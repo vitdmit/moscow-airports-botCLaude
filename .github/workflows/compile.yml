@@ -1,0 +1,64 @@
+name: Compile daily CSV
+
+# 09:00 по Москве = 06:00 UTC.
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "Дата (YYYY-MM-DD). Пусто = вчера MSK."
+        required: false
+
+# Использует тот же лок, что и поллер — чтобы не было гонки на git push.
+concurrency:
+  group: airports-write
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # нужен весь репо, чтобы прочитать предыдущие снапшоты
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Compile day
+        env:
+          DATE_ARG: ${{ inputs.date }}
+        run: |
+          if [ -n "${DATE_ARG}" ]; then
+            python -m src.compile --date "${DATE_ARG}"
+          else
+            python -m src.compile
+          fi
+
+      - name: Commit daily outputs
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet --exit-code data/daily; then
+            echo "No daily output changes to commit."
+            exit 0
+          fi
+          git add data/daily
+          git commit -m "compile: daily CSV $(date -u +'%Y-%m-%d')"
+          for i in 1 2 3; do
+            git pull --rebase --autostash && git push && exit 0
+            echo "push retry $i…"
+            sleep $((RANDOM % 5 + 2))
+          done
+          echo "push failed after 3 retries" >&2
+          exit 1
