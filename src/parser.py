@@ -148,26 +148,83 @@ def _extract_gate(raw_status: str) -> Optional[str]:
     return m.group(1).strip() if m else None
 
 
-def _extract_flight_numbers_and_airlines(rejs_cell_text: str) -> tuple[
-    list[str], list[str]
-]:
-    """Разобрать ячейку «Рейс».
+# Номер рейса из href ссылки: /avia/flights/U6-261/ -> ("U6", "261")
+_FLIGHT_FROM_HREF = re.compile(r"/avia/flights/([A-Z0-9]+)-(\d+[A-Z]?)/", re.I)
 
-    Формат: «FV 6519, SU 6519 Россия, Аэрофлот»
-            -> ["FV 6519", "SU 6519"], ["Россия", "Аэрофлот"]
+# Инлайновый номер рейса в тексте.
+# Хитрость с (?![A-Za-z0-9]) после необязательной буквы: не даём «съесть»
+# первую букву кода авиакомпании, когда номер слипся с названием,
+# например «S7 4263S7 Airlines» -> номер «S7 4263», а не «S7 4263S».
+_FLIGHT_INLINE = re.compile(
+    r"\b([A-Z0-9]{2,3})\s+(\d{1,4}(?:[A-Z](?![A-Za-z0-9]))?)"
+)
 
-    Алгоритм: ищем все токены вида «XX(X) NNNN» — это рейсы.
-    Всё, что осталось после удаления рейсов, делим запятой — это
-    авиакомпании.
+
+def _extract_flights_from_cell(td) -> tuple[list[str], list[str]]:
+    """Разобрать ячейку «Рейс» из DOM-элемента <td>.
+
+    Работаем с самим элементом, а не с его текстом, потому что у разных
+    аэропортов номер рейса и название авиакомпании в HTML стоят вплотную
+    без пробела (например «S7 3745S7 Airlines»), и склейка text_content()
+    делает их неразделимыми. Зато номера рейсов почти всегда лежат либо
+    в ссылках <a href=".../avia/flights/U6-261/">, либо разделимы regex-ом
+    с защитой от поедания кода авиакомпании.
+
+    Формат «FV 6519, SU 6519 Россия, Аэрофлот»
+        -> (["FV 6519", "SU 6519"], ["Россия", "Аэрофлот"])
+    Формат «S7 3745S7 Airlines» (слипшийся, DME)
+        -> (["S7 3745"], ["S7 Airlines"])
     """
-    flight_pattern = re.compile(r"\b([A-Z0-9]{2,3})\s*(\d{1,4}[A-Z]?)\b")
-    flights = [
-        f"{m.group(1)} {m.group(2)}" for m in flight_pattern.finditer(rejs_cell_text)
-    ]
-    # Удаляем рейсы из текста, чтобы остались только названия авиакомпаний.
-    remaining = flight_pattern.sub("", rejs_cell_text)
-    remaining = re.sub(r"\s*,\s*", ",", remaining).strip(", ")
+    import copy
+
+    flights: list[str] = []
+
+    def _add(code: str, num: str) -> None:
+        f = f"{code.upper()} {num}"
+        if f not in flights:
+            flights.append(f)
+
+    # 1) Номера из ссылок: сначала по тексту ссылки (там может быть
+    #    несколько номеров кодшеринга), при неудаче — из href.
+    for a in td.xpath(".//a"):
+        link_text = re.sub(r"\s+", " ", a.text_content() or "").strip()
+        found = list(_FLIGHT_INLINE.finditer(link_text))
+        if found:
+            for m in found:
+                _add(m.group(1), m.group(2))
+        else:
+            m = _FLIGHT_FROM_HREF.search(a.get("href", "") or "")
+            if m:
+                _add(m.group(1), m.group(2))
+
+    # 2) Авиакомпании: берём текст БЕЗ ссылок.
+    #    ВАЖНО: в lxml текст после </a> хранится в a.tail и при простом
+    #    remove(a) теряется. Поэтому переносим tail в соседний узел.
+    td_copy = copy.deepcopy(td)
+    for a in td_copy.xpath(".//a"):
+        parent = a.getparent()
+        prev = a.getprevious()
+        tail = a.tail
+        if tail:
+            if prev is not None:
+                prev.tail = (prev.tail or "") + tail
+            else:
+                parent.text = (parent.text or "") + tail
+        parent.remove(a)
+    remaining = re.sub(r"\s+", " ", td_copy.text_content() or "").strip()
+
+    # 2a) В остатке могут быть безссылочные номера (3F 1316, S7 4263),
+    #     слипшиеся с названием. Вытаскиваем их и заменяем пробелом.
+    def _pull(m) -> str:
+        _add(m.group(1), m.group(2))
+        return " "
+
+    remaining = _FLIGHT_INLINE.sub(_pull, remaining)
+
+    # 2b) Остаток — названия авиакомпаний, разделённые запятыми.
+    remaining = re.sub(r"\s+", " ", remaining).strip(" ,")
     airlines = [a.strip() for a in remaining.split(",") if a.strip()]
+
     return flights, airlines
 
 
@@ -264,8 +321,8 @@ def parse_tablo(
         if not destination:
             continue
 
-        flight_cell = _cell_text(tds[col_index["flight"]])
-        flights, airlines = _extract_flight_numbers_and_airlines(flight_cell)
+        flight_td = tds[col_index["flight"]]
+        flights, airlines = _extract_flights_from_cell(flight_td)
 
         terminal_text = (
             _cell_text(tds[col_index["terminal"]])
