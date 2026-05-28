@@ -1,0 +1,40 @@
+{
+  "target_date": "2026-05-28",
+  "total_snapshot_rows_considered": 3472,
+  "per_airport": {
+    "SVO": {
+      "snapshots_unique_flights": 289,
+      "snapshots_departed": 175,
+      "snapshots_cancelled": 1,
+      "snapshots_delayed_next_day": 0,
+      "final_flights": 288,
+      "final_review_true": 166,
+      "final_without_gate": 132,
+      "final_codeshare_groups": 78
+    },
+    "VKO": {
+      "snapshots_unique_flights": 91,
+      "snapshots_departed": 69,
+      "snapshots_cancelled": 0,
+      "snapshots_delayed_next_day": 0,
+      "final_flights": 87,
+      "final_review_true": 43,
+      "final_without_gate": 25,
+      "final_codeshare_groups": 5
+    },
+    "DME": {
+      "snapshots_unique_flights": 45,
+      "snapshots_departed": 43,
+      "snapshots_cancelled": 0,
+      "snapshots_delayed_next_day": 0,
+      "final_flights": 45,
+      "final_review_true": 5,
+      "final_without_gate": 4,
+      "final_codeshare_groups": 0
+    }
+  },
+  "notes": [
+    "snapshots_departed — нижняя граница «реально вылетевших»: учитывается только если поллер хотя бы один раз увидел статус «Вылетел». Если рейс пропал с табло раньше — он попадёт во final_review_true.",
+    "final_without_gate показывает, сколько рейсов даже после всех снимков остались без гейта (требуется ручной разбор или увеличение частоты опроса)."
+  ]
+}
