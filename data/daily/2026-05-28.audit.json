@@ -1,36 +1,36 @@
 {
   "target_date": "2026-05-28",
-  "total_snapshot_rows_considered": 3472,
+  "total_snapshot_rows_considered": 6753,
   "per_airport": {
     "SVO": {
-      "snapshots_unique_flights": 289,
-      "snapshots_departed": 175,
+      "snapshots_unique_flights": 478,
+      "snapshots_departed": 353,
       "snapshots_cancelled": 1,
-      "snapshots_delayed_next_day": 0,
-      "final_flights": 288,
-      "final_review_true": 166,
-      "final_without_gate": 132,
-      "final_codeshare_groups": 78
+      "snapshots_delayed_next_day": 3,
+      "final_flights": 460,
+      "final_review_true": 193,
+      "final_without_gate": 152,
+      "final_codeshare_groups": 118
     },
     "VKO": {
-      "snapshots_unique_flights": 91,
-      "snapshots_departed": 69,
-      "snapshots_cancelled": 0,
-      "snapshots_delayed_next_day": 0,
-      "final_flights": 87,
-      "final_review_true": 43,
-      "final_without_gate": 25,
-      "final_codeshare_groups": 5
+      "snapshots_unique_flights": 159,
+      "snapshots_departed": 128,
+      "snapshots_cancelled": 1,
+      "snapshots_delayed_next_day": 1,
+      "final_flights": 150,
+      "final_review_true": 58,
+      "final_without_gate": 36,
+      "final_codeshare_groups": 25
     },
     "DME": {
-      "snapshots_unique_flights": 45,
-      "snapshots_departed": 43,
-      "snapshots_cancelled": 0,
+      "snapshots_unique_flights": 107,
+      "snapshots_departed": 73,
+      "snapshots_cancelled": 1,
       "snapshots_delayed_next_day": 0,
-      "final_flights": 45,
-      "final_review_true": 5,
-      "final_without_gate": 4,
-      "final_codeshare_groups": 0
+      "final_flights": 106,
+      "final_review_true": 56,
+      "final_without_gate": 24,
+      "final_codeshare_groups": 4
     }
   },
   "notes": [
