@@ -7,29 +7,29 @@
       "snapshots_departed": 353,
       "snapshots_cancelled": 1,
       "snapshots_delayed_next_day": 3,
-      "final_flights": 460,
-      "final_review_true": 193,
-      "final_without_gate": 152,
-      "final_codeshare_groups": 118
+      "final_flights": 363,
+      "final_review_true": 80,
+      "final_without_gate": 55,
+      "final_codeshare_groups": 42
     },
     "VKO": {
       "snapshots_unique_flights": 159,
       "snapshots_departed": 128,
       "snapshots_cancelled": 1,
       "snapshots_delayed_next_day": 1,
-      "final_flights": 150,
-      "final_review_true": 58,
-      "final_without_gate": 36,
-      "final_codeshare_groups": 25
+      "final_flights": 140,
+      "final_review_true": 46,
+      "final_without_gate": 27,
+      "final_codeshare_groups": 24
     },
     "DME": {
       "snapshots_unique_flights": 107,
       "snapshots_departed": 73,
       "snapshots_cancelled": 1,
       "snapshots_delayed_next_day": 0,
-      "final_flights": 106,
-      "final_review_true": 56,
-      "final_without_gate": 24,
+      "final_flights": 103,
+      "final_review_true": 53,
+      "final_without_gate": 21,
       "final_codeshare_groups": 4
     }
   },
