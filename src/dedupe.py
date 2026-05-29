@@ -23,18 +23,21 @@ log = get_logger(__name__)
 # ---------- группировка снимков в потенциальный рейс ----------
 
 def _flight_key(s: FlightSnapshot) -> tuple:
-    """Ключ, идентифицирующий рейс на уровне снимков одного источника.
+    """Ключ, идентифицирующий физический борт.
 
-    Используем (airport, flight_date, scheduled_time, направление, frozenset
-    рейсов). Если рейс прошёл несколько кругов на табло — все снимки
-    свернутся в одну группу.
+    Идентифицируем рейс по (аэропорт, дата, время по расписанию,
+    направление). Номера рейсов сюда НЕ входят: они являются атрибутом
+    борта (могут быть кодшеринги), а не идентификатором, и иногда
+    Яндекс отдаёт в одной ячейке всю серию номеров SU 82XX — если
+    положить frozenset(flight_numbers) в ключ, один реальный борт
+    размножится на десятки фантомных групп. Проверено на инциденте
+    SU 8259/HZ 8259 Челябинск 28.05.2026 — 79 фантомных строк.
     """
     return (
         s.airport,
         s.flight_date,
         s.scheduled_time,
         s.destination.strip().lower(),
-        frozenset(s.flight_numbers),
     )
 
 
@@ -156,7 +159,7 @@ def build_daily_flights(
                 "гейт ни в одном снимке не был зафиксирован"
 
         airlines, numbers = _collect_airlines_and_numbers(group)
-        airport, flight_date, scheduled_time, destination, _ = key
+        airport, flight_date, scheduled_time, destination = key
 
         # Восстановим оригинальный destination из снимков (не lowercased).
         original_destination = group[0].destination
