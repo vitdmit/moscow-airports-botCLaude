@@ -139,6 +139,10 @@ def _classify_status(raw_status: str, scheduled: datetime) -> tuple[
         return ParsedStatus.REGISTRATION, None
     if "расписан" in text:
         return ParsedStatus.SCHEDULED, None
+    # Незнакомый статус — это сигнал, что Яндекс выдал что-то новое.
+    # Логируем, чтобы потом расширить классификатор.
+    if raw_status.strip():
+        log.warning("неизвестный статус (raw): %r", raw_status[:200])
     return ParsedStatus.UNKNOWN, None
 
 
