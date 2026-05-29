@@ -127,11 +127,18 @@ def build_daily_flights(
         if status == ParsedStatus.DEPARTED:
             pass  # норма
         elif status in {
-            ParsedStatus.BOARDING, ParsedStatus.REGISTRATION, ParsedStatus.SCHEDULED,
+            ParsedStatus.BOARDING, ParsedStatus.REGISTRATION,
         }:
-            # Рейс перестали показывать на табло, но в последнем
-            # известном снимке он был ещё «в процессе». Скорее всего вылетел —
-            # помечаем для ручной проверки.
+            # Рейс перестали показывать на табло, но в последнем известном
+            # снимке он был в активной фазе (посадка/регистрация). Это норма:
+            # между тиками поллера рейс ушёл из 2-часового окна табло.
+            # Гейт у такого рейса как правило уже зафиксирован.
+            # Если гейт есть — это однозначно вылетевший, review не ставим.
+            # Если гейта нет — оставляем review для ручной проверки.
+            pass  # ниже проверка по гейту проставит review при необходимости
+        elif status == ParsedStatus.SCHEDULED:
+            # Видели только «Вылет по расписанию», статус активной фазы не
+            # успели застать — менее уверены, ставим review.
             review = True
             review_reason = f"исчез из табло на статусе {status.value}"
         elif status == ParsedStatus.DELAYED_SAME_DAY:
