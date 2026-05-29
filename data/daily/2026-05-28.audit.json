@@ -8,7 +8,7 @@
       "snapshots_cancelled": 1,
       "snapshots_delayed_next_day": 3,
       "final_flights": 363,
-      "final_review_true": 80,
+      "final_review_true": 56,
       "final_without_gate": 55,
       "final_codeshare_groups": 42
     },
@@ -18,7 +18,7 @@
       "snapshots_cancelled": 1,
       "snapshots_delayed_next_day": 1,
       "final_flights": 140,
-      "final_review_true": 46,
+      "final_review_true": 28,
       "final_without_gate": 27,
       "final_codeshare_groups": 24
     },
@@ -28,7 +28,7 @@
       "snapshots_cancelled": 1,
       "snapshots_delayed_next_day": 0,
       "final_flights": 103,
-      "final_review_true": 53,
+      "final_review_true": 29,
       "final_without_gate": 21,
       "final_codeshare_groups": 4
     }
