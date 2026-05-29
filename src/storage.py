@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import csv
+import gzip
 import json
 from datetime import date, datetime, time
 from pathlib import Path
@@ -9,6 +10,11 @@ from typing import Iterable
 
 from src.config import DAILY_DIR, MSK, SNAPSHOTS_DIR
 from src.models import FlightDaily, FlightSnapshot
+
+
+# Параллельно с распарсенными JSONL храним сырой HTML (gzip) —
+# чтобы при любом будущем баге парсера можно было перепарсить задним числом.
+RAW_DIR = SNAPSHOTS_DIR.parent / "raw_html"
 
 
 # ---------- снапшоты (raw) ----------
@@ -35,6 +41,22 @@ def write_snapshot(airport: str, ts: datetime, rows: Iterable[FlightSnapshot]) -
     with path.open("w", encoding="utf-8") as f:
         for row in rows:
             f.write(row.model_dump_json() + "\n")
+    return path
+
+
+def write_raw_html(airport: str, ts: datetime, html_text: str) -> Path:
+    """Сохранить сырой HTML страницы под gzip.
+
+    Пример: data/raw_html/2026-05-27/1340_SVO.html.gz
+    Нужно для возможности перепарсить старые снапшоты при фиксе парсера.
+    Размер ~10 КБ после gzip; для 3 аэропортов × 144 тиков = ~4 МБ в день.
+    """
+    msk_dt = ts.astimezone(MSK)
+    day_dir = RAW_DIR / msk_dt.date().isoformat()
+    day_dir.mkdir(parents=True, exist_ok=True)
+    path = day_dir / f"{msk_dt.strftime('%H%M')}_{airport}.html.gz"
+    with gzip.open(path, "wt", encoding="utf-8", compresslevel=6) as f:
+        f.write(html_text)
     return path
 
 
