@@ -13,7 +13,7 @@ import httpx
 
 from src.config import AIRPORTS, REQUEST_TIMEOUT_SEC, USER_AGENT
 from src.parser import fetch_tablo, parse_tablo
-from src.storage import write_snapshot
+from src.storage import write_raw_html, write_snapshot
 from src.utils import get_logger
 
 log = get_logger("poll")
@@ -31,6 +31,13 @@ def poll_one(client: httpx.Client, airport: str, station_id: str) -> int:
     except (httpx.HTTPError, httpx.TimeoutException) as e:
         log.error("[%s] fetch failed: %s", airport, e)
         return 0
+
+    # Сохраняем raw HTML ДО парсинга — пригодится, если парсер упадёт
+    # или потом захотим перепарсить с новой логикой.
+    try:
+        write_raw_html(airport, ts, html_text)
+    except Exception as e:
+        log.warning("[%s] не смогли сохранить raw HTML: %s", airport, e)
 
     try:
         rows = parse_tablo(html_text, airport=airport, snapshot_at=ts)
