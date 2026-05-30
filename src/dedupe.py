@@ -114,6 +114,7 @@ def build_daily_flights(
 
     candidates: list[FlightDaily] = []
     for key, group in by_key.items():
+        airport, flight_date, scheduled_time, destination = key
         status = _final_status(group)
 
         if status == ParsedStatus.CANCELLED:
@@ -137,10 +138,21 @@ def build_daily_flights(
             # Если гейта нет — оставляем review для ручной проверки.
             pass  # ниже проверка по гейту проставит review при необходимости
         elif status == ParsedStatus.SCHEDULED:
-            # Видели только «Вылет по расписанию», статус активной фазы не
-            # успели застать — менее уверены, ставим review.
-            review = True
-            review_reason = f"исчез из табло на статусе {status.value}"
+            # Видели только «Вылет по расписанию». Для DME Яндекс часто
+            # вообще не показывает статусы registration/boarding — рейс
+            # остаётся на scheduled и просто исчезает с табло после вылета.
+            # Эвристика: если есть гейт и поллер видел рейс не менее
+            # 5 раз (≈50 минут) — считаем вылетевшим. Без гейта или с
+            # малым количеством наблюдений — review.
+            gate_now = _last_known(
+                group, "gate",
+                prefer_statuses={ParsedStatus.SCHEDULED},
+            )
+            if gate_now and len(group) >= 5:
+                pass  # уверенно вылетел
+            else:
+                review = True
+                review_reason = f"исчез из табло на статусе {status.value}"
         elif status == ParsedStatus.DELAYED_SAME_DAY:
             # Задержан, но в течение суток. Если мы не дождались DEPARTED —
             # ставим review (мог уйти после последнего тика).
@@ -160,13 +172,19 @@ def build_daily_flights(
             },
         )
         terminal = _last_known(group, "terminal")
+        # Особенности источника:
+        # VKO — у Яндекса нет столбца «Терминал», но в реальности там один
+        #       пассажирский терминал A. Захардкожено.
+        # DME — терминалов как зданий нет, буква сектора уже зашита в гейт
+        #       (D4, C5, E8). terminal оставляем пустым осознанно.
+        if airport == "VKO" and not terminal:
+            terminal = "A"
         if not gate:
             review = True
             review_reason = (review_reason + "; " if review_reason else "") + \
                 "гейт ни в одном снимке не был зафиксирован"
 
         airlines, numbers = _collect_airlines_and_numbers(group)
-        airport, flight_date, scheduled_time, destination = key
 
         # Восстановим оригинальный destination из снимков (не lowercased).
         original_destination = group[0].destination
