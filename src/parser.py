@@ -30,14 +30,23 @@ from lxml import html as lxml_html
 
 from src.config import (
     MSK,
+    BROWSER_HEADERS,
     REQUEST_TIMEOUT_SEC,
-    USER_AGENT,
     YANDEX_RASP_URL,
 )
 from src.models import FlightSnapshot, ParsedStatus
 from src.utils import get_logger
 
 log = get_logger(__name__)
+
+
+class TableNotFoundError(Exception):
+    """Таблица табло не найдена на странице.
+
+    Скорее всего антибот-заглушка или временный сбой Яндекса — в отличие
+    от легитимно пустого табло (таблица есть, но строк нет). Сигнал
+    поллеру, что запрос имеет смысл повторить.
+    """
 
 _TIME_RE = re.compile(r"^\s*(\d{1,2}):(\d{2})\s*$")
 _GATE_RE = re.compile(r"Выход\s+на\s+посадку\s+([A-Za-zА-Яа-я0-9\-/]+)", re.I)
@@ -59,12 +68,13 @@ def fetch_tablo(station_id: str, client: Optional[httpx.Client] = None) -> str:
     Если клиент не передан — создаём временный.
     """
     url = YANDEX_RASP_URL.format(station_id=station_id)
-    headers = {"User-Agent": USER_AGENT, "Accept-Language": "ru,en;q=0.8"}
     if client is None:
-        with httpx.Client(timeout=REQUEST_TIMEOUT_SEC, headers=headers) as c:
+        with httpx.Client(
+            timeout=REQUEST_TIMEOUT_SEC, headers=BROWSER_HEADERS
+        ) as c:
             r = c.get(url, follow_redirects=True)
     else:
-        r = client.get(url, headers=headers, follow_redirects=True)
+        r = client.get(url, headers=BROWSER_HEADERS, follow_redirects=True)
     r.raise_for_status()
     return r.text
 
@@ -268,8 +278,9 @@ def parse_tablo(
     root = lxml_html.fromstring(html_text)
     tbl = _find_departures_table(root)
     if tbl is None:
-        log.warning("[%s] не нашли таблицу табло — возможно, HTML изменился", airport)
-        return []
+        log.warning("[%s] не нашли таблицу табло — возможно, антибот-заглушка "
+                    "или изменился HTML", airport)
+        raise TableNotFoundError(airport)
 
     # Определяем порядок колонок по заголовку.
     header_cells = tbl.xpath(".//thead//th") or tbl.xpath(".//tr[1]//th") or \
