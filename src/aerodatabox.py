@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 import json
+import time as _time
 from datetime import date, datetime, timedelta, timezone
 from typing import Optional
 
@@ -39,6 +40,12 @@ USAGE_FILE = DATA_DIR / "aerodatabox_usage.json"
 
 DEPARTED_STATUSES = {"departed", "enroute", "arrived"}
 EXCLUDED_STATUSES = {"canceled", "cancelled", "diverted", "canceleduncertain"}
+
+# Пауза между запросами (секунд) — чтобы не упереться в rate limit «в секунду».
+REQUEST_PAUSE_SEC = 3
+# Сколько раз повторить запрос при HTTP 429 (rate limit) и пауза перед повтором.
+RATE_LIMIT_RETRIES = 4
+RATE_LIMIT_BACKOFF_SEC = 5
 
 
 # ---------- учёт расхода квоты ----------
@@ -94,19 +101,34 @@ def fetch_window(api_key: str, airport: str, from_local: datetime,
         "x-rapidapi-host": API_HOST,
         "Accept": "application/json",
     }
-    try:
+
+    def _do_get():
         if client is None:
             with httpx.Client(timeout=REQUEST_TIMEOUT_SEC) as c:
-                r = c.get(url, params=params, headers=headers)
-        else:
-            r = client.get(url, params=params, headers=headers)
-        r.raise_for_status()
-        return r.json()
-    except httpx.HTTPStatusError as e:
-        raise AeroDataBoxError(
-            f"HTTP {e.response.status_code}: {e.response.text[:200]}") from e
-    except (httpx.HTTPError, ValueError) as e:
-        raise AeroDataBoxError(str(e)) from e
+                return c.get(url, params=params, headers=headers)
+        return client.get(url, params=params, headers=headers)
+
+    last_err = None
+    for attempt in range(1, RATE_LIMIT_RETRIES + 1):
+        try:
+            r = _do_get()
+            if r.status_code == 429:
+                # rate limit — ждём и повторяем
+                wait = RATE_LIMIT_BACKOFF_SEC * attempt
+                log.warning("[%s] HTTP 429 (rate limit), попытка %d/%d, ждём %dс",
+                            airport, attempt, RATE_LIMIT_RETRIES, wait)
+                last_err = AeroDataBoxError("HTTP 429: rate limit")
+                _time.sleep(wait)
+                continue
+            r.raise_for_status()
+            return r.json()
+        except httpx.HTTPStatusError as e:
+            raise AeroDataBoxError(
+                f"HTTP {e.response.status_code}: {e.response.text[:200]}") from e
+        except (httpx.HTTPError, ValueError) as e:
+            last_err = AeroDataBoxError(str(e))
+            _time.sleep(RATE_LIMIT_BACKOFF_SEC)
+    raise last_err or AeroDataBoxError("неизвестная ошибка запроса")
 
 
 # ---------- разбор и сборка ----------
@@ -219,10 +241,12 @@ def fetch_airport_day(api_key: str, airport: str, day: date,
         (start + timedelta(hours=12), start + timedelta(hours=24)),
     ]
     payloads = []
-    for f, t in windows:
+    for idx, (f, t) in enumerate(windows):
         if remaining_budget() <= 0:
             raise AeroDataBoxError(
                 f"месячный бюджет AeroDataBox исчерпан (лимит {MONTHLY_BUDGET})")
+        if idx > 0:
+            _time.sleep(REQUEST_PAUSE_SEC)  # не упираться в rate limit «в секунду»
         payloads.append(fetch_window(api_key, airport, f, t, client=client))
         _bump_usage()
     rows = build_day_rows(airport, payloads)
