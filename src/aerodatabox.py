@@ -177,14 +177,20 @@ def build_day_rows(airport: str, payloads: list[dict]) -> list[dict]:
             if _is_excluded(status) or not _is_departed(status):
                 continue
 
-            dep = item.get("departure") or {}
+            # При withLeg=false вылетная инфа лежит в "movement";
+            # при withLeg=true — в "departure" (+ "arrival" с пунктом назначения).
+            dep = item.get("movement") or item.get("departure") or {}
             sched = _parse_local((dep.get("scheduledTime") or {}).get("local"))
             if sched is None:
                 continue
 
             gate = dep.get("gate") or None
             terminal = _terminal(dep)
-            arr_airport = (item.get("arrival") or {}).get("airport") or {}
+            # Направление: в режиме movement аэропорт назначения лежит прямо в
+            # dep["airport"]; в режиме departure/arrival — в item["arrival"].
+            arr_airport = (dep.get("airport")
+                           or (item.get("arrival") or {}).get("airport")
+                           or {})
             dest = arr_airport.get("name") or arr_airport.get("iata") or "?"
             dest_iata = arr_airport.get("iata") or ""
 
@@ -250,21 +256,5 @@ def fetch_airport_day(api_key: str, airport: str, day: date,
         payloads.append(fetch_window(api_key, airport, f, t, client=client))
         _bump_usage()
     rows = build_day_rows(airport, payloads)
-    if not rows:
-        # Диагностика: показать, что реально вернул API.
-        for i, p in enumerate(payloads):
-            if isinstance(p, dict):
-                keys = list(p.keys())
-                deps = p.get("departures")
-                ndep = len(deps) if isinstance(deps, list) else "нет ключа departures"
-                log.warning("[%s] окно %d: ключи ответа=%s, departures=%s",
-                            airport, i + 1, keys, ndep)
-                sample = json.dumps(p, ensure_ascii=False)[:600]
-                log.warning("[%s] окно %d сырой ответ (начало): %s",
-                            airport, i + 1, sample)
-            else:
-                log.warning("[%s] окно %d: ответ не dict, а %s: %s",
-                            airport, i + 1, type(p).__name__,
-                            str(p)[:400])
     log.info("[%s] %s: собрано %d вылетевших рейсов", airport, day, len(rows))
     return rows
