@@ -250,5 +250,21 @@ def fetch_airport_day(api_key: str, airport: str, day: date,
         payloads.append(fetch_window(api_key, airport, f, t, client=client))
         _bump_usage()
     rows = build_day_rows(airport, payloads)
+    if not rows:
+        # Диагностика: показать, что реально вернул API.
+        for i, p in enumerate(payloads):
+            if isinstance(p, dict):
+                keys = list(p.keys())
+                deps = p.get("departures")
+                ndep = len(deps) if isinstance(deps, list) else "нет ключа departures"
+                log.warning("[%s] окно %d: ключи ответа=%s, departures=%s",
+                            airport, i + 1, keys, ndep)
+                sample = json.dumps(p, ensure_ascii=False)[:600]
+                log.warning("[%s] окно %d сырой ответ (начало): %s",
+                            airport, i + 1, sample)
+            else:
+                log.warning("[%s] окно %d: ответ не dict, а %s: %s",
+                            airport, i + 1, type(p).__name__,
+                            str(p)[:400])
     log.info("[%s] %s: собрано %d вылетевших рейсов", airport, day, len(rows))
     return rows
