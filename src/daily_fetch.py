@@ -67,7 +67,7 @@ def main() -> int:
                 log.error("[%s] не удалось забрать день: %s", airport, e)
                 failed.append(airport)
             if i < len(AIRPORTS) - 1:
-                time_module.sleep(2)  # вежливая пауза между аэропортами
+                time_module.sleep(4)  # вежливая пауза между аэропортами
 
     if not all_rows:
         log.error("Ни одной строки не собрано (аэропорты с ошибкой: %s)", failed)
