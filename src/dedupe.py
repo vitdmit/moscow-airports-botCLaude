@@ -181,8 +181,18 @@ def build_daily_flights(
             terminal = "A"
         if not gate:
             review = True
+            if len(group) >= 10:
+                # Рейс наблюдался долго (≥10 раз ≈ 100+ минут), но гейт
+                # так и не появился — это отсутствие данных в источнике
+                # (Яндекс не показал гейт), а не провал нашего опроса.
+                reason_gate = "гейт отсутствует в источнике (наблюдений много)"
+            else:
+                reason_gate = (
+                    "гейт не зафиксирован (мало наблюдений — возможен "
+                    "пропуск опроса или поздний вылет)"
+                )
             review_reason = (review_reason + "; " if review_reason else "") + \
-                "гейт ни в одном снимке не был зафиксирован"
+                reason_gate
 
         airlines, numbers = _collect_airlines_and_numbers(group)
 
