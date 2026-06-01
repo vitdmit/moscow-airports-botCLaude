@@ -1,0 +1,53 @@
+name: Daily fetch (AeroDataBox)
+
+# Раз в сутки. Берём ВЧЕРАШНИЙ день (полные сутки MSK, данные устоялись).
+# 08:00 по Москве = 05:00 UTC.
+on:
+  schedule:
+    - cron: "0 5 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: airports-write
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Fetch yesterday
+        env:
+          AERODATABOX_KEY: ${{ secrets.AERODATABOX_KEY }}
+        run: python -m src.daily_fetch
+
+      - name: Commit daily CSV
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/daily data/aerodatabox_usage.json
+          if git diff --cached --quiet; then
+            echo "Нет изменений для коммита."
+            exit 0
+          fi
+          git commit -m "daily: CSV за $(date -u -d 'yesterday' +'%Y-%m-%d')"
+          for i in 1 2 3; do
+            git pull --rebase --autostash && git push && exit 0
+            echo "push retry $i…"
+            sleep $((RANDOM % 5 + 2))
+          done
+          echo "push failed after 3 retries" >&2
+          exit 1
