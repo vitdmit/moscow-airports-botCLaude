@@ -46,6 +46,7 @@ def write_csv(day: date, rows: list[dict]) -> str:
 
 
 def main() -> int:
+    log.info("=== daily_fetch ВЕРСИЯ 2026-06-02-fix-actdate (правило Б + фикс окна) ===")
     api_key = os.environ.get("AERODATABOX_KEY", "").strip()
     if not api_key:
         log.error("Нет AERODATABOX_KEY в окружении — нечем авторизоваться")
