@@ -142,15 +142,29 @@ def _parse_local(s: Optional[str]) -> Optional[datetime]:
         return None
 
 
+def _clean_field(v) -> Optional[str]:
+    """Убрать повторы внутри значения: '20A,20A' -> '20A', '103,103' -> '103'.
+    AeroDataBox иногда дублирует токены в gate/checkInDesk."""
+    if v is None:
+        return None
+    parts = [p.strip() for p in str(v).split(",") if p.strip()]
+    seen, out = set(), []
+    for p in parts:
+        if p not in seen:
+            seen.add(p)
+            out.append(p)
+    return ",".join(out) if out else None
+
+
 def _terminal(dep: dict) -> Optional[str]:
     """Терминал/зона вылета. У SVO/VKO есть поле terminal; у DME его нет —
     берём первую букву гейта (D13 -> D)."""
     t = dep.get("terminal")
     if t:
-        return str(t).strip()
-    gate = dep.get("gate")
-    if gate and str(gate)[0].isalpha():
-        return str(gate)[0].upper()
+        return _clean_field(t)
+    gate = _clean_field(dep.get("gate"))
+    if gate and gate[0].isalpha():
+        return gate[0].upper()
     return None
 
 
@@ -184,7 +198,7 @@ def build_day_rows(airport: str, payloads: list[dict]) -> list[dict]:
             if sched is None:
                 continue
 
-            gate = dep.get("gate") or None
+            gate = _clean_field(dep.get("gate"))
             terminal = _terminal(dep)
             # Направление: в режиме movement аэропорт назначения лежит прямо в
             # dep["airport"]; в режиме departure/arrival — в item["arrival"].
@@ -197,14 +211,22 @@ def build_day_rows(airport: str, payloads: list[dict]) -> list[dict]:
             number = (item.get("number") or "").strip()
             airline = (item.get("airline") or {}).get("name") or ""
             cs = (item.get("codeshareStatus") or "").strip().lower()
+            is_operator = cs == "isoperator"
             revised = _parse_local((dep.get("revisedTime") or {}).get("local"))
             runway = _parse_local((dep.get("runwayTime") or {}).get("local"))
+            at = revised or runway
 
-            key = (terminal, gate, sched.replace(tzinfo=None).isoformat(),
-                   dest_iata or dest)
+            # Ключ склейки БЕЗ гейта: один физический борт = (время вылета,
+            # направление). Гейт в ключ не входит, т.к. на границе 12ч-окон
+            # он может быть пустым в одном окне и заполненным/другим в другом,
+            # что иначе плодит дубли одного рейса. Чтобы РАЗНЫЕ рейсы в одно
+            # время в один город (разные перевозчики, не кодшеринг) не слиплись,
+            # добавляем в ключ номер рейса-оператора, если он известен.
+            op_number = number if is_operator else None
+            key = (sched.replace(tzinfo=None).isoformat(),
+                   dest_iata or dest, op_number)
             g = groups.get(key)
             if g is None:
-                at = revised or runway
                 g = {
                     "airport": airport,
                     "flight_date": sched.date().isoformat(),
@@ -215,12 +237,25 @@ def build_day_rows(airport: str, payloads: list[dict]) -> list[dict]:
                     "destination": dest,
                     "destination_iata": dest_iata,
                     "operators": [],
+                    "_best_at": at,  # для выбора последнего фактического времени
                 }
                 groups[key] = g
-            g["operators"].append((number, airline, cs == "isoperator"))
+            else:
+                # Берём непустой/более свежий гейт и терминал (учёт смены гейта
+                # между окнами): заполняем, если было пусто.
+                if gate and not g["gate"]:
+                    g["gate"] = gate
+                if terminal and not g["terminal"]:
+                    g["terminal"] = terminal
+                # фактическое время — берём максимально позднее известное
+                if at and (g["_best_at"] is None or at > g["_best_at"]):
+                    g["_best_at"] = at
+                    g["actual_time"] = at.strftime("%H:%M")
+            g["operators"].append((number, airline, is_operator))
 
     rows: list[dict] = []
     for g in groups.values():
+        g.pop("_best_at", None)
         ops = g.pop("operators")
         ordered = [o for o in ops if o[2]] + [o for o in ops if not o[2]]
         seen, numbers, airlines = set(), [], []
