@@ -181,7 +181,7 @@ def build_day_rows(airport: str, payloads: list[dict]) -> list[dict]:
     (терминал, гейт, плановое_время, направление). Кодшеринги схлопываются:
     все номера в одну ячейку, оператор первым. Только вылетевшие пассажирские.
     """
-    groups: dict[tuple, dict] = {}
+    groups: dict[tuple, list[dict]] = {}
 
     for payload in payloads:
         for item in (payload.get("departures") or []):
@@ -212,65 +212,125 @@ def build_day_rows(airport: str, payloads: list[dict]) -> list[dict]:
             airline = (item.get("airline") or {}).get("name") or ""
             cs = (item.get("codeshareStatus") or "").strip().lower()
             is_operator = cs == "isoperator"
+            is_codeshared = cs == "iscodeshared"
             revised = _parse_local((dep.get("revisedTime") or {}).get("local"))
             runway = _parse_local((dep.get("runwayTime") or {}).get("local"))
             at = revised or runway
 
-            # Ключ склейки БЕЗ гейта: один физический борт = (время вылета,
-            # направление). Гейт в ключ не входит, т.к. на границе 12ч-окон
-            # он может быть пустым в одном окне и заполненным/другим в другом,
-            # что иначе плодит дубли одного рейса. Чтобы РАЗНЫЕ рейсы в одно
-            # время в один город (разные перевозчики, не кодшеринг) не слиплись,
-            # добавляем в ключ номер рейса-оператора, если он известен.
-            op_number = number if is_operator else None
-            key = (sched.replace(tzinfo=None).isoformat(),
-                   dest_iata or dest, op_number)
-            g = groups.get(key)
-            if g is None:
-                g = {
-                    "airport": airport,
-                    "flight_date": sched.date().isoformat(),
-                    "scheduled_time": sched.strftime("%H:%M"),
-                    "actual_time": at.strftime("%H:%M") if at else "",
-                    "terminal": terminal or "",
-                    "gate": gate or "",
-                    "destination": dest,
-                    "destination_iata": dest_iata,
-                    "operators": [],
-                    "_best_at": at,  # для выбора последнего фактического времени
-                }
-                groups[key] = g
-            else:
-                # Берём непустой/более свежий гейт и терминал (учёт смены гейта
-                # между окнами): заполняем, если было пусто.
-                if gate and not g["gate"]:
-                    g["gate"] = gate
-                if terminal and not g["terminal"]:
-                    g["terminal"] = terminal
-                # фактическое время — берём максимально позднее известное
-                if at and (g["_best_at"] is None or at > g["_best_at"]):
-                    g["_best_at"] = at
-                    g["actual_time"] = at.strftime("%H:%M")
-            g["operators"].append((number, airline, is_operator))
+            # Фаза 1: копим все наблюдения по (время вылета, направление).
+            # Решение «один борт или несколько разных» принимаем во 2-й фазе
+            # по гейтам — у одного физического борта гейт один.
+            key = (sched.replace(tzinfo=None).isoformat(), dest_iata or dest)
+            groups.setdefault(key, []).append({
+                "airport": airport,
+                "flight_date": sched.date().isoformat(),
+                "scheduled_time": sched.strftime("%H:%M"),
+                "sched_dt": sched.replace(tzinfo=None),
+                "at": at,
+                "terminal": terminal or "",
+                "gate": gate or "",
+                "destination": dest,
+                "destination_iata": dest_iata,
+                "number": number,
+                "airline": airline,
+                "is_operator": is_operator,
+                "is_codeshared": is_codeshared,
+            })
 
     rows: list[dict] = []
-    for g in groups.values():
-        g.pop("_best_at", None)
-        ops = g.pop("operators")
-        ordered = [o for o in ops if o[2]] + [o for o in ops if not o[2]]
-        seen, numbers, airlines = set(), [], []
-        for num, al, _ in ordered:
-            if num and num not in seen:
-                seen.add(num)
-                numbers.append(num)
-                if al and al not in airlines:
-                    airlines.append(al)
-        g["flight_numbers"] = ",".join(numbers)
-        g["airlines"] = ",".join(airlines)
-        rows.append(g)
+    for obs_list in groups.values():
+        rows.extend(_resolve_group(obs_list))
 
     rows.sort(key=lambda r: (r["scheduled_time"], r["terminal"], r["gate"]))
     return rows
+
+
+def _resolve_group(obs: list[dict]) -> list[dict]:
+    """Из наблюдений с одинаковыми (время, направление) собрать строки.
+
+    Один физический борт = один гейт. Разные непустые гейты у НЕ-кодшеринговых
+    рейсов => это разные борта (например Аэрофлот и Победа в один город в одно
+    время) — разделяем по гейту. Кодшеринг (один борт, много номеров) и дубли
+    на границе 12ч-окон (тот же номер, гейт пустой/сменился) — сливаются."""
+    # непустые гейты среди "настоящих" рейсов (оператор/обычный, не кодшеринг)
+    real_gates = {o["gate"] for o in obs
+                  if o["gate"] and not o["is_codeshared"]}
+
+    # Если все НЕ-кодшеринговые наблюдения относятся к одному номеру рейса —
+    # это один борт, даже если гейт между окнами переназначили (104 -> 120).
+    op_numbers = {o["number"] for o in obs
+                  if o["number"] and not o["is_codeshared"]}
+
+    if len(real_gates) <= 1 or len(op_numbers) <= 1:
+        # один борт (или гейт неизвестен, или единый номер) — одна строка
+        return [_merge_obs(obs)]
+
+    # несколько разных гейтов => группируем по гейту (разные борта).
+    # Кодшеринг-наблюдения без своего гейта прицепляем к borту с тем же номером,
+    # иначе — к первой группе.
+    by_gate: dict[str, list[dict]] = {}
+    leftovers: list[dict] = []
+    for o in obs:
+        if o["gate"]:
+            by_gate.setdefault(o["gate"], []).append(o)
+        else:
+            leftovers.append(o)
+    # раскидать безгейтовые наблюдения по номеру рейса, если номер встречается
+    num_to_gate = {}
+    for gate, lst in by_gate.items():
+        for o in lst:
+            if o["number"]:
+                num_to_gate[o["number"]] = gate
+    for o in leftovers:
+        g = num_to_gate.get(o["number"])
+        if g:
+            by_gate[g].append(o)
+        else:
+            # некуда отнести — отдельная строка
+            by_gate.setdefault(o["gate"] or f"_{o['number']}", []).append(o)
+    return [_merge_obs(lst) for lst in by_gate.values()]
+
+
+def _merge_obs(obs: list[dict]) -> dict:
+    """Слить список наблюдений одного борта в одну строку."""
+    base = obs[0]
+    out = {
+        "airport": base["airport"],
+        "flight_date": base["flight_date"],
+        "scheduled_time": base["scheduled_time"],
+        "actual_time": "",
+        "terminal": "",
+        "gate": "",
+        "destination": base["destination"],
+        "destination_iata": base["destination_iata"],
+    }
+    # гейт/терминал — первый непустой
+    for o in obs:
+        if not out["gate"] and o["gate"]:
+            out["gate"] = o["gate"]
+        if not out["terminal"] and o["terminal"]:
+            out["terminal"] = o["terminal"]
+    # фактическое время — максимально позднее известное
+    best_at = None
+    for o in obs:
+        if o["at"] and (best_at is None or o["at"] > best_at):
+            best_at = o["at"]
+    if best_at:
+        out["actual_time"] = best_at.strftime("%H:%M")
+    # номера: оператор первым, затем остальные; без дублей
+    ordered = [o for o in obs if o["is_operator"]] + \
+              [o for o in obs if not o["is_operator"]]
+    seen, numbers, airlines = set(), [], []
+    for o in ordered:
+        num = o["number"]
+        if num and num not in seen:
+            seen.add(num)
+            numbers.append(num)
+            if o["airline"] and o["airline"] not in airlines:
+                airlines.append(o["airline"])
+    out["flight_numbers"] = ",".join(numbers)
+    out["airlines"] = ",".join(airlines)
+    return out
 
 
 def fetch_airport_day(api_key: str, airport: str, day: date,
