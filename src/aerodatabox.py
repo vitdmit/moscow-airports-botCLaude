@@ -241,8 +241,74 @@ def build_day_rows(airport: str, payloads: list[dict]) -> list[dict]:
     for obs_list in groups.values():
         rows.extend(_resolve_group(obs_list))
 
+    rows = _merge_near_time_dupes(rows)
     rows.sort(key=lambda r: (r["scheduled_time"], r["terminal"], r["gate"]))
     return rows
+
+
+def _merge_near_time_dupes(rows: list[dict]) -> list[dict]:
+    """Слить строки одного борта, попавшие в разные 12ч-окна с чуть разным
+    плановым временем (напр. 22:25 и 22:30). Признак одного борта: совпадают
+    аэропорт, направление и номер рейса-оператора (первый в flight_numbers),
+    а плановое время отличается не более чем на 20 минут."""
+    def to_min(hhmm: str) -> int:
+        try:
+            h, m = hhmm.split(":")
+            return int(h) * 60 + int(m)
+        except Exception:
+            return -10 ** 6
+
+    def op_num(r: dict) -> str:
+        return (r["flight_numbers"].split(",")[0] if r["flight_numbers"] else "")
+
+    used = [False] * len(rows)
+    out: list[dict] = []
+    for i, r in enumerate(rows):
+        if used[i]:
+            continue
+        group = [r]
+        for j in range(i + 1, len(rows)):
+            if used[j]:
+                continue
+            o = rows[j]
+            if (o["airport"] == r["airport"]
+                    and o["destination_iata"] == r["destination_iata"]
+                    and op_num(o) and op_num(o) == op_num(r)
+                    and abs(to_min(o["scheduled_time"]) - to_min(r["scheduled_time"])) <= 20):
+                group.append(o)
+                used[j] = True
+        used[i] = True
+        if len(group) == 1:
+            out.append(r)
+        else:
+            out.append(_merge_rows(group))
+    return out
+
+
+def _merge_rows(group: list[dict]) -> dict:
+    """Слить уже готовые строки одного борта в одну (берём раннее плановое
+    время, непустой гейт/терминал, позднее фактическое, объединённые номера)."""
+    group_sorted = sorted(group, key=lambda r: r["scheduled_time"])
+    base = dict(group_sorted[0])
+    for r in group_sorted[1:]:
+        if not base["gate"] and r["gate"]:
+            base["gate"] = r["gate"]
+        if not base["terminal"] and r["terminal"]:
+            base["terminal"] = r["terminal"]
+        if r["actual_time"] > base["actual_time"]:
+            base["actual_time"] = r["actual_time"]
+        # объединяем номера/авиакомпании без дублей
+        nums = base["flight_numbers"].split(",") if base["flight_numbers"] else []
+        for n in (r["flight_numbers"].split(",") if r["flight_numbers"] else []):
+            if n and n not in nums:
+                nums.append(n)
+        base["flight_numbers"] = ",".join(nums)
+        als = base["airlines"].split(",") if base["airlines"] else []
+        for a in (r["airlines"].split(",") if r["airlines"] else []):
+            if a and a not in als:
+                als.append(a)
+        base["airlines"] = ",".join(als)
+    return base
 
 
 def _resolve_group(obs: list[dict]) -> list[dict]:
