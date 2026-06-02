@@ -176,10 +176,15 @@ def _is_excluded(status: str) -> bool:
     return (status or "").strip().lower() in EXCLUDED_STATUSES
 
 
-def build_day_rows(airport: str, payloads: list[dict]) -> list[dict]:
-    """Собрать чистые строки за день. Группировка по физическому борту:
-    (терминал, гейт, плановое_время, направление). Кодшеринги схлопываются:
-    все номера в одну ячейку, оператор первым. Только вылетевшие пассажирские.
+def build_day_rows(airport: str, payloads: list[dict],
+                   target_day: Optional[date] = None) -> list[dict]:
+    """Собрать чистые строки за день. Группировка по физическому борту.
+    Кодшеринги схлопываются. Только вылетевшие пассажирские.
+
+    Если задан target_day, плановая дата рейса принудительно берётся как
+    target_day (историч. FIDS привязывает дату к окну запроса, а не к реальным
+    суткам — поэтому доверяем времени суток, а день берём целевой). Факт
+    корректируется относительно плана: переход через полночь даёт +1 день.
     """
     groups: dict[tuple, list[dict]] = {}
 
@@ -217,31 +222,53 @@ def build_day_rows(airport: str, payloads: list[dict]) -> list[dict]:
             runway = _parse_local((dep.get("runwayTime") or {}).get("local"))
             at = revised or runway
 
-            # Фикс «съезжания» даты факта из-за окна запроса. В историческом
-            # FIDS дата у revisedTime иногда привязывается к границе окна, а не
-            # к реальным суткам: рейс плана 1 июня 21:30 может прийти как факт
-            # «2 июня 21:38». Реальная задержка/опережение измеряется часами,
-            # не сутками. Поэтому если |факт - план| > 6 часов, подгоняем ДЕНЬ
-            # факта к ближайшему относительно планового времени (время суток
-            # факта сохраняем — оно корректно).
-            if at is not None:
-                diff_h = (at - sched).total_seconds() / 3600.0
-                if abs(diff_h) > 6:
-                    # сдвигаем дату факта на целое число суток к плану
-                    shift_days = round(diff_h / 24.0)
-                    at = at - timedelta(days=shift_days)
+            # Нормализация дат. Историч. FIDS привязывает абсолютную дату к окну
+            # запроса, а не к реальным суткам рейса. Поэтому, если знаем целевой
+            # день, берём плановую дату = target_day (доверяем времени суток),
+            # а фактическую дату вычисляем относительно плана по разнице ВРЕМЕНИ
+            # суток (переход через полночь -> соседние сутки).
+            if at is not None and sched is not None:
+                # разница по времени суток в минутах, приведённая к (-720..+720]
+                smin = sched.hour * 60 + sched.minute
+                amin = at.hour * 60 + at.minute
+                delta = amin - smin
+                if delta > 720:
+                    delta -= 1440
+                elif delta <= -720:
+                    delta += 1440
+                # delta теперь реальное отклонение факта от плана в минутах
+                fact_offset_min = delta
+            else:
+                fact_offset_min = 0
 
-            # Фаза 1: копим все наблюдения по (плановое время, направление).
-            # Дату рейса определяем по ФАКТИЧЕСКОМУ вылету (правило Б): если
-            # есть at — берём его дату, иначе откатываемся на плановую.
-            key = (sched.replace(tzinfo=None).isoformat(), dest_iata or dest)
+            sched_naive = sched.replace(tzinfo=None)
+            # Плановая дата: если знаем целевой день — принудительно он
+            # (FIDS привязывает дату к окну запроса, не к реальным суткам).
+            if target_day is not None:
+                plan_date = target_day
+            else:
+                plan_date = sched_naive.date()
+            plan_dt = datetime(plan_date.year, plan_date.month, plan_date.day,
+                               sched_naive.hour, sched_naive.minute)
+            # Фактическая дата = плановая + смещение факта (через полночь).
+            if at is not None:
+                fact_dt = plan_dt + timedelta(minutes=fact_offset_min)
+                actual_time = at.strftime("%H:%M")
+                actual_date = fact_dt.date()
+            else:
+                actual_time = ""
+                actual_date = plan_date
+
+            # ключ группировки — по времени суток плана + направление
+            key = (sched_naive.strftime("%H:%M"), dest_iata or dest)
             groups.setdefault(key, []).append({
                 "airport": airport,
-                "flight_date": sched.date().isoformat(),       # плановая (запас)
-                "actual_date": at.date().isoformat() if at else sched.date().isoformat(),
-                "scheduled_time": sched.strftime("%H:%M"),
-                "sched_dt": sched.replace(tzinfo=None),
-                "at": at,
+                "flight_date": plan_date.isoformat(),
+                "actual_date": actual_date.isoformat(),
+                "scheduled_time": sched_naive.strftime("%H:%M"),
+                "sched_dt": plan_dt,
+                "at_time": actual_time,
+                "fact_dt": (plan_dt + timedelta(minutes=fact_offset_min)) if at is not None else None,
                 "terminal": terminal or "",
                 "gate": gate or "",
                 "destination": dest,
@@ -392,16 +419,15 @@ def _merge_obs(obs: list[dict]) -> dict:
         if not out["terminal"] and o["terminal"]:
             out["terminal"] = o["terminal"]
     # фактическое время — максимально позднее известное;
-    # дата рейса (правило Б) = дата фактического вылета.
-    best_at = None
+    # дата рейса (правило Б) = дата фактического вылета (fact_dt).
+    best_fact = None
     for o in obs:
-        if o["at"] and (best_at is None or o["at"] > best_at):
-            best_at = o["at"]
-    if best_at:
-        out["actual_time"] = best_at.strftime("%H:%M")
-        out["flight_date"] = best_at.date().isoformat()
+        if o.get("fact_dt") and (best_fact is None or o["fact_dt"] > best_fact):
+            best_fact = o["fact_dt"]
+    if best_fact:
+        out["actual_time"] = best_fact.strftime("%H:%M")
+        out["flight_date"] = best_fact.date().isoformat()
     else:
-        # факта нет — оставляем плановую дату как запасную
         out["flight_date"] = base["flight_date"]
     # номера: оператор первым, затем остальные; без дублей
     ordered = [o for o in obs if o["is_operator"]] + \
@@ -429,17 +455,19 @@ def fetch_airport_day(api_key: str, airport: str, day: date,
     вечер `day` — уйти уже в следующие сутки), затем фильтруем строки по
     flight_date == day. Так ничего не теряется и не задваивается.
 
-    Окна (по плановому локальному времени):
-      1) (day-1) 21:00 .. day 09:00   — захватывает ночной хвост прошлых суток
-      2) day 09:00 .. day 21:00
-      3) day 21:00 .. (day+1) 03:00   — поздний вечер, уходящий за полночь
-    Каждое окно ≤12 часов (ограничение API). 3 запроса на аэропорт.
+    Окна (по плановому локальному времени), все начинаются в «ровные» часы
+    суток целевого дня, чтобы дата в ответе FIDS не «съезжала» к границе окна:
+      1) day 00:00 .. day 12:00
+      2) day 12:00 .. day 24:00
+      3) (day+1) 00:00 .. (day+1) 06:00  — утренний хвост: рейсы плана дня,
+         фактически улетевшие после полуночи; и поздние, попавшие в утро.
+    Затем оставляем строки с фактической датой == day.
     """
     d0 = datetime(day.year, day.month, day.day, 0, 0)
     windows = [
-        (d0 - timedelta(hours=3), d0 + timedelta(hours=9)),    # 21:00 пред. .. 09:00
-        (d0 + timedelta(hours=9), d0 + timedelta(hours=21)),   # 09:00 .. 21:00
-        (d0 + timedelta(hours=21), d0 + timedelta(hours=27)),  # 21:00 .. 03:00 след.
+        (d0, d0 + timedelta(hours=12)),
+        (d0 + timedelta(hours=12), d0 + timedelta(hours=24)),
+        (d0 + timedelta(hours=24), d0 + timedelta(hours=30)),
     ]
     payloads = []
     for idx, (f, t) in enumerate(windows):
