@@ -35,7 +35,7 @@ AIRPORTS = ("SVO", "VKO", "DME")
 # Бюджет запросов в месяц (страховка от выхода за лимит RapidAPI).
 # 6 запросов/день * ~30 дней ~= 180. Потолок с запасом.
 # Если план Basic = 300/мес — 250 безопасно. Если 600 — можно поднять.
-MONTHLY_BUDGET = 250
+MONTHLY_BUDGET = 320
 USAGE_FILE = DATA_DIR / "aerodatabox_usage.json"
 
 DEPARTED_STATUSES = {"departed", "enroute", "arrived"}
@@ -217,13 +217,16 @@ def build_day_rows(airport: str, payloads: list[dict]) -> list[dict]:
             runway = _parse_local((dep.get("runwayTime") or {}).get("local"))
             at = revised or runway
 
-            # Фаза 1: копим все наблюдения по (время вылета, направление).
-            # Решение «один борт или несколько разных» принимаем во 2-й фазе
-            # по гейтам — у одного физического борта гейт один.
+            # Фаза 1: копим все наблюдения по (плановое время, направление).
+            # Дату рейса определяем по ФАКТИЧЕСКОМУ вылету (правило Б): если
+            # есть at — берём его дату, иначе откатываемся на плановую.
+            # Группируем по плановому времени (оно стабильнее для склейки
+            # дублей с границы окон), а дату проставляем фактическую при сборке.
             key = (sched.replace(tzinfo=None).isoformat(), dest_iata or dest)
             groups.setdefault(key, []).append({
                 "airport": airport,
-                "flight_date": sched.date().isoformat(),
+                "flight_date": sched.date().isoformat(),       # плановая (запас)
+                "actual_date": at.date().isoformat() if at else sched.date().isoformat(),
                 "scheduled_time": sched.strftime("%H:%M"),
                 "sched_dt": sched.replace(tzinfo=None),
                 "at": at,
@@ -376,13 +379,18 @@ def _merge_obs(obs: list[dict]) -> dict:
             out["gate"] = o["gate"]
         if not out["terminal"] and o["terminal"]:
             out["terminal"] = o["terminal"]
-    # фактическое время — максимально позднее известное
+    # фактическое время — максимально позднее известное;
+    # дата рейса (правило Б) = дата фактического вылета.
     best_at = None
     for o in obs:
         if o["at"] and (best_at is None or o["at"] > best_at):
             best_at = o["at"]
     if best_at:
         out["actual_time"] = best_at.strftime("%H:%M")
+        out["flight_date"] = best_at.date().isoformat()
+    else:
+        # факта нет — оставляем плановую дату как запасную
+        out["flight_date"] = base["flight_date"]
     # номера: оператор первым, затем остальные; без дублей
     ordered = [o for o in obs if o["is_operator"]] + \
               [o for o in obs if not o["is_operator"]]
@@ -401,11 +409,25 @@ def _merge_obs(obs: list[dict]) -> dict:
 
 def fetch_airport_day(api_key: str, airport: str, day: date,
                       client: httpx.Client) -> list[dict]:
-    """Забрать полный день аэропорта (2 окна по 12ч) и собрать строки."""
-    start = datetime(day.year, day.month, day.day, 0, 0)
+    """Собрать рейсы, ФАКТИЧЕСКИ вылетевшие в сутки `day` (правило Б).
+
+    Рейс относится к дате по фактическому вылету. Поэтому запрашиваем по
+    плановому времени с запасом ±3 часа на стыках суток (поздний вечер
+    предыдущего дня может фактически уйти после полуночи `day`, а поздний
+    вечер `day` — уйти уже в следующие сутки), затем фильтруем строки по
+    flight_date == day. Так ничего не теряется и не задваивается.
+
+    Окна (по плановому локальному времени):
+      1) (day-1) 21:00 .. day 09:00   — захватывает ночной хвост прошлых суток
+      2) day 09:00 .. day 21:00
+      3) day 21:00 .. (day+1) 03:00   — поздний вечер, уходящий за полночь
+    Каждое окно ≤12 часов (ограничение API). 3 запроса на аэропорт.
+    """
+    d0 = datetime(day.year, day.month, day.day, 0, 0)
     windows = [
-        (start, start + timedelta(hours=12)),
-        (start + timedelta(hours=12), start + timedelta(hours=24)),
+        (d0 - timedelta(hours=3), d0 + timedelta(hours=9)),    # 21:00 пред. .. 09:00
+        (d0 + timedelta(hours=9), d0 + timedelta(hours=21)),   # 09:00 .. 21:00
+        (d0 + timedelta(hours=21), d0 + timedelta(hours=27)),  # 21:00 .. 03:00 след.
     ]
     payloads = []
     for idx, (f, t) in enumerate(windows):
@@ -417,5 +439,10 @@ def fetch_airport_day(api_key: str, airport: str, day: date,
         payloads.append(fetch_window(api_key, airport, f, t, client=client))
         _bump_usage()
     rows = build_day_rows(airport, payloads)
-    log.info("[%s] %s: собрано %d вылетевших рейсов", airport, day, len(rows))
-    return rows
+    # оставляем только фактически вылетевшие именно в этот день
+    target = day.isoformat()
+    kept = [r for r in rows if r["flight_date"] == target]
+    dropped = len(rows) - len(kept)
+    log.info("[%s] %s: собрано %d (отброшено %d вне суток по факту)",
+             airport, day, len(kept), dropped)
+    return kept
