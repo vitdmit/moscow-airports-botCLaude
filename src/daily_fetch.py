@@ -1,8 +1,12 @@
-"""Ежедневный сбор: вчерашний день по SVO/VKO/DME через AeroDataBox -> CSV.
+"""Ежедневный сбор: ПОЗАВЧЕРАШНИЙ день по SVO/VKO/DME через AeroDataBox -> CSV.
 
-Запускается раз в сутки из GitHub Actions (утром, когда вчерашние сутки
-полностью закрыты и данные в API устоялись). Один CSV на день со всеми
-тремя аэропортами.
+Берём именно позавчера, а не вчера: к этому моменту исторические данные FIDS
+по всем аэропортам полностью наполнены (DME дозревает до суток). Это убирает
+HTTP 204 «данных пока нет» и пустые фактические времена у ночных рейсов —
+без всяких retry, дозаписей и перепроверок. Один CSV на день, три аэропорта.
+
+Можно вручную собрать конкретную дату: задать FETCH_DATE=YYYY-MM-DD
+(workflow_dispatch). Тогда берётся она, а не позавчера.
 
 Колонки CSV:
   airport, flight_date, scheduled_time, actual_time, terminal, gate,
@@ -14,7 +18,7 @@ import csv
 import os
 import sys
 import time as time_module
-from datetime import date, timedelta
+from datetime import date
 
 import httpx
 
@@ -23,7 +27,7 @@ from src.aerodatabox import (
     fetch_airport_day, remaining_budget,
 )
 from src.config import DAILY_DIR, REQUEST_TIMEOUT_SEC
-from src.utils import get_logger, yesterday_msk
+from src.utils import get_logger, day_before_yesterday_msk
 
 log = get_logger("daily_fetch")
 
@@ -32,6 +36,8 @@ CSV_FIELDS = [
     "terminal", "gate", "airlines", "flight_numbers",
     "destination", "destination_iata",
 ]
+
+AIRPORT_RETRIES = 3
 
 
 def write_csv(day: date, rows: list[dict]) -> str:
@@ -46,8 +52,8 @@ def write_csv(day: date, rows: list[dict]) -> str:
 
 
 def resolve_target_day() -> date:
-    """Целевой день сбора. Если задана переменная FETCH_DATE (YYYY-MM-DD) —
-    берём её (ручной запуск за конкретную дату), иначе вчерашний день MSK."""
+    """Целевой день. FETCH_DATE (YYYY-MM-DD) — ручной сбор конкретной даты,
+    иначе позавчера по МСК (данные уже устоялись)."""
     raw = os.environ.get("FETCH_DATE", "").strip()
     if raw:
         try:
@@ -57,12 +63,12 @@ def resolve_target_day() -> date:
             return chosen
         except (ValueError, TypeError):
             log.warning("FETCH_DATE='%s' не распознан (нужен YYYY-MM-DD), "
-                        "беру вчерашний день", raw)
-    return yesterday_msk()
+                        "беру позавчера", raw)
+    return day_before_yesterday_msk()
 
 
 def main() -> int:
-    log.info("=== daily_fetch ВЕРСИЯ 2026-06-03-win3 (правило Б + окно3 только в прошлом) ===")
+    log.info("=== daily_fetch ВЕРСИЯ 2026-06-04-d2 (сбор позавчера) ===")
     api_key = os.environ.get("AERODATABOX_KEY", "").strip()
     if not api_key:
         log.error("Нет AERODATABOX_KEY в окружении — нечем авторизоваться")
@@ -74,7 +80,6 @@ def main() -> int:
 
     all_rows: list[dict] = []
     failed: list[str] = []
-    AIRPORT_RETRIES = 3
 
     with httpx.Client(timeout=REQUEST_TIMEOUT_SEC) as client:
         for i, airport in enumerate(AIRPORTS):
@@ -84,35 +89,46 @@ def main() -> int:
                     rows = fetch_airport_day(api_key, airport, day, client)
                     break
                 except NoDataYetError as e:
-                    # данные ещё не наполнены — повторять в этом запуске нет смысла
-                    log.error("[%s] %s — пропускаю, дособрать позже", airport, e)
+                    # данных нет даже за позавчера — задержка >2 суток (редкость).
+                    # Не повторяем; страховочное предупреждение ниже.
+                    log.error("[%s] %s", airport, e)
                     break
                 except AeroDataBoxError as e:
                     log.error("[%s] попытка %d/%d не удалась: %s",
                               airport, att, AIRPORT_RETRIES, e)
                     if att < AIRPORT_RETRIES:
-                        time_module.sleep(10 * att)  # пауза перед повтором дня
+                        time_module.sleep(10 * att)
             if rows is not None:
                 all_rows.extend(rows)
             else:
                 failed.append(airport)
             if i < len(AIRPORTS) - 1:
-                time_module.sleep(4)  # вежливая пауза между аэропортами
-
-    # Если часть аэропортов не собралась — это НЕ полный успех: пишем что есть,
-    # но возвращаем код ошибки, чтобы заметить (день можно дособрать вручную).
-    if failed:
-        log.error("ВНИМАНИЕ: не собраны аэропорты %s — данные за день НЕПОЛНЫЕ. "
-                  "Дособери вручную через workflow_dispatch с этой датой.", failed)
+                time_module.sleep(4)
 
     if not all_rows:
-        log.error("Ни одной строки не собрано (аэропорты с ошибкой: %s)", failed)
+        log.error("Ни одной строки не собрано (ошибки: %s)", failed)
         return 1
 
-    path = write_csv(day, all_rows)
     by_airport: dict[str, int] = {}
     for r in all_rows:
         by_airport[r["airport"]] = by_airport.get(r["airport"], 0) + 1
+
+    # СТРАХОВКА: за позавчера данные обязаны быть полными. Если какой-то
+    # аэропорт пуст или подозрительно мал — данные дозревают дольше 2 суток
+    # (необычно). Громко предупреждаем в лог, чтобы заметить и собрать вручную
+    # с большей задержкой. Автоматических перезапросов НЕ делаем.
+    MIN_EXPECTED = 30  # ниже этого по аэропорту за сутки — явно неполно
+    for airport in AIRPORTS:
+        n = by_airport.get(airport, 0)
+        if airport in failed or n == 0:
+            log.error("СТРАХОВКА: [%s] за %s пусто — данные дозревают дольше "
+                      "2 суток? Собери вручную позже (FETCH_DATE=%s).",
+                      airport, day, day)
+        elif n < MIN_EXPECTED:
+            log.warning("СТРАХОВКА: [%s] за %s только %d рейсов — подозрительно "
+                        "мало, проверь полноту.", airport, day, n)
+
+    path = write_csv(day, all_rows)
     log.info("Записано %d строк в %s. По аэропортам: %s. Ошибки: %s",
              len(all_rows), path, by_airport, failed or "нет")
     return 0
