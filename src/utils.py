@@ -34,3 +34,10 @@ def now_msk() -> datetime:
 def yesterday_msk() -> date:
     """Вчерашняя календарная дата по Москве."""
     return (now_msk() - timedelta(days=1)).date()
+
+
+def day_before_yesterday_msk() -> date:
+    """Позавчерашняя дата по Москве. Берём именно её (а не вчера): к этому
+    моменту исторические данные FIDS по всем аэропортам уже полностью
+    наполнены (DME дозревает до суток), поэтому сбор стабилен и без 204."""
+    return (now_msk() - timedelta(days=2)).date()
