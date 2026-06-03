@@ -45,14 +45,30 @@ def write_csv(day: date, rows: list[dict]) -> str:
     return str(path)
 
 
+def resolve_target_day() -> date:
+    """Целевой день сбора. Если задана переменная FETCH_DATE (YYYY-MM-DD) —
+    берём её (ручной запуск за конкретную дату), иначе вчерашний день MSK."""
+    raw = os.environ.get("FETCH_DATE", "").strip()
+    if raw:
+        try:
+            y, m, d = (int(x) for x in raw.split("-"))
+            chosen = date(y, m, d)
+            log.info("FETCH_DATE задан вручную: %s", chosen)
+            return chosen
+        except (ValueError, TypeError):
+            log.warning("FETCH_DATE='%s' не распознан (нужен YYYY-MM-DD), "
+                        "беру вчерашний день", raw)
+    return yesterday_msk()
+
+
 def main() -> int:
-    log.info("=== daily_fetch ВЕРСИЯ 2026-06-02-fix-actdate (правило Б + фикс окна) ===")
+    log.info("=== daily_fetch ВЕРСИЯ 2026-06-03-pickdate (правило Б + выбор даты) ===")
     api_key = os.environ.get("AERODATABOX_KEY", "").strip()
     if not api_key:
         log.error("Нет AERODATABOX_KEY в окружении — нечем авторизоваться")
         return 1
 
-    day = yesterday_msk()
+    day = resolve_target_day()
     log.info("Сбор за %s. Остаток бюджета: %d/%d",
              day, remaining_budget(), MONTHLY_BUDGET)
 
