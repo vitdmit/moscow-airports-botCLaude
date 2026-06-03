@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       fetch_date:
-        description: "Дата сбора YYYY-MM-DD (пусто = вчера)"
+        description: "Дата сбора YYYY-MM-DD (пусто = позавчера)"
         required: false
         default: ""
 
