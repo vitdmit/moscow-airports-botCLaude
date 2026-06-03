@@ -44,7 +44,7 @@ EXCLUDED_STATUSES = {"canceled", "cancelled", "diverted", "canceleduncertain"}
 # Пауза между запросами (секунд) — чтобы не упереться в rate limit «в секунду».
 REQUEST_PAUSE_SEC = 3
 # Сколько раз повторить запрос при HTTP 429 (rate limit) и пауза перед повтором.
-RATE_LIMIT_RETRIES = 4
+RATE_LIMIT_RETRIES = 6
 RATE_LIMIT_BACKOFF_SEC = 5
 
 
@@ -113,7 +113,6 @@ def fetch_window(api_key: str, airport: str, from_local: datetime,
         try:
             r = _do_get()
             if r.status_code == 429:
-                # rate limit — ждём и повторяем
                 wait = RATE_LIMIT_BACKOFF_SEC * attempt
                 log.warning("[%s] HTTP 429 (rate limit), попытка %d/%d, ждём %dс",
                             airport, attempt, RATE_LIMIT_RETRIES, wait)
@@ -121,13 +120,32 @@ def fetch_window(api_key: str, airport: str, from_local: datetime,
                 _time.sleep(wait)
                 continue
             r.raise_for_status()
-            return r.json()
+            body = r.text or ""
+            if not body.strip():
+                # API вернул ПУСТОЕ тело при статусе 200 (троттлинг/временный
+                # сбой). Это не ошибка HTTP — повторяем с нарастающей паузой.
+                wait = RATE_LIMIT_BACKOFF_SEC * attempt
+                log.warning("[%s] пустой ответ (статус %s), попытка %d/%d, ждём %dс",
+                            airport, r.status_code, attempt, RATE_LIMIT_RETRIES, wait)
+                last_err = AeroDataBoxError("пустой ответ от API")
+                _time.sleep(wait)
+                continue
+            try:
+                return r.json()
+            except ValueError:
+                # тело есть, но не JSON (HTML-страница ошибки и т.п.) — повтор
+                wait = RATE_LIMIT_BACKOFF_SEC * attempt
+                log.warning("[%s] не-JSON ответ (статус %s), попытка %d/%d, ждём %dс",
+                            airport, r.status_code, attempt, RATE_LIMIT_RETRIES, wait)
+                last_err = AeroDataBoxError("не-JSON ответ от API")
+                _time.sleep(wait)
+                continue
         except httpx.HTTPStatusError as e:
             raise AeroDataBoxError(
                 f"HTTP {e.response.status_code}: {e.response.text[:200]}") from e
-        except (httpx.HTTPError, ValueError) as e:
+        except httpx.HTTPError as e:
             last_err = AeroDataBoxError(str(e))
-            _time.sleep(RATE_LIMIT_BACKOFF_SEC)
+            _time.sleep(RATE_LIMIT_BACKOFF_SEC * attempt)
     raise last_err or AeroDataBoxError("неизвестная ошибка запроса")
 
 
