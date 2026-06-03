@@ -6,6 +6,11 @@ on:
   schedule:
     - cron: "0 5 * * *"
   workflow_dispatch:
+    inputs:
+      fetch_date:
+        description: "Дата сбора YYYY-MM-DD (пусто = вчера)"
+        required: false
+        default: ""
 
 concurrency:
   group: airports-write
@@ -29,9 +34,10 @@ jobs:
       - name: Install deps
         run: pip install -r requirements.txt
 
-      - name: Fetch yesterday
+      - name: Fetch flights
         env:
           AERODATABOX_KEY: ${{ secrets.AERODATABOX_KEY }}
+          FETCH_DATE: ${{ github.event.inputs.fetch_date }}
         run: python -m src.daily_fetch
 
       - name: Commit daily CSV
@@ -43,7 +49,7 @@ jobs:
             echo "Нет изменений для коммита."
             exit 0
           fi
-          git commit -m "daily: CSV за $(date -u -d 'yesterday' +'%Y-%m-%d')"
+          git commit -m "daily: обновление данных $(date -u +'%Y-%m-%dT%H:%M')"
           for i in 1 2 3; do
             git pull --rebase --autostash && git push && exit 0
             echo "push retry $i…"
