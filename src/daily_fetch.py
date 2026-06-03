@@ -19,7 +19,7 @@ from datetime import date, timedelta
 import httpx
 
 from src.aerodatabox import (
-    AIRPORTS, AeroDataBoxError, MONTHLY_BUDGET,
+    AIRPORTS, AeroDataBoxError, NoDataYetError, MONTHLY_BUDGET,
     fetch_airport_day, remaining_budget,
 )
 from src.config import DAILY_DIR, REQUEST_TIMEOUT_SEC
@@ -62,7 +62,7 @@ def resolve_target_day() -> date:
 
 
 def main() -> int:
-    log.info("=== daily_fetch ВЕРСИЯ 2026-06-03-retry (правило Б + ретраи аэропортов) ===")
+    log.info("=== daily_fetch ВЕРСИЯ 2026-06-03-win3 (правило Б + окно3 только в прошлом) ===")
     api_key = os.environ.get("AERODATABOX_KEY", "").strip()
     if not api_key:
         log.error("Нет AERODATABOX_KEY в окружении — нечем авторизоваться")
@@ -82,6 +82,10 @@ def main() -> int:
             for att in range(1, AIRPORT_RETRIES + 1):
                 try:
                     rows = fetch_airport_day(api_key, airport, day, client)
+                    break
+                except NoDataYetError as e:
+                    # данные ещё не наполнены — повторять в этом запуске нет смысла
+                    log.error("[%s] %s — пропускаю, дособрать позже", airport, e)
                     break
                 except AeroDataBoxError as e:
                     log.error("[%s] попытка %d/%d не удалась: %s",
