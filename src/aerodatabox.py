@@ -259,8 +259,11 @@ def build_day_rows(airport: str, payloads: list[dict],
                 actual_time = ""
                 actual_date = plan_date
 
-            # ключ группировки — по времени суток плана + направление
-            key = (sched_naive.strftime("%H:%M"), dest_iata or dest)
+            # ключ группировки — плановая ДАТА + время суток + направление.
+            # Дата в ключе обязательна: иначе рейсы разных суток с одинаковым
+            # временем суток (ежедневный рейс) слипнутся в один.
+            key = (plan_date.isoformat(), sched_naive.strftime("%H:%M"),
+                   dest_iata or dest)
             groups.setdefault(key, []).append({
                 "airport": airport,
                 "flight_date": plan_date.isoformat(),
@@ -314,6 +317,7 @@ def _merge_near_time_dupes(rows: list[dict]) -> list[dict]:
                 continue
             o = rows[j]
             if (o["airport"] == r["airport"]
+                    and o["flight_date"] == r["flight_date"]
                     and o["destination_iata"] == r["destination_iata"]
                     and op_num(o) and op_num(o) == op_num(r)
                     and abs(to_min(o["scheduled_time"]) - to_min(r["scheduled_time"])) <= 20):
