@@ -62,7 +62,7 @@ def resolve_target_day() -> date:
 
 
 def main() -> int:
-    log.info("=== daily_fetch ВЕРСИЯ 2026-06-03-pickdate (правило Б + выбор даты) ===")
+    log.info("=== daily_fetch ВЕРСИЯ 2026-06-03-retry (правило Б + ретраи аэропортов) ===")
     api_key = os.environ.get("AERODATABOX_KEY", "").strip()
     if not api_key:
         log.error("Нет AERODATABOX_KEY в окружении — нечем авторизоваться")
@@ -74,17 +74,32 @@ def main() -> int:
 
     all_rows: list[dict] = []
     failed: list[str] = []
+    AIRPORT_RETRIES = 3
 
     with httpx.Client(timeout=REQUEST_TIMEOUT_SEC) as client:
         for i, airport in enumerate(AIRPORTS):
-            try:
-                rows = fetch_airport_day(api_key, airport, day, client)
+            rows = None
+            for att in range(1, AIRPORT_RETRIES + 1):
+                try:
+                    rows = fetch_airport_day(api_key, airport, day, client)
+                    break
+                except AeroDataBoxError as e:
+                    log.error("[%s] попытка %d/%d не удалась: %s",
+                              airport, att, AIRPORT_RETRIES, e)
+                    if att < AIRPORT_RETRIES:
+                        time_module.sleep(10 * att)  # пауза перед повтором дня
+            if rows is not None:
                 all_rows.extend(rows)
-            except AeroDataBoxError as e:
-                log.error("[%s] не удалось забрать день: %s", airport, e)
+            else:
                 failed.append(airport)
             if i < len(AIRPORTS) - 1:
                 time_module.sleep(4)  # вежливая пауза между аэропортами
+
+    # Если часть аэропортов не собралась — это НЕ полный успех: пишем что есть,
+    # но возвращаем код ошибки, чтобы заметить (день можно дособрать вручную).
+    if failed:
+        log.error("ВНИМАНИЕ: не собраны аэропорты %s — данные за день НЕПОЛНЫЕ. "
+                  "Дособери вручную через workflow_dispatch с этой датой.", failed)
 
     if not all_rows:
         log.error("Ни одной строки не собрано (аэропорты с ошибкой: %s)", failed)
