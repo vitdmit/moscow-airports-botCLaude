@@ -81,6 +81,12 @@ class AeroDataBoxError(Exception):
     pass
 
 
+class NoDataYetError(AeroDataBoxError):
+    """Данные за запрошенный период ещё не наполнены в истории API (HTTP 204).
+    Повторять в рамках того же запуска бесполезно — нужно дособрать позже."""
+    pass
+
+
 def fetch_window(api_key: str, airport: str, from_local: datetime,
                  to_local: datetime, client: Optional[httpx.Client] = None) -> dict:
     """Запросить вылеты аэропорта за окно [from_local, to_local] (<=12ч)."""
@@ -120,10 +126,15 @@ def fetch_window(api_key: str, airport: str, from_local: datetime,
                 _time.sleep(wait)
                 continue
             r.raise_for_status()
+            if r.status_code == 204:
+                # 204 No Content — данных за этот период ещё нет в истории API
+                # (наполнение FIDS по аэропорту отстаёт). Повторять бесполезно:
+                # сразу сообщаем особой ошибкой, чтобы день дособрать позже.
+                raise NoDataYetError(
+                    f"[{airport}] HTTP 204: данные за период ещё не наполнены")
             body = r.text or ""
             if not body.strip():
-                # API вернул ПУСТОЕ тело при статусе 200 (троттлинг/временный
-                # сбой). Это не ошибка HTTP — повторяем с нарастающей паузой.
+                # пустое тело при 200 — возможно временный сбой, пара повторов
                 wait = RATE_LIMIT_BACKOFF_SEC * attempt
                 log.warning("[%s] пустой ответ (статус %s), попытка %d/%d, ждём %dс",
                             airport, r.status_code, attempt, RATE_LIMIT_RETRIES, wait)
@@ -477,20 +488,31 @@ def fetch_airport_day(api_key: str, airport: str, day: date,
     вечер `day` — уйти уже в следующие сутки), затем фильтруем строки по
     flight_date == day. Так ничего не теряется и не задваивается.
 
-    Окна (по плановому локальному времени), все начинаются в «ровные» часы
-    суток целевого дня, чтобы дата в ответе FIDS не «съезжала» к границе окна:
+    Окна (по плановому локальному времени), все начинаются в «ровные» часы:
       1) day 00:00 .. day 12:00
       2) day 12:00 .. day 24:00
-      3) (day+1) 00:00 .. (day+1) 06:00  — утренний хвост: рейсы плана дня,
-         фактически улетевшие после полуночи; и поздние, попавшие в утро.
+      3) (day+1) 00:00 .. (day+1) 06:00  — утренний хвост СЛЕДУЮЩЕГО дня.
+         Запрашивается ТОЛЬКО если этот следующий день уже полностью в прошлом.
+         Иначе (если day+1 — сегодня или будущее) данных в истории ещё нет и
+         API отвечает HTTP 204. Хвостовые ночные рейсы при пропуске окна 3 не
+         теряются: они соберутся при штатном сборе следующего дня (его окна
+         1-2 покроют их по фактической дате — правило Б).
     Затем оставляем строки с фактической датой == day.
     """
     d0 = datetime(day.year, day.month, day.day, 0, 0)
     windows = [
         (d0, d0 + timedelta(hours=12)),
         (d0 + timedelta(hours=12), d0 + timedelta(hours=24)),
-        (d0 + timedelta(hours=24), d0 + timedelta(hours=30)),
     ]
+    # окно 3 добавляем, только если (day+1) уже завершился (день <= позавчера
+    # относительно сегодняшней даты MSK)
+    today_msk = datetime.now(tz=timezone(timedelta(hours=3))).date()
+    if (day + timedelta(days=1)) < today_msk:
+        windows.append((d0 + timedelta(hours=24), d0 + timedelta(hours=30)))
+    else:
+        log.info("[%s] %s: окно утра след. дня пропущено (день ещё не "
+                 "завершён в истории; хвост соберётся при сборе %s)",
+                 airport, day, day + timedelta(days=1))
     payloads = []
     for idx, (f, t) in enumerate(windows):
         if remaining_budget() <= 0:
