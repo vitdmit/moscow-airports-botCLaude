@@ -111,104 +111,114 @@ def build_summary(wb, d):
     ws.freeze_panes = "B5"
 
 
-def build_airport_sheet(wb, d, airport):
-    sub = d[d["airport"] == airport]
+def build_airport_sheet(wb, d, airport, n_weeks=8):
+    """Детальный лист аэропорта в формате коллег: гейты построчно,
+    сгруппированы по терминалу и зоне (ВВЛ/МВЛ). По колонкам — последние
+    n_weeks недель + все месяцы, в каждом периоде пара «кол-во | %».
+    % = доля гейта внутри (терминал, зона) за период. Снизу строка ИТОГО."""
+    sub = d[d["airport"] == airport].copy()
     if sub.empty:
         return
     ws = wb.create_sheet(airport)
+    sub["week"] = sub["flight_date"].dt.strftime("%G-W%V")
+    weeks = sorted(sub["week"].unique())[-n_weeks:]
     months = sorted(sub["ym"].unique())
-    years = sorted({m[:4] for m in months})
 
-    ws.cell(1, 1, f"{airport} — доля гейтов по месяцам (%, внутри зоны терминала)").font = TITLE_FONT
-    ws.cell(2, 1, "Доля = рейсов с гейта ÷ рейсов (терминал+зона) за месяц. "
-                  "Сумма гейтов одной зоны за месяц = 100%. Δ — изменение к тому же "
-                  "месяцу прошлого года (процентные пункты).").font = GREY
+    ws.cell(1, 1, f"{airport} — детальная загрузка гейтов по зонам").font = TITLE_FONT
+    ws.cell(2, 1, f"Кол-во рейсов и доля гейта (%) внутри своей зоны терминала. "
+                  f"Периоды: последние {len(weeks)} недель и все месяцы. "
+                  f"Сумма % гейтов одной зоны за период = 100%.").font = GREY
 
-    # число рейсов в (терминал,зона,гейт,месяц)
-    g = (sub.groupby(["terminal", "zone", "gate", "ym"]).size()
-         .reset_index(name="n"))
-    # знаменатель: рейсы (терминал,зона,месяц)
-    denom = (sub.groupby(["terminal", "zone", "ym"]).size()
-             .reset_index(name="d"))
-    g = g.merge(denom, on=["terminal", "zone", "ym"])
-    g["share"] = g["n"] / g["d"] * 100
+    # периоды: (метка, тип, значение-колонка в данных)
+    periods = [("W:" + w, "week", w) for w in weeks] + \
+              [("M:" + m, "ym", m) for m in months]
 
-    r0 = 4
-    headers = ["Терминал", "Зона", "Гейт"] + months
-    _style_header(ws, r0, headers)
-    # колонки Δ год-к-году для последнего месяца, если есть пара лет
-    yoy_col = None
-    if len(months) >= 13:
-        yoy_col = 4 + len(months)
-        c = ws.cell(r0, yoy_col, "Δ г/г (посл. мес), пп")
-        c.fill = HDR_FILL; c.font = HDR_FONT; c.border = BORDER; c.alignment = CENTER
+    # шапка: 3 строки. R4 — группа период (merged на 2 колонки), R5 — кол-во/%
+    r_grp, r_sub, r_data = 4, 5, 6
+    ws.cell(r_grp, 1, "Терминал").font = HDR_FONT
+    ws.cell(r_grp, 1).fill = HDR_FILL
+    ws.cell(r_grp, 2, "Зона").font = HDR_FONT
+    ws.cell(r_grp, 2).fill = HDR_FILL
+    ws.cell(r_grp, 3, "Гейт").font = HDR_FONT
+    ws.cell(r_grp, 3).fill = HDR_FILL
+    for c in (1, 2, 3):
+        ws.cell(r_grp, c).alignment = CENTER
+        ws.cell(r_grp, c).border = BORDER
+        ws.merge_cells(start_row=r_grp, start_column=c, end_row=r_sub, end_column=c)
+    col = 4
+    for label, _, _ in periods:
+        nice = label[2:].replace("W", "нед.") if label.startswith("W:") else label[2:]
+        ws.merge_cells(start_row=r_grp, start_column=col, end_row=r_grp, end_column=col + 1)
+        gc = ws.cell(r_grp, col, nice)
+        gc.fill = HDR_FILL; gc.font = HDR_FONT; gc.alignment = CENTER; gc.border = BORDER
+        for off, t in enumerate(["кол", "%"]):
+            sc = ws.cell(r_sub, col + off, t)
+            sc.fill = SUB_FILL; sc.font = Font(FONT, bold=True, size=8)
+            sc.alignment = CENTER; sc.border = BORDER
+        col += 2
+    last_col = col - 1
 
-    row = r0 + 1
-    terminals = sorted(sub["terminal"].unique())
+    # данные: число рейсов (терминал,зона,гейт,период) и знаменатель (терминал,зона,период)
+    def counts(period_type):
+        n = sub.groupby(["terminal", "zone", "gate", period_type]).size()
+        den = sub.groupby(["terminal", "zone", period_type]).size()
+        return n, den
+    wn, wden = counts("week")
+    mn, mden = counts("ym")
+
+    row = r_data
     zone_order = {"ВВЛ": 0, "МВЛ": 1, "?": 2}
-    for term in terminals:
+    for term in sorted(sub["terminal"].unique()):
         for z in sorted(sub[sub.terminal == term]["zone"].unique(),
                         key=lambda x: zone_order.get(x, 9)):
-            block = g[(g.terminal == term) & (g.zone == z)]
-            if block.empty:
-                continue
-            # строка-заголовок зоны
             zlabel = {"ВВЛ": "Внутренние (ВВЛ)", "МВЛ": "Международные (МВЛ)",
-                      "?": "Не классифицировано"}.get(z, z)
-            ws.cell(row, 1, f"Терминал {term}").font = BOLD
-            ws.cell(row, 1).fill = ZONE_FILL
+                      "?": "Не классиф."}.get(z, z)
+            # заголовок зоны
+            ws.cell(row, 1, f"Терм. {term}").font = BOLD
             ws.cell(row, 2, zlabel).font = BOLD
-            ws.cell(row, 2).fill = ZONE_FILL
-            for cc in range(3, 4 + len(months) + (1 if yoy_col else 0)):
-                ws.cell(row, cc).fill = ZONE_FILL
+            for c in range(1, last_col + 1):
+                ws.cell(row, c).fill = ZONE_FILL
             row += 1
-            gates = sorted(block["gate"].unique())
-            first_gate_row = row
-            for gate in gates:
-                ws.cell(row, 1, "").border = BORDER
-                ws.cell(row, 2, "").border = BORDER
-                gc = ws.cell(row, 3, gate); gc.font = BASE; gc.border = BORDER; gc.alignment = CENTER
-                share_by_m = block[block.gate == gate].set_index("ym")["share"]
-                for j, m in enumerate(months):
-                    v = share_by_m.get(m, None)
-                    cell = ws.cell(row, 4 + j)
-                    if v is not None and v > 0:
-                        cell.value = round(v, 1)
-                        cell.number_format = '0.0"%"'
+            zgates = sorted(sub[(sub.terminal == term) & (sub.zone == z)]["gate"].unique())
+            block_start = row
+            for gate in zgates:
+                ws.cell(row, 3, gate).font = BASE
+                ws.cell(row, 3).alignment = CENTER; ws.cell(row, 3).border = BORDER
+                c = 4
+                for label, ptype, pval in periods:
+                    if ptype == "week":
+                        cnt = int(wn.get((term, z, gate, pval), 0))
+                        den = int(wden.get((term, z, pval), 0))
                     else:
-                        cell.value = None
-                    cell.font = BASE; cell.border = BORDER; cell.alignment = CENTER
-                # Δ год-к-году для последнего месяца
-                if yoy_col:
-                    last_m = months[-1]
-                    py = f"{int(last_m[:4])-1}-{last_m[5:]}"
-                    cur = share_by_m.get(last_m)
-                    prev = share_by_m.get(py)
-                    cell = ws.cell(row, yoy_col)
-                    if cur is not None and prev is not None:
-                        cell.value = round(cur - prev, 1)
-                        cell.number_format = '+0.0;-0.0'
-                    cell.font = BASE; cell.border = BORDER; cell.alignment = CENTER
+                        cnt = int(mn.get((term, z, gate, pval), 0))
+                        den = int(mden.get((term, z, pval), 0))
+                    pct = (cnt / den * 100) if den else 0
+                    cc = ws.cell(row, c, cnt if cnt else None)
+                    cc.font = BASE; cc.alignment = CENTER; cc.border = BORDER
+                    pc = ws.cell(row, c + 1, round(pct, 0) / 100 if cnt else None)
+                    pc.number_format = "0%"; pc.font = BASE
+                    pc.alignment = CENTER; pc.border = BORDER
+                    c += 2
                 row += 1
-            # строка ИТОГО зоны (рейсов) — контроль
-            tot_by_m = denom[(denom.terminal == term) & (denom.zone == z)].set_index("ym")["d"]
-            ws.cell(row, 2, "рейсов в зоне:").font = GREY
-            ws.cell(row, 2).alignment = Alignment(horizontal="right")
-            for j, m in enumerate(months):
-                v = int(tot_by_m.get(m, 0))
-                cell = ws.cell(row, 4 + j, v if v else None)
-                cell.font = GREY; cell.alignment = CENTER
-            row += 1
-            row += 1  # пустая строка между блоками
+            # ИТОГО зоны
+            ws.cell(row, 2, "ИТОГО зоны").font = BOLD
+            for c in range(1, last_col + 1):
+                ws.cell(row, c).fill = TOTAL_FILL
+            cc = 4
+            for label, ptype, pval in periods:
+                den = int((wden if ptype == "week" else mden).get((term, z, pval), 0))
+                tc = ws.cell(row, cc, den if den else None)
+                tc.font = BOLD; tc.alignment = CENTER; tc.border = BORDER
+                ws.cell(row, cc + 1, None).border = BORDER
+                cc += 2
+            row += 2
 
-    ws.column_dimensions["A"].width = 14
-    ws.column_dimensions["B"].width = 22
-    ws.column_dimensions["C"].width = 8
-    for j in range(len(months)):
-        ws.column_dimensions[get_column_letter(4 + j)].width = 8
-    if yoy_col:
-        ws.column_dimensions[get_column_letter(yoy_col)].width = 16
-    ws.freeze_panes = ws.cell(r0 + 1, 4).coordinate
+    ws.column_dimensions["A"].width = 11
+    ws.column_dimensions["B"].width = 18
+    ws.column_dimensions["C"].width = 7
+    for c in range(4, last_col + 1):
+        ws.column_dimensions[get_column_letter(c)].width = 5.5
+    ws.freeze_panes = ws.cell(r_data, 4).coordinate
 
 
 def _point_share_series(d, point, available):
