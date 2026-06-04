@@ -68,7 +68,7 @@ def resolve_target_day() -> date:
 
 
 def main() -> int:
-    log.info("=== daily_fetch ВЕРСИЯ 2026-06-04-d2 (сбор позавчера) ===")
+    log.info("=== daily_fetch ВЕРСИЯ 2026-06-04-win3fix (204 в окне не рушит день) ===")
     api_key = os.environ.get("AERODATABOX_KEY", "").strip()
     if not api_key:
         log.error("Нет AERODATABOX_KEY в окружении — нечем авторизоваться")
