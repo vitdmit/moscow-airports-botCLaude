@@ -171,6 +171,18 @@ def _parse_local(s: Optional[str]) -> Optional[datetime]:
         return None
 
 
+def _norm_dest(name: str, iata: str) -> str:
+    """Канонический ключ направления для склейки. Используем нормализованное
+    ИМЯ (не IATA): в кодшеринге у партнёров IATA может быть только у одного
+    (напр. YC 90 -> NUX, UT 4090 -> пусто), и по IATA они бы не сошлись.
+    Нормализуем имя: нижний регистр, только буквы, схлопнуть транслит-варианты
+    (Novyy Urengoy / Novy Urengoj -> одно)."""
+    s = (name or iata or "").strip().lower()
+    s = "".join(ch for ch in s if ch.isalpha())
+    s = s.replace("yy", "y").replace("oj", "oy").replace("ij", "iy")
+    return s
+
+
 def _clean_field(v) -> Optional[str]:
     """Убрать повторы внутри значения: '20A,20A' -> '20A', '103,103' -> '103'.
     AeroDataBox иногда дублирует токены в gate/checkInDesk."""
@@ -292,7 +304,7 @@ def build_day_rows(airport: str, payloads: list[dict],
             # Дата в ключе обязательна: иначе рейсы разных суток с одинаковым
             # временем суток (ежедневный рейс) слипнутся в один.
             key = (plan_date.isoformat(), sched_naive.strftime("%H:%M"),
-                   dest_iata or dest)
+                   _norm_dest(dest, dest_iata))
             groups.setdefault(key, []).append({
                 "airport": airport,
                 "flight_date": plan_date.isoformat(),
@@ -514,14 +526,26 @@ def fetch_airport_day(api_key: str, airport: str, day: date,
                  "завершён в истории; хвост соберётся при сборе %s)",
                  airport, day, day + timedelta(days=1))
     payloads = []
+    empty_windows = 0
     for idx, (f, t) in enumerate(windows):
         if remaining_budget() <= 0:
             raise AeroDataBoxError(
                 f"месячный бюджет AeroDataBox исчерпан (лимит {MONTHLY_BUDGET})")
         if idx > 0:
             _time.sleep(REQUEST_PAUSE_SEC)  # не упираться в rate limit «в секунду»
-        payloads.append(fetch_window(api_key, airport, f, t, client=client))
+        try:
+            payloads.append(fetch_window(api_key, airport, f, t, client=client))
+        except NoDataYetError:
+            # 204 в ОТДЕЛЬНОМ окне = в этом окне рейсов/данных нет. Это не повод
+            # ронять весь день: окна 1-2 могут содержать данные. Пропускаем окно.
+            empty_windows += 1
+            log.info("[%s] %s: окно %s..%s пусто (204) — пропускаю",
+                     airport, day, f.strftime("%d %H:%M"), t.strftime("%d %H:%M"))
         _bump_usage()
+    # день считаем «нет данных», только если ВСЕ окна пустые
+    if empty_windows == len(windows):
+        raise NoDataYetError(
+            f"[{airport}] HTTP 204: все окна за {day} пусты — данных нет")
     rows = build_day_rows(airport, payloads)
     # оставляем только фактически вылетевшие именно в этот день
     target = day.isoformat()
