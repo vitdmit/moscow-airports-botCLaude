@@ -1,0 +1,59 @@
+name: Отчёт загрузки гейтов (Excel)
+
+# Запуск по кнопке. Генерирует Excel-отчёт и кладёт его в data/reports/,
+# плюс прикрепляет как артефакт (можно скачать прямо со страницы запуска).
+on:
+  workflow_dispatch:
+    inputs:
+      from_month:
+        description: "С месяца YYYY-MM (пусто = с начала истории)"
+        required: false
+        default: ""
+      to_month:
+        description: "По месяц YYYY-MM (пусто = последний доступный)"
+        required: false
+        default: ""
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install deps
+        run: pip install pandas openpyxl pyarrow
+      - name: Build report
+        run: |
+          mkdir -p data/reports
+          STAMP=$(date -u +'%Y-%m-%d')
+          OUT="data/reports/Загрузка_гейтов_${STAMP}.xlsx"
+          ARGS="--out \"$OUT\""
+          if [ -n "${{ github.event.inputs.from_month }}" ]; then
+            ARGS="$ARGS --from ${{ github.event.inputs.from_month }}"
+          fi
+          if [ -n "${{ github.event.inputs.to_month }}" ]; then
+            ARGS="$ARGS --to ${{ github.event.inputs.to_month }}"
+          fi
+          echo "python -m src.report $ARGS"
+          eval python -m src.report $ARGS | tee report_output.txt
+          echo "REPORT_PATH=$OUT" >> $GITHUB_ENV
+      - name: Показать дайджест в сводке запуска
+        run: |
+          echo "## Дайджест загрузки гейтов" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          sed -n '/Дайджест/,$p' report_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-loading-report
+          path: data/reports/*.xlsx
+      - name: Commit report to repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/reports/*.xlsx
+          git commit -m "report: Excel-отчёт загрузки гейтов $(date -u +'%Y-%m-%d')" || echo "нет изменений"
+          for i in 1 2 3; do git push && break || (git pull --rebase && sleep 3); done
