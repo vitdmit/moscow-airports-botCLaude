@@ -40,6 +40,45 @@ CSV_FIELDS = [
 AIRPORT_RETRIES = 3
 
 
+def fill_dme_gates(rows: list[dict], day: date) -> int:
+    """Для рейсов DME без гейта подставить гейт из снапшота табло Яндекса.
+    Сопоставление по (номер рейса, плановое время). Возвращает число
+    заполненных. AeroDataBox остаётся источником истины по составу рейсов —
+    Яндекс лишь дополняет недостающие гейты."""
+    try:
+        from src.yandex_board import load_snapshot
+    except Exception:
+        return 0
+    snap = load_snapshot(day)
+    if not snap:
+        return 0
+    # индекс снапшота: по каждому отдельному номеру рейса + время
+    by_key = {}
+    for v in snap.values():
+        t = v.get("time", "")
+        for token in str(v.get("flight", "")).replace(",", " ").split():
+            pass  # flight в снапшоте — один номер вида "U6 1343"
+        by_key[(v.get("flight", ""), t)] = v
+    filled = 0
+    for r in rows:
+        if r["airport"] != "DME":
+            continue
+        if str(r.get("gate", "")).strip():
+            continue
+        t = r.get("scheduled_time", "")
+        # у рейса может быть несколько номеров (кодшеринг) — пробуем каждый
+        for num in str(r.get("flight_numbers", "")).split(","):
+            num = num.strip()
+            hit = by_key.get((num, t))
+            if hit and hit.get("gate"):
+                r["gate"] = hit["gate"]
+                if not str(r.get("terminal", "")).strip() and hit.get("terminal"):
+                    r["terminal"] = hit["terminal"]
+                filled += 1
+                break
+    return filled
+
+
 def write_csv(day: date, rows: list[dict]) -> str:
     DAILY_DIR.mkdir(parents=True, exist_ok=True)
     path = DAILY_DIR / f"{day.isoformat()}.csv"
@@ -68,7 +107,7 @@ def resolve_target_day() -> date:
 
 
 def main() -> int:
-    log.info("=== daily_fetch ВЕРСИЯ 2026-06-04-win3fix (204 в окне не рушит день) ===")
+    log.info("=== daily_fetch ВЕРСИЯ 2026-06-04-yagates (гейты DME из табло Яндекса) ===")
     api_key = os.environ.get("AERODATABOX_KEY", "").strip()
     if not api_key:
         log.error("Нет AERODATABOX_KEY в окружении — нечем авторизоваться")
@@ -127,6 +166,11 @@ def main() -> int:
         elif n < MIN_EXPECTED:
             log.warning("СТРАХОВКА: [%s] за %s только %d рейсов — подозрительно "
                         "мало, проверь полноту.", airport, day, n)
+
+    # дополнить недостающие гейты DME из снапшота табло Яндекса
+    filled = fill_dme_gates(all_rows, day)
+    if filled:
+        log.info("Дополнено гейтов DME из табло Яндекса: %d", filled)
 
     path = write_csv(day, all_rows)
     log.info("Записано %d строк в %s. По аэропортам: %s. Ошибки: %s",
