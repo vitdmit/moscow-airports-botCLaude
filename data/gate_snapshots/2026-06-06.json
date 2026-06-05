@@ -34,5 +34,29 @@
   "time": "01:10",
   "gate": "E3",
   "terminal": "E"
+ },
+ "YC 90|01:30": {
+  "flight": "YC 90",
+  "time": "01:30",
+  "gate": "D4",
+  "terminal": "D"
+ },
+ "UT 4090|01:30": {
+  "flight": "UT 4090",
+  "time": "01:30",
+  "gate": "D4",
+  "terminal": "D"
+ },
+ "S7 2571|01:45": {
+  "flight": "S7 2571",
+  "time": "01:45",
+  "gate": "C12",
+  "terminal": "C"
+ },
+ "3F 314|01:50": {
+  "flight": "3F 314",
+  "time": "01:50",
+  "gate": "E8",
+  "terminal": "E"
  }
 }
