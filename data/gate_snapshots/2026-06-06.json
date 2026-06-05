@@ -58,5 +58,17 @@
   "time": "01:50",
   "gate": "E8",
   "terminal": "E"
+ },
+ "10 5|20:10": {
+  "flight": "10 5",
+  "time": "20:10",
+  "gate": "E4",
+  "terminal": "E"
+ },
+ "3F 316|20:10": {
+  "flight": "3F 316",
+  "time": "20:10",
+  "gate": "E4",
+  "terminal": "E"
  }
 }
