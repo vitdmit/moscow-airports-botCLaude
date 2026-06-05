@@ -1,0 +1,34 @@
+name: Снимки табло DME (гейты)
+
+# Каждые 10 минут снимает живое табло Яндекса по Домодедово и копит гейты
+# в data/gate_snapshots/<дата>.json. Эти гейты потом подставляются в основной
+# сбор для рейсов DME, у которых AeroDataBox не отдал гейт.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+# Чтобы параллельные запуски не толкались при коммите
+concurrency:
+  group: gate-snapshots
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install deps
+        run: pip install httpx
+      - name: Snapshot board
+        run: python -m src.yandex_board
+      - name: Commit snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/gate_snapshots/*.json
+          git commit -m "snapshot: гейты DME $(date -u +'%Y-%m-%dT%H:%M')" || echo "нет изменений"
+          for i in 1 2 3 4 5; do git push && break || (git pull --rebase && sleep 3); done
