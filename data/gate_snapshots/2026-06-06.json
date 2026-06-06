@@ -560,7 +560,7 @@
  "S7 2513|23:05": {
   "flight": "S7 2513",
   "time": "23:05",
-  "gate": "C18",
+  "gate": "C19",
   "terminal": "C"
  },
  "U6 387|23:10": {
@@ -579,6 +579,24 @@
   "flight": "S7 2565",
   "time": "23:30",
   "gate": "C12",
+  "terminal": "C"
+ },
+ "EK 132|23:45": {
+  "flight": "EK 132",
+  "time": "23:45",
+  "gate": "E14",
+  "terminal": "E"
+ },
+ "Y7 103|23:45": {
+  "flight": "Y7 103",
+  "time": "23:45",
+  "gate": "D8",
+  "terminal": "D"
+ },
+ "S7 3041|23:45": {
+  "flight": "S7 3041",
+  "time": "23:45",
+  "gate": "C7",
   "terminal": "C"
  }
 }
