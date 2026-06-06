@@ -58,5 +58,11 @@
   "time": "01:50",
   "gate": "E4",
   "terminal": "E"
+ },
+ "SZ 202|01:00": {
+  "flight": "SZ 202",
+  "time": "01:00",
+  "gate": "E6",
+  "terminal": "E"
  }
 }
