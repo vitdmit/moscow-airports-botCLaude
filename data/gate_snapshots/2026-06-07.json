@@ -100,5 +100,17 @@
   "time": "22:30",
   "gate": "E6",
   "terminal": "E"
+ },
+ "U6 2633|22:00": {
+  "flight": "U6 2633",
+  "time": "22:00",
+  "gate": "E4",
+  "terminal": "E"
+ },
+ "U6 771|06:30": {
+  "flight": "U6 771",
+  "time": "06:30",
+  "gate": "E10",
+  "terminal": "E"
  }
 }
