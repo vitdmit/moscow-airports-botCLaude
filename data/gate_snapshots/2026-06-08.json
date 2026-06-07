@@ -52,5 +52,11 @@
   "time": "01:50",
   "gate": "E6",
   "terminal": "E"
+ },
+ "YC 32|03:05": {
+  "flight": "YC 32",
+  "time": "03:05",
+  "gate": "D6",
+  "terminal": "D"
  }
 }
