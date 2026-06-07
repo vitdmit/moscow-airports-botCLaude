@@ -166,5 +166,17 @@
   "time": "09:00",
   "gate": "D13",
   "terminal": "D"
+ },
+ "S7 2051|08:55": {
+  "flight": "S7 2051",
+  "time": "08:55",
+  "gate": "C13",
+  "terminal": "C"
+ },
+ "S7 1003|09:30": {
+  "flight": "S7 1003",
+  "time": "09:30",
+  "gate": "C16",
+  "terminal": "C"
  }
 }
