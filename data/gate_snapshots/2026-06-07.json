@@ -352,5 +352,17 @@
   "time": "13:45",
   "gate": "C5",
   "terminal": "C"
+ },
+ "S7 1213|14:20": {
+  "flight": "S7 1213",
+  "time": "14:20",
+  "gate": "C13",
+  "terminal": "C"
+ },
+ "LY 612|14:40": {
+  "flight": "LY 612",
+  "time": "14:40",
+  "gate": "E15",
+  "terminal": "E"
  }
 }
