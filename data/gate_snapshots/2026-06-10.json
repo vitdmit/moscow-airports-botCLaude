@@ -1,0 +1,26 @@
+{
+ "U6 2969|22:30": {
+  "flight": "U6 2969",
+  "time": "22:30",
+  "gate": "E10",
+  "terminal": "E"
+ },
+ "U6 8253|00:35": {
+  "flight": "U6 8253",
+  "time": "00:35",
+  "gate": "E9",
+  "terminal": "E"
+ },
+ "J2 186|00:40": {
+  "flight": "J2 186",
+  "time": "00:40",
+  "gate": "E8",
+  "terminal": "E"
+ },
+ "MS 728|01:10": {
+  "flight": "MS 728",
+  "time": "01:10",
+  "gate": "E4",
+  "terminal": "E"
+ }
+}
