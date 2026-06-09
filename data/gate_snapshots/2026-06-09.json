@@ -76,5 +76,11 @@
   "time": "03:45",
   "gate": "D6",
   "terminal": "D"
+ },
+ "HH 706|05:40": {
+  "flight": "HH 706",
+  "time": "05:40",
+  "gate": "E6",
+  "terminal": "E"
  }
 }
