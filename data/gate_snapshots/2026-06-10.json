@@ -490,5 +490,17 @@
   "time": "21:55",
   "gate": "C13",
   "terminal": "C"
+ },
+ "S7 3275|22:00": {
+  "flight": "S7 3275",
+  "time": "22:00",
+  "gate": "E17",
+  "terminal": "E"
+ },
+ "U6 2633|22:00": {
+  "flight": "U6 2633",
+  "time": "22:00",
+  "gate": "E9",
+  "terminal": "E"
  }
 }
