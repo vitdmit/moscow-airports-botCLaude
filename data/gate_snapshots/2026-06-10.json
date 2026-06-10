@@ -322,5 +322,17 @@
   "time": "14:20",
   "gate": "C13",
   "terminal": "C"
+ },
+ "HH 702|16:00": {
+  "flight": "HH 702",
+  "time": "16:00",
+  "gate": "E4",
+  "terminal": "E"
+ },
+ "S7 1073|16:00": {
+  "flight": "S7 1073",
+  "time": "16:00",
+  "gate": "C7",
+  "terminal": "C"
  }
 }
