@@ -142,5 +142,17 @@
   "time": "09:55",
   "gate": "E17",
   "terminal": "E"
+ },
+ "3F 312|10:00": {
+  "flight": "3F 312",
+  "time": "10:00",
+  "gate": "E4",
+  "terminal": "E"
+ },
+ "U6 261|10:00": {
+  "flight": "U6 261",
+  "time": "10:00",
+  "gate": "D9",
+  "terminal": "D"
  }
 }
