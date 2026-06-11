@@ -502,5 +502,17 @@
   "time": "21:40",
   "gate": "C13",
   "terminal": "C"
+ },
+ "S7 2605|21:55": {
+  "flight": "S7 2605",
+  "time": "21:55",
+  "gate": "C8",
+  "terminal": "C"
+ },
+ "IO 475|21:55": {
+  "flight": "IO 475",
+  "time": "21:55",
+  "gate": "C19",
+  "terminal": "C"
  }
 }
