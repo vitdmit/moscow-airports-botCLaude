@@ -70,5 +70,17 @@
   "time": "00:35",
   "gate": "E17",
   "terminal": "E"
+ },
+ "YC 173|03:05": {
+  "flight": "YC 173",
+  "time": "03:05",
+  "gate": "D9",
+  "terminal": "D"
+ },
+ "YC 32|03:05": {
+  "flight": "YC 32",
+  "time": "03:05",
+  "gate": "D6",
+  "terminal": "D"
  }
 }
