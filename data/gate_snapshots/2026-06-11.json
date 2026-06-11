@@ -8,7 +8,7 @@
  "U6 271|23:45": {
   "flight": "U6 271",
   "time": "23:45",
-  "gate": "D11",
+  "gate": "D13",
   "terminal": "D"
  },
  "SZ 202|00:30": {
@@ -604,5 +604,23 @@
   "time": "23:30",
   "gate": "C7",
   "terminal": "C"
+ },
+ "S7 2581|23:40": {
+  "flight": "S7 2581",
+  "time": "23:40",
+  "gate": "C5",
+  "terminal": "C"
+ },
+ "S7 3041|23:45": {
+  "flight": "S7 3041",
+  "time": "23:45",
+  "gate": "C18",
+  "terminal": "C"
+ },
+ "Y7 103|23:45": {
+  "flight": "Y7 103",
+  "time": "23:45",
+  "gate": "D3",
+  "terminal": "D"
  }
 }
