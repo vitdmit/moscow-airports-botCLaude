@@ -1,0 +1,68 @@
+{
+ "U6 2633|22:00": {
+  "flight": "U6 2633",
+  "time": "22:00",
+  "gate": "E9",
+  "terminal": "E"
+ },
+ "S7 2615|22:25": {
+  "flight": "S7 2615",
+  "time": "22:25",
+  "gate": "C8",
+  "terminal": "C"
+ },
+ "U6 2969|22:30": {
+  "flight": "U6 2969",
+  "time": "22:30",
+  "gate": "E10",
+  "terminal": "E"
+ },
+ "B2 8762|22:50": {
+  "flight": "B2 8762",
+  "time": "22:50",
+  "gate": "E6",
+  "terminal": "E"
+ },
+ "00 12|23:00": {
+  "flight": "00 12",
+  "time": "23:00",
+  "gate": "E8",
+  "terminal": "E"
+ },
+ "HY 602|23:00": {
+  "flight": "HY 602",
+  "time": "23:00",
+  "gate": "E8",
+  "terminal": "E"
+ },
+ "U6 271|23:45": {
+  "flight": "U6 271",
+  "time": "23:45",
+  "gate": "D11",
+  "terminal": "D"
+ },
+ "SZ 202|00:30": {
+  "flight": "SZ 202",
+  "time": "00:30",
+  "gate": "E4",
+  "terminal": "E"
+ },
+ "J2 186|00:40": {
+  "flight": "J2 186",
+  "time": "00:40",
+  "gate": "E13",
+  "terminal": "E"
+ },
+ "MS 728|01:10": {
+  "flight": "MS 728",
+  "time": "01:10",
+  "gate": "E3",
+  "terminal": "E"
+ },
+ "S7 2631|01:20": {
+  "flight": "S7 2631",
+  "time": "01:20",
+  "gate": "C16",
+  "terminal": "C"
+ }
+}
