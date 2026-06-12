@@ -262,5 +262,23 @@
   "time": "11:35",
   "gate": "C5",
   "terminal": "C"
+ },
+ "S7 2505|11:45": {
+  "flight": "S7 2505",
+  "time": "11:45",
+  "gate": "C7",
+  "terminal": "C"
+ },
+ "HY 604|11:45": {
+  "flight": "HY 604",
+  "time": "11:45",
+  "gate": "E6",
+  "terminal": "E"
+ },
+ "S7 4263|11:45": {
+  "flight": "S7 4263",
+  "time": "11:45",
+  "gate": "E6",
+  "terminal": "E"
  }
 }
