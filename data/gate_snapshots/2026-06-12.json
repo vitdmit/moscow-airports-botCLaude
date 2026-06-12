@@ -154,5 +154,17 @@
   "time": "09:30",
   "gate": "C12",
   "terminal": "C"
+ },
+ "HH 708|09:40": {
+  "flight": "HH 708",
+  "time": "09:40",
+  "gate": "E8",
+  "terminal": "E"
+ },
+ "Y7 533|09:45": {
+  "flight": "Y7 533",
+  "time": "09:45",
+  "gate": "E2",
+  "terminal": "E"
  }
 }
