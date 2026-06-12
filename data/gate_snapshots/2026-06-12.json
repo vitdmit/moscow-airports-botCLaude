@@ -514,5 +514,17 @@
   "time": "21:35",
   "gate": "C16",
   "terminal": "C"
+ },
+ "I8 308|21:10": {
+  "flight": "I8 308",
+  "time": "21:10",
+  "gate": "C4",
+  "terminal": "C"
+ },
+ "S7 2593|21:40": {
+  "flight": "S7 2593",
+  "time": "21:40",
+  "gate": "C8",
+  "terminal": "C"
  }
 }
