@@ -520,5 +520,11 @@
   "time": "20:35",
   "gate": "D14",
   "terminal": "D"
+ },
+ "HH 712|20:30": {
+  "flight": "HH 712",
+  "time": "20:30",
+  "gate": "E6",
+  "terminal": "E"
  }
 }
