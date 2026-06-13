@@ -490,5 +490,17 @@
   "time": "21:10",
   "gate": "C4",
   "terminal": "C"
+ },
+ "S7 3017|21:30": {
+  "flight": "S7 3017",
+  "time": "21:30",
+  "gate": "C13",
+  "terminal": "C"
+ },
+ "ET 761|21:30": {
+  "flight": "ET 761",
+  "time": "21:30",
+  "gate": "E13",
+  "terminal": "E"
  }
 }
