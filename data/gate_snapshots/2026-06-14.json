@@ -94,5 +94,23 @@
   "time": "01:00",
   "gate": "E6",
   "terminal": "E"
+ },
+ "WZ 3201|02:05": {
+  "flight": "WZ 3201",
+  "time": "02:05",
+  "gate": "E5",
+  "terminal": "E"
+ },
+ "HH 710|02:40": {
+  "flight": "HH 710",
+  "time": "02:40",
+  "gate": "E4",
+  "terminal": "E"
+ },
+ "YC 32|03:05": {
+  "flight": "YC 32",
+  "time": "03:05",
+  "gate": "D9",
+  "terminal": "D"
  }
 }
