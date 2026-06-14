@@ -262,5 +262,23 @@
   "time": "11:15",
   "gate": "C14",
   "terminal": "C"
+ },
+ "U6 153|10:40": {
+  "flight": "U6 153",
+  "time": "10:40",
+  "gate": "D4",
+  "terminal": "D"
+ },
+ "Y7 408|11:30": {
+  "flight": "Y7 408",
+  "time": "11:30",
+  "gate": "D8",
+  "terminal": "D"
+ },
+ "S7 2153|11:35": {
+  "flight": "S7 2153",
+  "time": "11:35",
+  "gate": "C13",
+  "terminal": "C"
  }
 }
