@@ -518,13 +518,31 @@
  "S7 3017|21:30": {
   "flight": "S7 3017",
   "time": "21:30",
-  "gate": "C12",
+  "gate": "C16",
   "terminal": "C"
  },
  "S7 2593|21:40": {
   "flight": "S7 2593",
   "time": "21:40",
   "gate": "C17",
+  "terminal": "C"
+ },
+ "Y7 107|21:50": {
+  "flight": "Y7 107",
+  "time": "21:50",
+  "gate": "D3",
+  "terminal": "D"
+ },
+ "IO 475|21:55": {
+  "flight": "IO 475",
+  "time": "21:55",
+  "gate": "C16",
+  "terminal": "C"
+ },
+ "S7 2605|21:55": {
+  "flight": "S7 2605",
+  "time": "21:55",
+  "gate": "C8",
   "terminal": "C"
  }
 }
