@@ -130,5 +130,47 @@
   "time": "07:40",
   "gate": "E8",
   "terminal": "E"
+ },
+ "U6 2803|08:15": {
+  "flight": "U6 2803",
+  "time": "08:15",
+  "gate": "E6",
+  "terminal": "E"
+ },
+ "U6 273|08:25": {
+  "flight": "U6 273",
+  "time": "08:25",
+  "gate": "D4",
+  "terminal": "D"
+ },
+ "I8 302|08:40": {
+  "flight": "I8 302",
+  "time": "08:40",
+  "gate": "C4",
+  "terminal": "C"
+ },
+ "S7 3745|08:45": {
+  "flight": "S7 3745",
+  "time": "08:45",
+  "gate": "E12",
+  "terminal": "E"
+ },
+ "D2 253|08:50": {
+  "flight": "D2 253",
+  "time": "08:50",
+  "gate": "C14",
+  "terminal": "C"
+ },
+ "S7 2049|08:55": {
+  "flight": "S7 2049",
+  "time": "08:55",
+  "gate": "C13",
+  "terminal": "C"
+ },
+ "U6 371|09:00": {
+  "flight": "U6 371",
+  "time": "09:00",
+  "gate": "D14",
+  "terminal": "D"
  }
 }
