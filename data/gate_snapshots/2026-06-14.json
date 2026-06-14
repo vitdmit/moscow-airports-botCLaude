@@ -334,5 +334,17 @@
   "time": "13:05",
   "gate": "C14",
   "terminal": "C"
+ },
+ "Y7 1041|13:30": {
+  "flight": "Y7 1041",
+  "time": "13:30",
+  "gate": "D5",
+  "terminal": "D"
+ },
+ "D2 251|13:30": {
+  "flight": "D2 251",
+  "time": "13:30",
+  "gate": "C16",
+  "terminal": "C"
  }
 }
