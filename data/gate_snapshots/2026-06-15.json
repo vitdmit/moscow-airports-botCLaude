@@ -226,5 +226,35 @@
   "time": "10:00",
   "gate": "D13",
   "terminal": "D"
+ },
+ "YK 884|10:30": {
+  "flight": "YK 884",
+  "time": "10:30",
+  "gate": "E3",
+  "terminal": "E"
+ },
+ "S7 1135|10:35": {
+  "flight": "S7 1135",
+  "time": "10:35",
+  "gate": "C12",
+  "terminal": "C"
+ },
+ "S7 3235|10:35": {
+  "flight": "S7 3235",
+  "time": "10:35",
+  "gate": "E20",
+  "terminal": "E"
+ },
+ "S7 1211|10:50": {
+  "flight": "S7 1211",
+  "time": "10:50",
+  "gate": "C16",
+  "terminal": "C"
+ },
+ "S7 2145|11:15": {
+  "flight": "S7 2145",
+  "time": "11:15",
+  "gate": "C8",
+  "terminal": "C"
  }
 }
