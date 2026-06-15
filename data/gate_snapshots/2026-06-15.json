@@ -286,5 +286,17 @@
   "time": "11:45",
   "gate": "E13",
   "terminal": "E"
+ },
+ "YK 966|10:40": {
+  "flight": "YK 966",
+  "time": "10:40",
+  "gate": "E2",
+  "terminal": "E"
+ },
+ "Y7 1051|12:00": {
+  "flight": "Y7 1051",
+  "time": "12:00",
+  "gate": "D3",
+  "terminal": "D"
  }
 }
