@@ -208,5 +208,11 @@
   "time": "09:40",
   "gate": "D11",
   "terminal": "D"
+ },
+ "S7 3749|09:55": {
+  "flight": "S7 3749",
+  "time": "09:55",
+  "gate": "E17",
+  "terminal": "E"
  }
 }
