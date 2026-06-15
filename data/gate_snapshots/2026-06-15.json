@@ -538,5 +538,11 @@
   "time": "21:35",
   "gate": "C16",
   "terminal": "C"
+ },
+ "S7 2593|21:40": {
+  "flight": "S7 2593",
+  "time": "21:40",
+  "gate": "C13",
+  "terminal": "C"
  }
 }
