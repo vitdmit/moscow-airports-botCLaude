@@ -436,5 +436,11 @@
   "time": "17:45",
   "gate": "D8",
   "terminal": "D"
+ },
+ "LY 612|17:50": {
+  "flight": "LY 612",
+  "time": "17:50",
+  "gate": "E15",
+  "terminal": "E"
  }
 }
