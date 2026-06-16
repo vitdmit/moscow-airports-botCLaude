@@ -574,5 +574,17 @@
   "time": "23:50",
   "gate": "C16",
   "terminal": "C"
+ },
+ "HY 602|23:00": {
+  "flight": "HY 602",
+  "time": "23:00",
+  "gate": "E13",
+  "terminal": "E"
+ },
+ "S7 4261|23:00": {
+  "flight": "S7 4261",
+  "time": "23:00",
+  "gate": "E13",
+  "terminal": "E"
  }
 }
