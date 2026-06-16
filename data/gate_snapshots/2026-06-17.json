@@ -70,5 +70,29 @@
   "time": "01:10",
   "gate": "E4",
   "terminal": "E"
+ },
+ "U6 2709|23:00": {
+  "flight": "U6 2709",
+  "time": "23:00",
+  "gate": "E19",
+  "terminal": "E"
+ },
+ "UT 4090|01:30": {
+  "flight": "UT 4090",
+  "time": "01:30",
+  "gate": "D11",
+  "terminal": "D"
+ },
+ "YC 90|01:30": {
+  "flight": "YC 90",
+  "time": "01:30",
+  "gate": "D11",
+  "terminal": "D"
+ },
+ "S7 2571|01:45": {
+  "flight": "S7 2571",
+  "time": "01:45",
+  "gate": "C7",
+  "terminal": "C"
  }
 }
