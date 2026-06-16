@@ -484,5 +484,11 @@
   "time": "21:30",
   "gate": "C14",
   "terminal": "C"
+ },
+ "IO 475|21:55": {
+  "flight": "IO 475",
+  "time": "21:55",
+  "gate": "C15",
+  "terminal": "C"
  }
 }
