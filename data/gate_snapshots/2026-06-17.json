@@ -14,7 +14,7 @@
  "3F 316|20:10": {
   "flight": "3F 316",
   "time": "20:10",
-  "gate": "E10",
+  "gate": "E4",
   "terminal": "E"
  },
  "U6 9695|20:55": {
@@ -424,5 +424,41 @@
   "time": "19:55",
   "gate": "E3",
   "terminal": "E"
+ },
+ "LY 612|20:35": {
+  "flight": "LY 612",
+  "time": "20:35",
+  "gate": "E15",
+  "terminal": "E"
+ },
+ "C6 410|20:45": {
+  "flight": "C6 410",
+  "time": "20:45",
+  "gate": "E8",
+  "terminal": "E"
+ },
+ "S7 3031|20:45": {
+  "flight": "S7 3031",
+  "time": "20:45",
+  "gate": "C13",
+  "terminal": "C"
+ },
+ "S7 3005|21:00": {
+  "flight": "S7 3005",
+  "time": "21:00",
+  "gate": "C8",
+  "terminal": "C"
+ },
+ "U6 349|21:05": {
+  "flight": "U6 349",
+  "time": "21:05",
+  "gate": "D8",
+  "terminal": "D"
+ },
+ "I8 308|21:10": {
+  "flight": "I8 308",
+  "time": "21:10",
+  "gate": "C4",
+  "terminal": "C"
  }
 }
