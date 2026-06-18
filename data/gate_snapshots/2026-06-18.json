@@ -184,5 +184,23 @@
   "time": "11:15",
   "gate": "C8",
   "terminal": "C"
+ },
+ "U6 261|10:00": {
+  "flight": "U6 261",
+  "time": "10:00",
+  "gate": "D13",
+  "terminal": "D"
+ },
+ "U6 109|11:00": {
+  "flight": "U6 109",
+  "time": "11:00",
+  "gate": "D9",
+  "terminal": "D"
+ },
+ "U6 627|11:30": {
+  "flight": "U6 627",
+  "time": "11:30",
+  "gate": "D8",
+  "terminal": "D"
  }
 }
