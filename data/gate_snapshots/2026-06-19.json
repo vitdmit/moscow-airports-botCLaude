@@ -178,5 +178,17 @@
   "time": "09:00",
   "gate": "D7",
   "terminal": "D"
+ },
+ "I8 302|08:40": {
+  "flight": "I8 302",
+  "time": "08:40",
+  "gate": "C4",
+  "terminal": "C"
+ },
+ "S7 1003|09:30": {
+  "flight": "S7 1003",
+  "time": "09:30",
+  "gate": "C13",
+  "terminal": "C"
  }
 }
