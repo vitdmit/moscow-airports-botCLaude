@@ -44,7 +44,7 @@
  "S7 2513|23:05": {
   "flight": "S7 2513",
   "time": "23:05",
-  "gate": "C19",
+  "gate": "C8",
   "terminal": "C"
  },
  "U6 387|23:10": {
@@ -538,5 +538,65 @@
   "time": "22:00",
   "gate": "E9",
   "terminal": "E"
+ },
+ "Y7 101|22:05": {
+  "flight": "Y7 101",
+  "time": "22:05",
+  "gate": "D3",
+  "terminal": "D"
+ },
+ "YK 960|22:10": {
+  "flight": "YK 960",
+  "time": "22:10",
+  "gate": "E3",
+  "terminal": "E"
+ },
+ "U6 9355|22:10": {
+  "flight": "U6 9355",
+  "time": "22:10",
+  "gate": "D7",
+  "terminal": "D"
+ },
+ "S7 3033|22:15": {
+  "flight": "S7 3033",
+  "time": "22:15",
+  "gate": "C16",
+  "terminal": "C"
+ },
+ "S7 2615|22:25": {
+  "flight": "S7 2615",
+  "time": "22:25",
+  "gate": "C12",
+  "terminal": "C"
+ },
+ "YK 748|22:50": {
+  "flight": "YK 748",
+  "time": "22:50",
+  "gate": "E4",
+  "terminal": "E"
+ },
+ "S7 2629|22:50": {
+  "flight": "S7 2629",
+  "time": "22:50",
+  "gate": "C3",
+  "terminal": "C"
+ },
+ "S7 2601|22:55": {
+  "flight": "S7 2601",
+  "time": "22:55",
+  "gate": "C17",
+  "terminal": "C"
+ },
+ "EK 132|23:10": {
+  "flight": "EK 132",
+  "time": "23:10",
+  "gate": "E14",
+  "terminal": "E"
+ },
+ "S7 2625|23:25": {
+  "flight": "S7 2625",
+  "time": "23:25",
+  "gate": "C5",
+  "terminal": "C"
  }
 }
