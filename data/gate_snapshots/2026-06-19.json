@@ -400,5 +400,11 @@
   "time": "16:30",
   "gate": "C13",
   "terminal": "C"
+ },
+ "MS 730|16:55": {
+  "flight": "MS 730",
+  "time": "16:55",
+  "gate": "E3",
+  "terminal": "E"
  }
 }
