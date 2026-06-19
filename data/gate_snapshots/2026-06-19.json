@@ -382,5 +382,11 @@
   "time": "16:55",
   "gate": "C15",
   "terminal": "C"
+ },
+ "EK 134|16:50": {
+  "flight": "EK 134",
+  "time": "16:50",
+  "gate": "E14",
+  "terminal": "E"
  }
 }
