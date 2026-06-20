@@ -14,7 +14,7 @@
  "U6 93|19:45": {
   "flight": "U6 93",
   "time": "19:45",
-  "gate": "D11",
+  "gate": "D6",
   "terminal": "D"
  },
  "HY 602|23:00": {
@@ -333,6 +333,18 @@
   "flight": "S7 3047",
   "time": "19:25",
   "gate": "C8",
+  "terminal": "C"
+ },
+ "U6 105|19:30": {
+  "flight": "U6 105",
+  "time": "19:30",
+  "gate": "D13",
+  "terminal": "D"
+ },
+ "S7 1195|19:45": {
+  "flight": "S7 1195",
+  "time": "19:45",
+  "gate": "C12",
   "terminal": "C"
  }
 }
