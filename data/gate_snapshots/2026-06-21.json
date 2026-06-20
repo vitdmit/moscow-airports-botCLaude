@@ -1,0 +1,38 @@
+{
+ "U6 387|23:10": {
+  "flight": "U6 387",
+  "time": "23:10",
+  "gate": "D4",
+  "terminal": "D"
+ },
+ "U6 271|23:45": {
+  "flight": "U6 271",
+  "time": "23:45",
+  "gate": "D13",
+  "terminal": "D"
+ },
+ "J2 186|00:40": {
+  "flight": "J2 186",
+  "time": "00:40",
+  "gate": "E6",
+  "terminal": "E"
+ },
+ "SZ 202|01:00": {
+  "flight": "SZ 202",
+  "time": "01:00",
+  "gate": "E4",
+  "terminal": "E"
+ },
+ "Y7 1091|01:00": {
+  "flight": "Y7 1091",
+  "time": "01:00",
+  "gate": "D7",
+  "terminal": "D"
+ },
+ "MS 728|01:10": {
+  "flight": "MS 728",
+  "time": "01:10",
+  "gate": "E8",
+  "terminal": "E"
+ }
+}
