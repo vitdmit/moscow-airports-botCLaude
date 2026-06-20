@@ -70,5 +70,35 @@
   "time": "22:30",
   "gate": "E17",
   "terminal": "E"
+ },
+ "WZ 3201|02:05": {
+  "flight": "WZ 3201",
+  "time": "02:05",
+  "gate": "E5",
+  "terminal": "E"
+ },
+ "HH 710|02:40": {
+  "flight": "HH 710",
+  "time": "02:40",
+  "gate": "E6",
+  "terminal": "E"
+ },
+ "YC 419|02:50": {
+  "flight": "YC 419",
+  "time": "02:50",
+  "gate": "D9",
+  "terminal": "D"
+ },
+ "YC 32|03:05": {
+  "flight": "YC 32",
+  "time": "03:05",
+  "gate": "D6",
+  "terminal": "D"
+ },
+ "YC 173|03:25": {
+  "flight": "YC 173",
+  "time": "03:25",
+  "gate": "D8",
+  "terminal": "D"
  }
 }
