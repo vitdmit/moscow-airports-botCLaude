@@ -418,5 +418,29 @@
   "time": "17:50",
   "gate": "E15",
   "terminal": "E"
+ },
+ "S7 1007|18:15": {
+  "flight": "S7 1007",
+  "time": "18:15",
+  "gate": "C5",
+  "terminal": "C"
+ },
+ "S7 1055|18:25": {
+  "flight": "S7 1055",
+  "time": "18:25",
+  "gate": "C12",
+  "terminal": "C"
+ },
+ "U6 2909|19:20": {
+  "flight": "U6 2909",
+  "time": "19:20",
+  "gate": "E9",
+  "terminal": "E"
+ },
+ "S7 3047|19:25": {
+  "flight": "S7 3047",
+  "time": "19:25",
+  "gate": "C19",
+  "terminal": "C"
  }
 }
