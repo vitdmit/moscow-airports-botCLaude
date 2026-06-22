@@ -100,5 +100,11 @@
   "time": "03:30",
   "gate": "E13",
   "terminal": "E"
+ },
+ "YC 173|03:45": {
+  "flight": "YC 173",
+  "time": "03:45",
+  "gate": "C15",
+  "terminal": "C"
  }
 }
