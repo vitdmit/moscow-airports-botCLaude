@@ -448,5 +448,29 @@
   "time": "19:30",
   "gate": "D6",
   "terminal": "D"
+ },
+ "I8 308|19:40": {
+  "flight": "I8 308",
+  "time": "19:40",
+  "gate": "C4",
+  "terminal": "C"
+ },
+ "S7 1195|19:45": {
+  "flight": "S7 1195",
+  "time": "19:45",
+  "gate": "C8",
+  "terminal": "C"
+ },
+ "U6 93|19:45": {
+  "flight": "U6 93",
+  "time": "19:45",
+  "gate": "D4",
+  "terminal": "D"
+ },
+ "S7 2511|19:45": {
+  "flight": "S7 2511",
+  "time": "19:45",
+  "gate": "C12",
+  "terminal": "C"
  }
 }
