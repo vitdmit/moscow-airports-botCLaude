@@ -38,7 +38,7 @@ AIRPORTS = ("SVO", "VKO", "DME")
 # заблокировать). Штатный расход: 9 запросов/день * ~30 = 270, плюс запас на
 # ручные пересборы. Счётчик считает по календарному месяцу и сам обнуляется
 # 1-го числа (см. _month() / remaining_budget()).
-MONTHLY_BUDGET = 650
+MONTHLY_BUDGET = 700
 USAGE_FILE = DATA_DIR / "aerodatabox_usage.json"
 
 DEPARTED_STATUSES = {"departed", "enroute", "arrived"}
