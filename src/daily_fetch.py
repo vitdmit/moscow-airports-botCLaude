@@ -11,6 +11,13 @@ HTTP 204 «данных пока нет» и пустые фактические
 Колонки CSV:
   airport, flight_date, scheduled_time, actual_time, terminal, gate,
   airlines, flight_numbers, destination, destination_iata
+
+ИЗМЕНЕНИЕ 2026-06 (supplement DME из Яндекс.Расписания):
+  AeroDataBox пропускает ~8-9 рейсов/день по DME (мелкие перевозчики,
+  не в FIDS-базе). После AeroDataBox-сбора дополняем DME рейсами из
+  Яндекс.Расписания (только те, которых нет по номеру рейса). Новые строки
+  имеют пустые actual_time и destination_iata, но корректные gate/terminal
+  если рейс найден в снапшоте Яндекс-табло.
 """
 from __future__ import annotations
 
@@ -56,8 +63,6 @@ def fill_dme_gates(rows: list[dict], day: date) -> int:
     by_key = {}
     for v in snap.values():
         t = v.get("time", "")
-        for token in str(v.get("flight", "")).replace(",", " ").split():
-            pass  # flight в снапшоте — один номер вида "U6 1343"
         by_key[(v.get("flight", ""), t)] = v
     filled = 0
     for r in rows:
@@ -77,6 +82,32 @@ def fill_dme_gates(rows: list[dict], day: date) -> int:
                 filled += 1
                 break
     return filled
+
+
+def supplement_dme_from_yandex(all_rows: list[dict], day: date,
+                                client: httpx.Client) -> int:
+    """Дополнить DME рейсами из Яндекс.Расписания — теми, которых нет в AeroDataBox.
+
+    Работает только для DME. Для SVO и VKO AeroDataBox покрывает данные полнее.
+    При любой ошибке молча возвращает 0 (не роняет основной сбор).
+    Возвращает число добавленных строк.
+    """
+    try:
+        from src.yandex_departures import supplement_dme
+    except Exception as e:
+        log.warning("Не удалось импортировать yandex_departures: %s", e)
+        return 0
+
+    try:
+        dme_rows = [r for r in all_rows if r["airport"] == "DME"]
+        new_rows = supplement_dme(dme_rows, day, client=client)
+        if new_rows:
+            all_rows.extend(new_rows)
+            log.info("[DME] Яндекс дополнил %d рейсов за %s", len(new_rows), day)
+        return len(new_rows)
+    except Exception as e:
+        log.warning("[DME] supplement_dme_from_yandex: неожиданная ошибка: %s", e)
+        return 0
 
 
 def write_csv(day: date, rows: list[dict]) -> str:
@@ -107,7 +138,7 @@ def resolve_target_day() -> date:
 
 
 def main() -> int:
-    log.info("=== daily_fetch ВЕРСИЯ 2026-06-04-yagates (гейты DME из табло Яндекса) ===")
+    log.info("=== daily_fetch ВЕРСИЯ 2026-06-23-yandex-supplement (гейты + рейсы DME из Яндекса) ===")
     api_key = os.environ.get("AERODATABOX_KEY", "").strip()
     if not api_key:
         log.error("Нет AERODATABOX_KEY в окружении — нечем авторизоваться")
@@ -128,8 +159,6 @@ def main() -> int:
                     rows = fetch_airport_day(api_key, airport, day, client)
                     break
                 except NoDataYetError as e:
-                    # данных нет даже за позавчера — задержка >2 суток (редкость).
-                    # Не повторяем; страховочное предупреждение ниже.
                     log.error("[%s] %s", airport, e)
                     break
                 except AeroDataBoxError as e:
@@ -152,11 +181,7 @@ def main() -> int:
     for r in all_rows:
         by_airport[r["airport"]] = by_airport.get(r["airport"], 0) + 1
 
-    # СТРАХОВКА: за позавчера данные обязаны быть полными. Если какой-то
-    # аэропорт пуст или подозрительно мал — данные дозревают дольше 2 суток
-    # (необычно). Громко предупреждаем в лог, чтобы заметить и собрать вручную
-    # с большей задержкой. Автоматических перезапросов НЕ делаем.
-    MIN_EXPECTED = 30  # ниже этого по аэропорту за сутки — явно неполно
+    MIN_EXPECTED = 30
     for airport in AIRPORTS:
         n = by_airport.get(airport, 0)
         if airport in failed or n == 0:
@@ -167,14 +192,34 @@ def main() -> int:
             log.warning("СТРАХОВКА: [%s] за %s только %d рейсов — подозрительно "
                         "мало, проверь полноту.", airport, day, n)
 
-    # дополнить недостающие гейты DME из снапшота табло Яндекса
+    # Шаг 1: дополнить недостающие гейты DME из снапшота табло Яндекса
     filled = fill_dme_gates(all_rows, day)
     if filled:
         log.info("Дополнено гейтов DME из табло Яндекса: %d", filled)
 
+    # Шаг 2: дополнить СОСТАВ рейсов DME из исторического табло Яндекс.Расписания
+    # (AeroDataBox пропускает ~8-9 мелких перевозчиков/день по DME)
+    with httpx.Client(timeout=REQUEST_TIMEOUT_SEC,
+                      headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                                             "AppleWebKit/537.36 (KHTML, like Gecko) "
+                                             "Chrome/126.0.0.0 Safari/537.36"}) as ya_client:
+        added = supplement_dme_from_yandex(all_rows, day, ya_client)
+
+    # Обновить счётчик после дополнения
+    for r in all_rows:
+        if r["airport"] == "DME":
+            by_airport["DME"] = by_airport.get("DME", 0)
+    by_airport_final: dict[str, int] = {}
+    for r in all_rows:
+        by_airport_final[r["airport"]] = by_airport_final.get(r["airport"], 0) + 1
+
     path = write_csv(day, all_rows)
-    log.info("Записано %d строк в %s. По аэропортам: %s. Ошибки: %s",
-             len(all_rows), path, by_airport, failed or "нет")
+    log.info(
+        "Записано %d строк в %s. По аэропортам: %s (DME: %d от ADB + %d от Яндекса). Ошибки: %s",
+        len(all_rows), path, by_airport_final,
+        by_airport.get("DME", 0), added,
+        failed or "нет",
+    )
     return 0
 
 
