@@ -18,6 +18,11 @@ HTTP 204 «данных пока нет» и пустые фактические
   Яндекс.Расписания (только те, которых нет по номеру рейса). Новые строки
   имеют пустые actual_time и destination_iata, но корректные gate/terminal
   если рейс найден в снапшоте Яндекс-табло.
+
+ИЗМЕНЕНИЕ 2026-06-24 (учёт переноса через дату):
+  fill_dme_gates теперь проверяет снапшоты ДНЯ и ДНЯ+1. Если рейс был
+  задержан и получил гейт уже после полуночи, гейт окажется в файле D+1.json.
+  Объединение снапшотов двух дней позволяет не терять такие гейты.
 """
 from __future__ import annotations
 
@@ -25,7 +30,7 @@ import csv
 import os
 import sys
 import time as time_module
-from datetime import date
+from datetime import date, timedelta
 
 import httpx
 
@@ -49,21 +54,36 @@ AIRPORT_RETRIES = 3
 
 def fill_dme_gates(rows: list[dict], day: date) -> int:
     """Для рейсов DME без гейта подставить гейт из снапшота табло Яндекса.
-    Сопоставление по (номер рейса, плановое время). Возвращает число
-    заполненных. AeroDataBox остаётся источником истины по составу рейсов —
-    Яндекс лишь дополняет недостающие гейты."""
+
+    Проверяет снапшоты ДНЯ (D) и СЛЕДУЮЩЕГО ДНЯ (D+1).
+
+    Почему D+1: если рейс задержали и он получил гейт уже после полуночи,
+    снапшот зафиксировал этот гейт в файле D+1.json (логика _flight_day()
+    в yandex_board.py). При обогащении данных за D мы обязаны заглянуть
+    и в D+1.json, иначе потеряем такие гейты.
+
+    Сопоставление по (номер рейса, плановое время). Возвращает число заполненных.
+    AeroDataBox остаётся источником истины по составу рейсов.
+    """
     try:
         from src.yandex_board import load_snapshot
     except Exception:
         return 0
-    snap = load_snapshot(day)
-    if not snap:
+
+    snap_d  = load_snapshot(day)
+    snap_d1 = load_snapshot(day + timedelta(days=1))
+
+    # Объединяем: снапшот дня D приоритетнее D+1 при совпадении ключа
+    combined = {**snap_d1, **snap_d}
+    if not combined:
         return 0
-    # индекс снапшота: по каждому отдельному номеру рейса + время
-    by_key = {}
-    for v in snap.values():
+
+    # Индекс: (номер рейса, плановое время) → запись снапшота
+    by_key: dict[tuple[str, str], dict] = {}
+    for v in combined.values():
         t = v.get("time", "")
         by_key[(v.get("flight", ""), t)] = v
+
     filled = 0
     for r in rows:
         if r["airport"] != "DME":
@@ -71,7 +91,7 @@ def fill_dme_gates(rows: list[dict], day: date) -> int:
         if str(r.get("gate", "")).strip():
             continue
         t = r.get("scheduled_time", "")
-        # у рейса может быть несколько номеров (кодшеринг) — пробуем каждый
+        # У кодшеринга несколько номеров — пробуем каждый
         for num in str(r.get("flight_numbers", "")).split(","):
             num = num.strip()
             hit = by_key.get((num, t))
@@ -138,7 +158,7 @@ def resolve_target_day() -> date:
 
 
 def main() -> int:
-    log.info("=== daily_fetch ВЕРСИЯ 2026-06-23-yandex-supplement (гейты + рейсы DME из Яндекса) ===")
+    log.info("=== daily_fetch 2026-06-24 (гейты D+D+1 + рейсы DME из Яндекса) ===")
     api_key = os.environ.get("AERODATABOX_KEY", "").strip()
     if not api_key:
         log.error("Нет AERODATABOX_KEY в окружении — нечем авторизоваться")
@@ -193,6 +213,7 @@ def main() -> int:
                         "мало, проверь полноту.", airport, day, n)
 
     # Шаг 1: дополнить недостающие гейты DME из снапшота табло Яндекса
+    # (проверяет снапшоты D и D+1 для задержанных рейсов)
     filled = fill_dme_gates(all_rows, day)
     if filled:
         log.info("Дополнено гейтов DME из табло Яндекса: %d", filled)
@@ -205,17 +226,15 @@ def main() -> int:
                                              "Chrome/126.0.0.0 Safari/537.36"}) as ya_client:
         added = supplement_dme_from_yandex(all_rows, day, ya_client)
 
-    # Обновить счётчик после дополнения
-    for r in all_rows:
-        if r["airport"] == "DME":
-            by_airport["DME"] = by_airport.get("DME", 0)
+    # Итоговые счётчики
     by_airport_final: dict[str, int] = {}
     for r in all_rows:
         by_airport_final[r["airport"]] = by_airport_final.get(r["airport"], 0) + 1
 
     path = write_csv(day, all_rows)
     log.info(
-        "Записано %d строк в %s. По аэропортам: %s (DME: %d от ADB + %d от Яндекса). Ошибки: %s",
+        "Записано %d строк в %s. По аэропортам: %s "
+        "(DME: %d от ADB + %d от Яндекса). Ошибки: %s",
         len(all_rows), path, by_airport_final,
         by_airport.get("DME", 0), added,
         failed or "нет",
