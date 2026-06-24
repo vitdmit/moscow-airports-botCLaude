@@ -316,5 +316,59 @@
   "time": "15:55",
   "gate": "13A",
   "terminal": ""
+ },
+ "FZ 990|16:15": {
+  "flight": "FZ 990",
+  "time": "16:15",
+  "gate": "26",
+  "terminal": ""
+ },
+ "FV 6032|16:30": {
+  "flight": "FV 6032",
+  "time": "16:30",
+  "gate": "09",
+  "terminal": ""
+ },
+ "A4 7019|17:00": {
+  "flight": "A4 7019",
+  "time": "17:00",
+  "gate": "11A",
+  "terminal": ""
+ },
+ "A9 925|17:00": {
+  "flight": "A9 925",
+  "time": "17:00",
+  "gate": "30",
+  "terminal": ""
+ },
+ "B2 980|17:05": {
+  "flight": "B2 980",
+  "time": "17:05",
+  "gate": "29",
+  "terminal": ""
+ },
+ "DP 167|17:05": {
+  "flight": "DP 167",
+  "time": "17:05",
+  "gate": "14A",
+  "terminal": ""
+ },
+ "DP 485|17:45": {
+  "flight": "DP 485",
+  "time": "17:45",
+  "gate": "12A",
+  "terminal": ""
+ },
+ "DP 263|17:55": {
+  "flight": "DP 263",
+  "time": "17:55",
+  "gate": "13A",
+  "terminal": ""
+ },
+ "3F 326|18:00": {
+  "flight": "3F 326",
+  "time": "18:00",
+  "gate": "20",
+  "terminal": ""
  }
 }
