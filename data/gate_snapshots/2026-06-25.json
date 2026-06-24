@@ -1,0 +1,50 @@
+{
+ "U6 3555|12:45": {
+  "flight": "U6 3555",
+  "time": "12:45",
+  "gate": "E10",
+  "terminal": "E"
+ },
+ "S7 2605|21:55": {
+  "flight": "S7 2605",
+  "time": "21:55",
+  "gate": "C5",
+  "terminal": "C"
+ },
+ "S7 2601|22:55": {
+  "flight": "S7 2601",
+  "time": "22:55",
+  "gate": "C14",
+  "terminal": "C"
+ },
+ "S7 2625|23:25": {
+  "flight": "S7 2625",
+  "time": "23:25",
+  "gate": "C12",
+  "terminal": "C"
+ },
+ "SZ 202|00:30": {
+  "flight": "SZ 202",
+  "time": "00:30",
+  "gate": "E3",
+  "terminal": "E"
+ },
+ "J2 186|00:40": {
+  "flight": "J2 186",
+  "time": "00:40",
+  "gate": "E8",
+  "terminal": "E"
+ },
+ "U6 3557|00:45": {
+  "flight": "U6 3557",
+  "time": "00:45",
+  "gate": "E10",
+  "terminal": "E"
+ },
+ "MS 728|01:10": {
+  "flight": "MS 728",
+  "time": "01:10",
+  "gate": "E4",
+  "terminal": "E"
+ }
+}
