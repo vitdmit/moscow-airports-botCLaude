@@ -8,7 +8,7 @@
  "S7 2605|21:55": {
   "flight": "S7 2605",
   "time": "21:55",
-  "gate": "C5",
+  "gate": "C16",
   "terminal": "C"
  },
  "S7 2601|22:55": {
@@ -46,5 +46,35 @@
   "time": "01:10",
   "gate": "E4",
   "terminal": "E"
+ },
+ "Y7 1091|01:00": {
+  "flight": "Y7 1091",
+  "time": "01:00",
+  "gate": "D5",
+  "terminal": "D"
+ },
+ "UT 4090|01:30": {
+  "flight": "UT 4090",
+  "time": "01:30",
+  "gate": "C15",
+  "terminal": "C"
+ },
+ "YC 90|01:30": {
+  "flight": "YC 90",
+  "time": "01:30",
+  "gate": "C15",
+  "terminal": "C"
+ },
+ "3F 314|01:40": {
+  "flight": "3F 314",
+  "time": "01:40",
+  "gate": "E6",
+  "terminal": "E"
+ },
+ "S7 2571|01:45": {
+  "flight": "S7 2571",
+  "time": "01:45",
+  "gate": "C3",
+  "terminal": "C"
  }
 }
