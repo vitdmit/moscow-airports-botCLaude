@@ -23,6 +23,12 @@ HTTP 204 «данных пока нет» и пустые фактические
   fill_dme_gates теперь проверяет снапшоты ДНЯ и ДНЯ+1. Если рейс был
   задержан и получил гейт уже после полуночи, гейт окажется в файле D+1.json.
   Объединение снапшотов двух дней позволяет не терять такие гейты.
+
+ИЗМЕНЕНИЕ 2026-06-24 (fallback-матчинг гейтов по номеру рейса):
+  fill_dme_gates теперь двухступенчатый. Если точный матч (рейс, время)
+  не нашёл гейт — ищем только по номеру рейса среди всех записей снапшота.
+  Выбирается запись ближайшая по времени к scheduled_time. Это закрывает
+  задержанные рейсы, у которых плановое время в ADB и табло расходится.
 """
 from __future__ import annotations
 
@@ -62,7 +68,13 @@ def fill_dme_gates(rows: list[dict], day: date) -> int:
     в yandex_board.py). При обогащении данных за D мы обязаны заглянуть
     и в D+1.json, иначе потеряем такие гейты.
 
-    Сопоставление по (номер рейса, плановое время). Возвращает число заполненных.
+    Сопоставление двухступенчатое:
+      1. Точное: (номер рейса, плановое время) — основной путь.
+      2. Fallback по номеру рейса без времени — для задержанных рейсов,
+         у которых scheduled_time в ADB не совпадает с временем в снапшоте.
+         Из кандидатов выбирается ближайший по времени к scheduled_time.
+
+    Возвращает число заполненных.
     AeroDataBox остаётся источником истины по составу рейсов.
     """
     try:
@@ -78,11 +90,27 @@ def fill_dme_gates(rows: list[dict], day: date) -> int:
     if not combined:
         return 0
 
-    # Индекс: (номер рейса, плановое время) → запись снапшота
+    # Индекс 1: точный — (номер рейса, время) → запись снапшота
     by_key: dict[tuple[str, str], dict] = {}
+    # Индекс 2: fallback — номер рейса → все записи с этим номером
+    by_flight: dict[str, list[dict]] = {}
     for v in combined.values():
+        flight = v.get("flight", "")
         t = v.get("time", "")
-        by_key[(v.get("flight", ""), t)] = v
+        by_key[(flight, t)] = v
+        if flight:
+            by_flight.setdefault(flight, []).append(v)
+
+    def _time_diff_min(snap_time: str, sched_time: str) -> int:
+        """Разница в минутах между временем снапшота и плановым временем рейса."""
+        if not snap_time or not sched_time:
+            return 9999
+        try:
+            sh, sm = int(snap_time.split(":")[0]), int(snap_time.split(":")[1])
+            th, tm = int(sched_time.split(":")[0]), int(sched_time.split(":")[1])
+            return abs((sh * 60 + sm) - (th * 60 + tm))
+        except Exception:
+            return 9999
 
     filled = 0
     for r in rows:
@@ -94,6 +122,10 @@ def fill_dme_gates(rows: list[dict], day: date) -> int:
         # У кодшеринга несколько номеров — пробуем каждый
         for num in str(r.get("flight_numbers", "")).split(","):
             num = num.strip()
+            if not num:
+                continue
+
+            # Приоритет 1: точное совпадение (рейс, плановое время)
             hit = by_key.get((num, t))
             if hit and hit.get("gate"):
                 r["gate"] = hit["gate"]
@@ -101,6 +133,24 @@ def fill_dme_gates(rows: list[dict], day: date) -> int:
                     r["terminal"] = hit["terminal"]
                 filled += 1
                 break
+
+            # Приоритет 2: fallback — только по номеру рейса
+            # Срабатывает когда рейс задержан и его время в снапшоте отличается
+            # от scheduled_time. Берём запись с гейтом, ближайшую по времени.
+            candidates = [c for c in by_flight.get(num, []) if c.get("gate")]
+            if candidates:
+                best = min(candidates,
+                           key=lambda c: _time_diff_min(c.get("time", ""), t))
+                r["gate"] = best["gate"]
+                if not str(r.get("terminal", "")).strip() and best.get("terminal"):
+                    r["terminal"] = best["terminal"]
+                filled += 1
+                log.debug(
+                    "[DME] fallback-гейт %s: sched %s → snap %s, гейт %s",
+                    num, t, best.get("time"), best.get("gate"),
+                )
+                break
+
     return filled
 
 
