@@ -1,0 +1,50 @@
+name: Бэкфилл DME (гейты + рейсы из Яндекса)
+# Ретроактивно дополняет CSV в data/daily/ гейтами из снапшотов
+# и рейсами из Яндекс.Расписания. Бюджет AeroDataBox НЕ расходуется.
+# Запускать вручную: Actions → этот workflow → Run workflow.
+
+on:
+  workflow_dispatch:
+    inputs:
+      month:
+        description: 'Месяц YYYY-MM (пусто = прошлый месяц)'
+        required: false
+        default: ''
+      from_date:
+        description: 'От YYYY-MM-DD (опционально, приоритет над month)'
+        required: false
+        default: ''
+      to_date:
+        description: 'До YYYY-MM-DD (используется вместе с from_date)'
+        required: false
+        default: ''
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install httpx
+
+      - name: Run backfill
+        env:
+          BACKFILL_MONTH: ${{ github.event.inputs.month }}
+          BACKFILL_FROM:  ${{ github.event.inputs.from_date }}
+          BACKFILL_TO:    ${{ github.event.inputs.to_date }}
+        run: python scripts/backfill_dme.py
+
+      - name: Commit updated CSVs
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/daily/*.csv
+          git diff --staged --quiet \
+            && echo "Нет изменений — коммит не нужен" \
+            || git commit -m "backfill: DME обновлено за ${{ github.event.inputs.month || github.event.inputs.from_date || 'прошлый месяц' }}"
+          git push
