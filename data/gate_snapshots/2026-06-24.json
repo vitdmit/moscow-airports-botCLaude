@@ -364,5 +364,29 @@
   "time": "17:45",
   "gate": "D11",
   "terminal": "D"
+ },
+ "S7 1007|18:15": {
+  "flight": "S7 1007",
+  "time": "18:15",
+  "gate": "C13",
+  "terminal": "C"
+ },
+ "LY 612|18:20": {
+  "flight": "LY 612",
+  "time": "18:20",
+  "gate": "E15",
+  "terminal": "E"
+ },
+ "S7 1055|18:25": {
+  "flight": "S7 1055",
+  "time": "18:25",
+  "gate": "C12",
+  "terminal": "C"
+ },
+ "U6 437|19:00": {
+  "flight": "U6 437",
+  "time": "19:00",
+  "gate": "D6",
+  "terminal": "D"
  }
 }
