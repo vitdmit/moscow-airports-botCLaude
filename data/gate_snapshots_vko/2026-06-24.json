@@ -256,5 +256,65 @@
   "time": "14:00",
   "gate": "25A",
   "terminal": ""
+ },
+ "TK 418|14:30": {
+  "flight": "TK 418",
+  "time": "14:30",
+  "gate": "23",
+  "terminal": ""
+ },
+ "FV 6026|14:30": {
+  "flight": "FV 6026",
+  "time": "14:30",
+  "gate": "08",
+  "terminal": ""
+ },
+ "DP 193|14:40": {
+  "flight": "DP 193",
+  "time": "14:40",
+  "gate": "16A",
+  "terminal": ""
+ },
+ "R3 735|15:00": {
+  "flight": "R3 735",
+  "time": "15:00",
+  "gate": "12",
+  "terminal": ""
+ },
+ "PC 389|15:05": {
+  "flight": "PC 389",
+  "time": "15:05",
+  "gate": "22",
+  "terminal": ""
+ },
+ "FV 6028|15:30": {
+  "flight": "FV 6028",
+  "time": "15:30",
+  "gate": "09",
+  "terminal": ""
+ },
+ "DP 967|15:40": {
+  "flight": "DP 967",
+  "time": "15:40",
+  "gate": "19A",
+  "terminal": ""
+ },
+ "6R 544|15:45": {
+  "flight": "6R 544",
+  "time": "15:45",
+  "gate": "14",
+  "terminal": ""
+ },
+ "UT 179|15:45": {
+  "flight": "UT 179",
+  "time": "15:45",
+  "gate": "17",
+  "terminal": ""
+ },
+ "DP 159|15:55": {
+  "flight": "DP 159",
+  "time": "15:55",
+  "gate": "13A",
+  "terminal": ""
  }
 }
