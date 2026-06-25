@@ -334,5 +334,47 @@
   "time": "14:30",
   "gate": "C8",
   "terminal": "C"
+ },
+ "S7 1137|16:30": {
+  "flight": "S7 1137",
+  "time": "16:30",
+  "gate": "C13",
+  "terminal": "C"
+ },
+ "S7 2509|16:35": {
+  "flight": "S7 2509",
+  "time": "16:35",
+  "gate": "C14",
+  "terminal": "C"
+ },
+ "S7 1005|16:45": {
+  "flight": "S7 1005",
+  "time": "16:45",
+  "gate": "C5",
+  "terminal": "C"
+ },
+ "EK 134|16:50": {
+  "flight": "EK 134",
+  "time": "16:50",
+  "gate": "E14",
+  "terminal": "E"
+ },
+ "S7 3045|16:55": {
+  "flight": "S7 3045",
+  "time": "16:55",
+  "gate": "C3",
+  "terminal": "C"
+ },
+ "MS 730|16:55": {
+  "flight": "MS 730",
+  "time": "16:55",
+  "gate": "E3",
+  "terminal": "E"
+ },
+ "D2 258|17:15": {
+  "flight": "D2 258",
+  "time": "17:15",
+  "gate": "C16",
+  "terminal": "C"
  }
 }
