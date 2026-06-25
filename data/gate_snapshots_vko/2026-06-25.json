@@ -490,5 +490,59 @@
   "time": "10:00",
   "gate": "14",
   "terminal": ""
+ },
+ "UT 397|10:10": {
+  "flight": "UT 397",
+  "time": "10:10",
+  "gate": "10",
+  "terminal": ""
+ },
+ "A4 7053|10:15": {
+  "flight": "A4 7053",
+  "time": "10:15",
+  "gate": "26",
+  "terminal": ""
+ },
+ "FV 6004|10:30": {
+  "flight": "FV 6004",
+  "time": "10:30",
+  "gate": "09",
+  "terminal": ""
+ },
+ "UT 783|10:30": {
+  "flight": "UT 783",
+  "time": "10:30",
+  "gate": "22",
+  "terminal": ""
+ },
+ "UT 249|10:35": {
+  "flight": "UT 249",
+  "time": "10:35",
+  "gate": "12",
+  "terminal": ""
+ },
+ "KA 556|10:55": {
+  "flight": "KA 556",
+  "time": "10:55",
+  "gate": "20",
+  "terminal": ""
+ },
+ "UT 295|11:30": {
+  "flight": "UT 295",
+  "time": "11:30",
+  "gate": "11",
+  "terminal": ""
+ },
+ "FV 6006|11:30": {
+  "flight": "FV 6006",
+  "time": "11:30",
+  "gate": "08",
+  "terminal": ""
+ },
+ "A9 935|12:00": {
+  "flight": "A9 935",
+  "time": "12:00",
+  "gate": "30",
+  "terminal": ""
  }
 }
