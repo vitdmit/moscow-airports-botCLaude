@@ -286,5 +286,41 @@
   "time": "02:55",
   "gate": "122",
   "terminal": ""
+ },
+ "SU 1110|04:55": {
+  "flight": "SU 1110",
+  "time": "04:55",
+  "gate": "115",
+  "terminal": ""
+ },
+ "UJ 620|05:10": {
+  "flight": "UJ 620",
+  "time": "05:10",
+  "gate": "127",
+  "terminal": ""
+ },
+ "SU 1106|05:35": {
+  "flight": "SU 1106",
+  "time": "05:35",
+  "gate": "112",
+  "terminal": ""
+ },
+ "FV 6953|05:40": {
+  "flight": "FV 6953",
+  "time": "05:40",
+  "gate": "124",
+  "terminal": ""
+ },
+ "SU 1288|06:00": {
+  "flight": "SU 1288",
+  "time": "06:00",
+  "gate": "105",
+  "terminal": ""
+ },
+ "FV 6299|06:00": {
+  "flight": "FV 6299",
+  "time": "06:00",
+  "gate": "102",
+  "terminal": ""
  }
 }
