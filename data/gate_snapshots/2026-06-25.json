@@ -8,7 +8,7 @@
  "S7 2605|21:55": {
   "flight": "S7 2605",
   "time": "21:55",
-  "gate": "C16",
+  "gate": "C12",
   "terminal": "C"
  },
  "S7 2601|22:55": {
@@ -489,6 +489,12 @@
   "flight": "S7 2593",
   "time": "21:40",
   "gate": "C3",
+  "terminal": "C"
+ },
+ "IO 475|21:55": {
+  "flight": "IO 475",
+  "time": "21:55",
+  "gate": "C18",
   "terminal": "C"
  }
 }
