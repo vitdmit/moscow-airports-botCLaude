@@ -544,5 +544,77 @@
   "time": "12:00",
   "gate": "30",
   "terminal": ""
+ },
+ "J2 5829|12:15": {
+  "flight": "J2 5829",
+  "time": "12:15",
+  "gate": "26",
+  "terminal": ""
+ },
+ "DP 485|12:20": {
+  "flight": "DP 485",
+  "time": "12:20",
+  "gate": "15A",
+  "terminal": ""
+ },
+ "TK 414|12:30": {
+  "flight": "TK 414",
+  "time": "12:30",
+  "gate": "23",
+  "terminal": ""
+ },
+ "FV 6008|12:30": {
+  "flight": "FV 6008",
+  "time": "12:30",
+  "gate": "09",
+  "terminal": ""
+ },
+ "DP 207|12:35": {
+  "flight": "DP 207",
+  "time": "12:35",
+  "gate": "13A",
+  "terminal": ""
+ },
+ "4G 905|13:00": {
+  "flight": "4G 905",
+  "time": "13:00",
+  "gate": "11A",
+  "terminal": ""
+ },
+ "TK 3071|13:10": {
+  "flight": "TK 3071",
+  "time": "13:10",
+  "gate": "22",
+  "terminal": ""
+ },
+ "ZF 3005|13:20": {
+  "flight": "ZF 3005",
+  "time": "13:20",
+  "gate": "18",
+  "terminal": ""
+ },
+ "TK 1232|13:30": {
+  "flight": "TK 1232",
+  "time": "13:30",
+  "gate": "24",
+  "terminal": ""
+ },
+ "FV 6010|13:30": {
+  "flight": "FV 6010",
+  "time": "13:30",
+  "gate": "08",
+  "terminal": ""
+ },
+ "TK 3013|13:30": {
+  "flight": "TK 3013",
+  "time": "13:30",
+  "gate": "21",
+  "terminal": ""
+ },
+ "A9 938|14:00": {
+  "flight": "A9 938",
+  "time": "14:00",
+  "gate": "30",
+  "terminal": ""
  }
 }
