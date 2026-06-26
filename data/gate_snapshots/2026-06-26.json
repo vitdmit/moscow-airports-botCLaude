@@ -508,5 +508,23 @@
   "time": "21:55",
   "gate": "C16",
   "terminal": "C"
+ },
+ "3F 316|20:10": {
+  "flight": "3F 316",
+  "time": "20:10",
+  "gate": "E4",
+  "terminal": "E"
+ },
+ "U6 265|22:00": {
+  "flight": "U6 265",
+  "time": "22:00",
+  "gate": "D13",
+  "terminal": "D"
+ },
+ "S7 2515|22:00": {
+  "flight": "S7 2515",
+  "time": "22:00",
+  "gate": "C12",
+  "terminal": "C"
  }
 }
