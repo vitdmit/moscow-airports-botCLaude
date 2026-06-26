@@ -754,5 +754,71 @@
   "time": "15:55",
   "gate": "15A",
   "terminal": ""
+ },
+ "UT 269|16:10": {
+  "flight": "UT 269",
+  "time": "16:10",
+  "gate": "12",
+  "terminal": ""
+ },
+ "FZ 990|16:15": {
+  "flight": "FZ 990",
+  "time": "16:15",
+  "gate": "29",
+  "terminal": ""
+ },
+ "FV 6032|16:30": {
+  "flight": "FV 6032",
+  "time": "16:30",
+  "gate": "08",
+  "terminal": ""
+ },
+ "ZF 3001|16:30": {
+  "flight": "ZF 3001",
+  "time": "16:30",
+  "gate": "19",
+  "terminal": ""
+ },
+ "A9 925|17:00": {
+  "flight": "A9 925",
+  "time": "17:00",
+  "gate": "30",
+  "terminal": ""
+ },
+ "B2 980|17:05": {
+  "flight": "B2 980",
+  "time": "17:05",
+  "gate": "29",
+  "terminal": ""
+ },
+ "DP 767|17:15": {
+  "flight": "DP 767",
+  "time": "17:15",
+  "gate": "23A",
+  "terminal": ""
+ },
+ "A4 7019|17:25": {
+  "flight": "A4 7019",
+  "time": "17:25",
+  "gate": "11A",
+  "terminal": ""
+ },
+ "FV 6038|17:30": {
+  "flight": "FV 6038",
+  "time": "17:30",
+  "gate": "09",
+  "terminal": ""
+ },
+ "3F 326|18:00": {
+  "flight": "3F 326",
+  "time": "18:00",
+  "gate": "20",
+  "terminal": ""
+ },
+ "DP 263|18:00": {
+  "flight": "DP 263",
+  "time": "18:00",
+  "gate": "12A",
+  "terminal": ""
  }
 }
