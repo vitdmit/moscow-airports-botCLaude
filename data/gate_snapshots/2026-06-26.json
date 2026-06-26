@@ -430,5 +430,11 @@
   "time": "19:45",
   "gate": "C12",
   "terminal": "C"
+ },
+ "B2 956|19:55": {
+  "flight": "B2 956",
+  "time": "19:55",
+  "gate": "E3",
+  "terminal": "E"
  }
 }
