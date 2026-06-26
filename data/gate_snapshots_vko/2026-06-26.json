@@ -700,5 +700,59 @@
   "time": "13:55",
   "gate": "21",
   "terminal": ""
+ },
+ "TK 418|14:30": {
+  "flight": "TK 418",
+  "time": "14:30",
+  "gate": "19",
+  "terminal": ""
+ },
+ "FV 6026|14:30": {
+  "flight": "FV 6026",
+  "time": "14:30",
+  "gate": "08",
+  "terminal": ""
+ },
+ "TK 3059|14:45": {
+  "flight": "TK 3059",
+  "time": "14:45",
+  "gate": "24",
+  "terminal": ""
+ },
+ "DP 193|15:00": {
+  "flight": "DP 193",
+  "time": "15:00",
+  "gate": "14A",
+  "terminal": ""
+ },
+ "ZF 3009|15:00": {
+  "flight": "ZF 3009",
+  "time": "15:00",
+  "gate": "18",
+  "terminal": ""
+ },
+ "PC 389|15:05": {
+  "flight": "PC 389",
+  "time": "15:05",
+  "gate": "20",
+  "terminal": ""
+ },
+ "FV 6028|15:30": {
+  "flight": "FV 6028",
+  "time": "15:30",
+  "gate": "09",
+  "terminal": ""
+ },
+ "UT 179|15:45": {
+  "flight": "UT 179",
+  "time": "15:45",
+  "gate": "10",
+  "terminal": ""
+ },
+ "DP 159|15:55": {
+  "flight": "DP 159",
+  "time": "15:55",
+  "gate": "15A",
+  "terminal": ""
  }
 }

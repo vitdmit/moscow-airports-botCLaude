@@ -1324,5 +1324,221 @@
   "time": "14:00",
   "gate": "108",
   "terminal": ""
+ },
+ "SU 1024|14:15": {
+  "flight": "SU 1024",
+  "time": "14:15",
+  "gate": "116",
+  "terminal": ""
+ },
+ "SU 1020|14:15": {
+  "flight": "SU 1020",
+  "time": "14:15",
+  "gate": "119",
+  "terminal": ""
+ },
+ "SU 1122|14:20": {
+  "flight": "SU 1122",
+  "time": "14:20",
+  "gate": "114",
+  "terminal": ""
+ },
+ "FV 6145|14:30": {
+  "flight": "FV 6145",
+  "time": "14:30",
+  "gate": "102",
+  "terminal": ""
+ },
+ "DP 6969|14:35": {
+  "flight": "DP 6969",
+  "time": "14:35",
+  "gate": "1",
+  "terminal": ""
+ },
+ "SU 1856|14:35": {
+  "flight": "SU 1856",
+  "time": "14:35",
+  "gate": "146",
+  "terminal": ""
+ },
+ "FV 6249|14:40": {
+  "flight": "FV 6249",
+  "time": "14:40",
+  "gate": "103",
+  "terminal": ""
+ },
+ "N4 105|14:40": {
+  "flight": "N4 105",
+  "time": "14:40",
+  "gate": "105",
+  "terminal": ""
+ },
+ "FV 6227|14:45": {
+  "flight": "FV 6227",
+  "time": "14:45",
+  "gate": "101",
+  "terminal": ""
+ },
+ "SU 1340|14:45": {
+  "flight": "SU 1340",
+  "time": "14:45",
+  "gate": "104",
+  "terminal": ""
+ },
+ "SU 1040|14:50": {
+  "flight": "SU 1040",
+  "time": "14:50",
+  "gate": "106",
+  "terminal": ""
+ },
+ "VJ 8924|14:50": {
+  "flight": "VJ 8924",
+  "time": "14:50",
+  "gate": "129",
+  "terminal": ""
+ },
+ "SU 1182|14:55": {
+  "flight": "SU 1182",
+  "time": "14:55",
+  "gate": "117",
+  "terminal": ""
+ },
+ "SU 52|15:00": {
+  "flight": "SU 52",
+  "time": "15:00",
+  "gate": "113",
+  "terminal": ""
+ },
+ "SU 1836|15:00": {
+  "flight": "SU 1836",
+  "time": "15:00",
+  "gate": "131",
+  "terminal": ""
+ },
+ "2S 86|15:05": {
+  "flight": "2S 86",
+  "time": "15:05",
+  "gate": "144",
+  "terminal": ""
+ },
+ "DP 6825|15:05": {
+  "flight": "DP 6825",
+  "time": "15:05",
+  "gate": "3",
+  "terminal": ""
+ },
+ "SU 1324|15:10": {
+  "flight": "SU 1324",
+  "time": "15:10",
+  "gate": "118",
+  "terminal": ""
+ },
+ "SU 1364|15:10": {
+  "flight": "SU 1364",
+  "time": "15:10",
+  "gate": "121",
+  "terminal": ""
+ },
+ "SU 1862|15:10": {
+  "flight": "SU 1862",
+  "time": "15:10",
+  "gate": "130",
+  "terminal": ""
+ },
+ "SU 1768|15:15": {
+  "flight": "SU 1768",
+  "time": "15:15",
+  "gate": "115",
+  "terminal": ""
+ },
+ "FV 6361|15:20": {
+  "flight": "FV 6361",
+  "time": "15:20",
+  "gate": "101",
+  "terminal": ""
+ },
+ "DP 6831|15:20": {
+  "flight": "DP 6831",
+  "time": "15:20",
+  "gate": "1",
+  "terminal": ""
+ },
+ "SU 1914|15:20": {
+  "flight": "SU 1914",
+  "time": "15:20",
+  "gate": "141",
+  "terminal": ""
+ },
+ "SU 1404|15:25": {
+  "flight": "SU 1404",
+  "time": "15:25",
+  "gate": "112",
+  "terminal": ""
+ },
+ "SU 1226|15:25": {
+  "flight": "SU 1226",
+  "time": "15:25",
+  "gate": "104",
+  "terminal": ""
+ },
+ "DP 6941|15:30": {
+  "flight": "DP 6941",
+  "time": "15:30",
+  "gate": "3",
+  "terminal": ""
+ },
+ "SU 1700|15:40": {
+  "flight": "SU 1700",
+  "time": "15:40",
+  "gate": "110",
+  "terminal": ""
+ },
+ "SU 1300|15:45": {
+  "flight": "SU 1300",
+  "time": "15:45",
+  "gate": "116",
+  "terminal": ""
+ },
+ "SU 1258|15:50": {
+  "flight": "SU 1258",
+  "time": "15:50",
+  "gate": "119",
+  "terminal": ""
+ },
+ "SU 1496|15:50": {
+  "flight": "SU 1496",
+  "time": "15:50",
+  "gate": "103",
+  "terminal": ""
+ },
+ "FV 6035|15:55": {
+  "flight": "FV 6035",
+  "time": "15:55",
+  "gate": "113",
+  "terminal": ""
+ },
+ "DP 6861|15:55": {
+  "flight": "DP 6861",
+  "time": "15:55",
+  "gate": "1",
+  "terminal": ""
+ },
+ "GS 7942|16:00": {
+  "flight": "GS 7942",
+  "time": "16:00",
+  "gate": "134",
+  "terminal": ""
+ },
+ "FV 6497|16:00": {
+  "flight": "FV 6497",
+  "time": "16:00",
+  "gate": "102",
+  "terminal": ""
+ },
+ "SU 1438|16:00": {
+  "flight": "SU 1438",
+  "time": "16:00",
+  "gate": "111",
+  "terminal": ""
  }
 }
