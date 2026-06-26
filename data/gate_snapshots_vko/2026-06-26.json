@@ -526,5 +526,101 @@
   "time": "10:00",
   "gate": "11A",
   "terminal": ""
+ },
+ "UT 455|10:05": {
+  "flight": "UT 455",
+  "time": "10:05",
+  "gate": "13",
+  "terminal": ""
+ },
+ "UT 397|10:10": {
+  "flight": "UT 397",
+  "time": "10:10",
+  "gate": "10",
+  "terminal": ""
+ },
+ "R3 479|10:10": {
+  "flight": "R3 479",
+  "time": "10:10",
+  "gate": "15",
+  "terminal": ""
+ },
+ "A4 7053|10:15": {
+  "flight": "A4 7053",
+  "time": "10:15",
+  "gate": "28A",
+  "terminal": ""
+ },
+ "UT 783|10:30": {
+  "flight": "UT 783",
+  "time": "10:30",
+  "gate": "25",
+  "terminal": ""
+ },
+ "FV 6004|10:30": {
+  "flight": "FV 6004",
+  "time": "10:30",
+  "gate": "08",
+  "terminal": ""
+ },
+ "UT 595|10:50": {
+  "flight": "UT 595",
+  "time": "10:50",
+  "gate": "16A",
+  "terminal": ""
+ },
+ "KA 556|10:55": {
+  "flight": "KA 556",
+  "time": "10:55",
+  "gate": "26",
+  "terminal": ""
+ },
+ "DP 859|11:00": {
+  "flight": "DP 859",
+  "time": "11:00",
+  "gate": "19A",
+  "terminal": ""
+ },
+ "DV 802|11:00": {
+  "flight": "DV 802",
+  "time": "11:00",
+  "gate": "20",
+  "terminal": ""
+ },
+ "FV 6006|11:30": {
+  "flight": "FV 6006",
+  "time": "11:30",
+  "gate": "09",
+  "terminal": ""
+ },
+ "UT 295|11:30": {
+  "flight": "UT 295",
+  "time": "11:30",
+  "gate": "11",
+  "terminal": ""
+ },
+ "NE 619|11:45": {
+  "flight": "NE 619",
+  "time": "11:45",
+  "gate": "19",
+  "terminal": ""
+ },
+ "DP 169|11:50": {
+  "flight": "DP 169",
+  "time": "11:50",
+  "gate": "13A",
+  "terminal": ""
+ },
+ "A9 935|12:00": {
+  "flight": "A9 935",
+  "time": "12:00",
+  "gate": "30",
+  "terminal": ""
+ },
+ "KA 504|12:00": {
+  "flight": "KA 504",
+  "time": "12:00",
+  "gate": "21",
+  "terminal": ""
  }
 }
