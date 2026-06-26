@@ -1,0 +1,20 @@
+{
+ "SZ 202|00:30": {
+  "flight": "SZ 202",
+  "time": "00:30",
+  "gate": "E6",
+  "terminal": "E"
+ },
+ "J2 186|00:40": {
+  "flight": "J2 186",
+  "time": "00:40",
+  "gate": "E3",
+  "terminal": "E"
+ },
+ "MS 728|01:10": {
+  "flight": "MS 728",
+  "time": "01:10",
+  "gate": "E8",
+  "terminal": "E"
+ }
+}
