@@ -188,19 +188,25 @@
  "NE 603|03:40": {
   "flight": "NE 603",
   "time": "03:40",
-  "gate": "26",
+  "gate": "25",
   "terminal": ""
  },
  "NE 493|04:00": {
   "flight": "NE 493",
   "time": "04:00",
-  "gate": "25",
+  "gate": "26",
   "terminal": ""
  },
  "PC 387|04:00": {
   "flight": "PC 387",
   "time": "04:00",
   "gate": "21",
+  "terminal": ""
+ },
+ "11 3|03:40": {
+  "flight": "11 3",
+  "time": "03:40",
+  "gate": "29",
   "terminal": ""
  }
 }
