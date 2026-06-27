@@ -310,5 +310,29 @@
   "time": "02:55",
   "gate": "123",
   "terminal": ""
+ },
+ "SU 1110|04:55": {
+  "flight": "SU 1110",
+  "time": "04:55",
+  "gate": "119",
+  "terminal": ""
+ },
+ "FV 6953|05:00": {
+  "flight": "FV 6953",
+  "time": "05:00",
+  "gate": "136",
+  "terminal": ""
+ },
+ "FV 6075|06:00": {
+  "flight": "FV 6075",
+  "time": "06:00",
+  "gate": "109",
+  "terminal": ""
+ },
+ "FV 6299|06:00": {
+  "flight": "FV 6299",
+  "time": "06:00",
+  "gate": "114",
+  "terminal": ""
  }
 }

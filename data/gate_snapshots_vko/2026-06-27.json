@@ -214,5 +214,59 @@
   "time": "03:40",
   "gate": "29",
   "terminal": ""
+ },
+ "ZF 3001|04:45": {
+  "flight": "ZF 3001",
+  "time": "04:45",
+  "gate": "19",
+  "terminal": ""
+ },
+ "4G 913|05:00": {
+  "flight": "4G 913",
+  "time": "05:00",
+  "gate": "10A",
+  "terminal": ""
+ },
+ "VF 588|05:05": {
+  "flight": "VF 588",
+  "time": "05:05",
+  "gate": "24",
+  "terminal": ""
+ },
+ "A9 931|05:30": {
+  "flight": "A9 931",
+  "time": "05:30",
+  "gate": "30",
+  "terminal": ""
+ },
+ "NE 607|05:30": {
+  "flight": "NE 607",
+  "time": "05:30",
+  "gate": "26",
+  "terminal": ""
+ },
+ "PC 1457|05:30": {
+  "flight": "PC 1457",
+  "time": "05:30",
+  "gate": "20",
+  "terminal": ""
+ },
+ "UT 743|05:45": {
+  "flight": "UT 743",
+  "time": "05:45",
+  "gate": "18A",
+  "terminal": ""
+ },
+ "0E 9151|05:50": {
+  "flight": "0E 9151",
+  "time": "05:50",
+  "gate": "12",
+  "terminal": ""
+ },
+ "VF 278|05:55": {
+  "flight": "VF 278",
+  "time": "05:55",
+  "gate": "25",
+  "terminal": ""
  }
 }
