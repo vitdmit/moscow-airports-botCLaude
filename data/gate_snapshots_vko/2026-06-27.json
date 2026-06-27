@@ -814,5 +814,113 @@
   "time": "19:35",
   "gate": "22",
   "terminal": ""
+ },
+ "UT 399|20:20": {
+  "flight": "UT 399",
+  "time": "20:20",
+  "gate": "10",
+  "terminal": ""
+ },
+ "FV 6180|20:30": {
+  "flight": "FV 6180",
+  "time": "20:30",
+  "gate": "09",
+  "terminal": ""
+ },
+ "UT 453|20:30": {
+  "flight": "UT 453",
+  "time": "20:30",
+  "gate": "15",
+  "terminal": ""
+ },
+ "DP 475|20:30": {
+  "flight": "DP 475",
+  "time": "20:30",
+  "gate": "16A",
+  "terminal": ""
+ },
+ "UT 363|20:40": {
+  "flight": "UT 363",
+  "time": "20:40",
+  "gate": "14",
+  "terminal": ""
+ },
+ "UT 785|20:50": {
+  "flight": "UT 785",
+  "time": "20:50",
+  "gate": "21",
+  "terminal": ""
+ },
+ "UT 247|20:50": {
+  "flight": "UT 247",
+  "time": "20:50",
+  "gate": "12",
+  "terminal": ""
+ },
+ "DP 187|21:10": {
+  "flight": "DP 187",
+  "time": "21:10",
+  "gate": "14A",
+  "terminal": ""
+ },
+ "DP 741|21:20": {
+  "flight": "DP 741",
+  "time": "21:20",
+  "gate": "25A",
+  "terminal": ""
+ },
+ "UT 571|21:25": {
+  "flight": "UT 571",
+  "time": "21:25",
+  "gate": "13",
+  "terminal": ""
+ },
+ "FV 6182|21:30": {
+  "flight": "FV 6182",
+  "time": "21:30",
+  "gate": "08",
+  "terminal": ""
+ },
+ "HY 9608|21:35": {
+  "flight": "HY 9608",
+  "time": "21:35",
+  "gate": "24",
+  "terminal": ""
+ },
+ "HY 614|21:35": {
+  "flight": "HY 614",
+  "time": "21:35",
+  "gate": "23",
+  "terminal": ""
+ },
+ "NE 649|21:45": {
+  "flight": "NE 649",
+  "time": "21:45",
+  "gate": "22",
+  "terminal": ""
+ },
+ "DV 816|21:50": {
+  "flight": "DV 816",
+  "time": "21:50",
+  "gate": "20",
+  "terminal": ""
+ },
+ "HY 9614|21:50": {
+  "flight": "HY 9614",
+  "time": "21:50",
+  "gate": "25",
+  "terminal": ""
+ },
+ "DP 205|21:55": {
+  "flight": "DP 205",
+  "time": "21:55",
+  "gate": "15A",
+  "terminal": ""
+ },
+ "DP 997|21:55": {
+  "flight": "DP 997",
+  "time": "21:55",
+  "gate": "26A",
+  "terminal": ""
  }
 }
