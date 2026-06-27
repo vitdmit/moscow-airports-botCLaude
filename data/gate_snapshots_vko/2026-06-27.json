@@ -268,5 +268,125 @@
   "time": "05:55",
   "gate": "25",
   "terminal": ""
+ },
+ "PC 391|06:10": {
+  "flight": "PC 391",
+  "time": "06:10",
+  "gate": "21",
+  "terminal": ""
+ },
+ "4S 318|06:20": {
+  "flight": "4S 318",
+  "time": "06:20",
+  "gate": "22",
+  "terminal": ""
+ },
+ "TK 420|06:25": {
+  "flight": "TK 420",
+  "time": "06:25",
+  "gate": "23",
+  "terminal": ""
+ },
+ "FV 6190|06:30": {
+  "flight": "FV 6190",
+  "time": "06:30",
+  "gate": "10",
+  "terminal": ""
+ },
+ "DP 993|06:40": {
+  "flight": "DP 993",
+  "time": "06:40",
+  "gate": "24A",
+  "terminal": ""
+ },
+ "A4 9175|07:00": {
+  "flight": "A4 9175",
+  "time": "07:00",
+  "gate": "19A",
+  "terminal": ""
+ },
+ "DP 839|07:10": {
+  "flight": "DP 839",
+  "time": "07:10",
+  "gate": "26A",
+  "terminal": ""
+ },
+ "PC 1459|07:20": {
+  "flight": "PC 1459",
+  "time": "07:20",
+  "gate": "20",
+  "terminal": ""
+ },
+ "FV 6162|07:30": {
+  "flight": "FV 6162",
+  "time": "07:30",
+  "gate": "08",
+  "terminal": ""
+ },
+ "7R 177|07:35": {
+  "flight": "7R 177",
+  "time": "07:35",
+  "gate": "23A",
+  "terminal": ""
+ },
+ "ZF 511|07:40": {
+  "flight": "ZF 511",
+  "time": "07:40",
+  "gate": "18",
+  "terminal": ""
+ },
+ "TK 408|07:40": {
+  "flight": "TK 408",
+  "time": "07:40",
+  "gate": "22",
+  "terminal": ""
+ },
+ "DP 835|07:45": {
+  "flight": "DP 835",
+  "time": "07:45",
+  "gate": "25A",
+  "terminal": ""
+ },
+ "DP 963|07:50": {
+  "flight": "DP 963",
+  "time": "07:50",
+  "gate": "24A",
+  "terminal": ""
+ },
+ "UT 801|07:50": {
+  "flight": "UT 801",
+  "time": "07:50",
+  "gate": "29",
+  "terminal": ""
+ },
+ "DP 465|07:50": {
+  "flight": "DP 465",
+  "time": "07:50",
+  "gate": "14A",
+  "terminal": ""
+ },
+ "DP 209|07:50": {
+  "flight": "DP 209",
+  "time": "07:50",
+  "gate": "12A",
+  "terminal": ""
+ },
+ "DP 423|07:50": {
+  "flight": "DP 423",
+  "time": "07:50",
+  "gate": "13A",
+  "terminal": ""
+ },
+ "DP 169|08:00": {
+  "flight": "DP 169",
+  "time": "08:00",
+  "gate": "15A",
+  "terminal": ""
+ },
+ "FV 6170|08:00": {
+  "flight": "FV 6170",
+  "time": "08:00",
+  "gate": "09",
+  "terminal": ""
  }
 }
