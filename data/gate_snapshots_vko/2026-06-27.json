@@ -688,5 +688,65 @@
   "time": "15:55",
   "gate": "16A",
   "terminal": ""
+ },
+ "ZF 3007|16:05": {
+  "flight": "ZF 3007",
+  "time": "16:05",
+  "gate": "22A",
+  "terminal": ""
+ },
+ "UT 269|16:10": {
+  "flight": "UT 269",
+  "time": "16:10",
+  "gate": "14",
+  "terminal": ""
+ },
+ "FZ 990|16:15": {
+  "flight": "FZ 990",
+  "time": "16:15",
+  "gate": "26",
+  "terminal": ""
+ },
+ "UT 763|17:00": {
+  "flight": "UT 763",
+  "time": "17:00",
+  "gate": "20A",
+  "terminal": ""
+ },
+ "A9 925|17:00": {
+  "flight": "A9 925",
+  "time": "17:00",
+  "gate": "30",
+  "terminal": ""
+ },
+ "B2 980|17:05": {
+  "flight": "B2 980",
+  "time": "17:05",
+  "gate": "29",
+  "terminal": ""
+ },
+ "DP 167|17:05": {
+  "flight": "DP 167",
+  "time": "17:05",
+  "gate": "15A",
+  "terminal": ""
+ },
+ "3F 326|18:00": {
+  "flight": "3F 326",
+  "time": "18:00",
+  "gate": "19",
+  "terminal": ""
+ },
+ "ZF 2501|18:00": {
+  "flight": "ZF 2501",
+  "time": "18:00",
+  "gate": "18",
+  "terminal": ""
+ },
+ "DP 263|18:00": {
+  "flight": "DP 263",
+  "time": "18:00",
+  "gate": "12A",
+  "terminal": ""
  }
 }
