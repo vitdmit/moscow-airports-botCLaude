@@ -184,5 +184,23 @@
   "time": "09:55",
   "gate": "E18",
   "terminal": "E"
+ },
+ "U6 2803|08:15": {
+  "flight": "U6 2803",
+  "time": "08:15",
+  "gate": "E17",
+  "terminal": "E"
+ },
+ "U6 2411|10:00": {
+  "flight": "U6 2411",
+  "time": "10:00",
+  "gate": "E9",
+  "terminal": "E"
+ },
+ "3F 312|10:00": {
+  "flight": "3F 312",
+  "time": "10:00",
+  "gate": "E19",
+  "terminal": "E"
  }
 }
