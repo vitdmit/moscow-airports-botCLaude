@@ -68,31 +68,31 @@
  "DV 814|23:40": {
   "flight": "DV 814",
   "time": "23:40",
-  "gate": "18",
+  "gate": "19A",
   "terminal": ""
  },
  "DP 413|23:45": {
   "flight": "DP 413",
   "time": "23:45",
-  "gate": "11A",
+  "gate": "12A",
   "terminal": ""
  },
  "DP 433|23:45": {
   "flight": "DP 433",
   "time": "23:45",
-  "gate": "11",
+  "gate": "14A",
   "terminal": ""
  },
  "PC 1581|23:50": {
   "flight": "PC 1581",
   "time": "23:50",
-  "gate": "30",
+  "gate": "25",
   "terminal": ""
  },
  "UT 559|23:55": {
   "flight": "UT 559",
   "time": "23:55",
-  "gate": "10",
+  "gate": "11",
   "terminal": ""
  },
  "NE 491|23:55": {
@@ -993,6 +993,48 @@
   "flight": "DP 743",
   "time": "21:55",
   "gate": "26A",
+  "terminal": ""
+ },
+ "NE 647|22:05": {
+  "flight": "NE 647",
+  "time": "22:05",
+  "gate": "22",
+  "terminal": ""
+ },
+ "RT 302|22:15": {
+  "flight": "RT 302",
+  "time": "22:15",
+  "gate": "09A",
+  "terminal": ""
+ },
+ "DP 405|22:25": {
+  "flight": "DP 405",
+  "time": "22:25",
+  "gate": "13A",
+  "terminal": ""
+ },
+ "FV 6184|22:30": {
+  "flight": "FV 6184",
+  "time": "22:30",
+  "gate": "10",
+  "terminal": ""
+ },
+ "BJ 815|22:30": {
+  "flight": "BJ 815",
+  "time": "22:30",
+  "gate": "21",
+  "terminal": ""
+ },
+ "J2 804|23:05": {
+  "flight": "J2 804",
+  "time": "23:05",
+  "gate": "18",
+  "terminal": ""
+ },
+ "FV 6186|23:30": {
+  "flight": "FV 6186",
+  "time": "23:30",
+  "gate": "08",
   "terminal": ""
  }
 }
