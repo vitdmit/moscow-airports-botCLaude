@@ -346,5 +346,35 @@
   "time": "03:45",
   "gate": "142",
   "terminal": ""
+ },
+ "SU 434|04:20": {
+  "flight": "SU 434",
+  "time": "04:20",
+  "gate": "141",
+  "terminal": ""
+ },
+ "FV 6953|04:50": {
+  "flight": "FV 6953",
+  "time": "04:50",
+  "gate": "135",
+  "terminal": ""
+ },
+ "SU 1270|05:55": {
+  "flight": "SU 1270",
+  "time": "05:55",
+  "gate": "116",
+  "terminal": ""
+ },
+ "FV 6299|06:00": {
+  "flight": "FV 6299",
+  "time": "06:00",
+  "gate": "101",
+  "terminal": ""
+ },
+ "SU 1288|06:00": {
+  "flight": "SU 1288",
+  "time": "06:00",
+  "gate": "122",
+  "terminal": ""
  }
 }
