@@ -730,5 +730,65 @@
   "time": "14:00",
   "gate": "24",
   "terminal": ""
+ },
+ "NE 621|14:05": {
+  "flight": "NE 621",
+  "time": "14:05",
+  "gate": "26",
+  "terminal": ""
+ },
+ "FV 6026|14:30": {
+  "flight": "FV 6026",
+  "time": "14:30",
+  "gate": "08",
+  "terminal": ""
+ },
+ "TK 418|14:30": {
+  "flight": "TK 418",
+  "time": "14:30",
+  "gate": "18",
+  "terminal": ""
+ },
+ "B2 984|14:55": {
+  "flight": "B2 984",
+  "time": "14:55",
+  "gate": "29",
+  "terminal": ""
+ },
+ "PC 389|15:05": {
+  "flight": "PC 389",
+  "time": "15:05",
+  "gate": "19",
+  "terminal": ""
+ },
+ "A4 7009|15:05": {
+  "flight": "A4 7009",
+  "time": "15:05",
+  "gate": "22A",
+  "terminal": ""
+ },
+ "DP 193|15:10": {
+  "flight": "DP 193",
+  "time": "15:10",
+  "gate": "13A",
+  "terminal": ""
+ },
+ "DP 189|15:10": {
+  "flight": "DP 189",
+  "time": "15:10",
+  "gate": "15A",
+  "terminal": ""
+ },
+ "FV 6028|15:30": {
+  "flight": "FV 6028",
+  "time": "15:30",
+  "gate": "09",
+  "terminal": ""
+ },
+ "6R 544|15:45": {
+  "flight": "6R 544",
+  "time": "15:45",
+  "gate": "14",
+  "terminal": ""
  }
 }
