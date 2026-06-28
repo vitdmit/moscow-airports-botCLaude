@@ -634,5 +634,101 @@
   "time": "12:00",
   "gate": "30",
   "terminal": ""
+ },
+ "FV 6008|12:30": {
+  "flight": "FV 6008",
+  "time": "12:30",
+  "gate": "08",
+  "terminal": ""
+ },
+ "DP 735|12:30": {
+  "flight": "DP 735",
+  "time": "12:30",
+  "gate": "23A",
+  "terminal": ""
+ },
+ "TK 414|12:30": {
+  "flight": "TK 414",
+  "time": "12:30",
+  "gate": "22",
+  "terminal": ""
+ },
+ "S7 4137|12:50": {
+  "flight": "S7 4137",
+  "time": "12:50",
+  "gate": "18",
+  "terminal": ""
+ },
+ "J2 808|12:50": {
+  "flight": "J2 808",
+  "time": "12:50",
+  "gate": "18",
+  "terminal": ""
+ },
+ "TK 3071|13:10": {
+  "flight": "TK 3071",
+  "time": "13:10",
+  "gate": "21",
+  "terminal": ""
+ },
+ "UT 445|13:15": {
+  "flight": "UT 445",
+  "time": "13:15",
+  "gate": "13",
+  "terminal": ""
+ },
+ "TK 3077|13:15": {
+  "flight": "TK 3077",
+  "time": "13:15",
+  "gate": "25",
+  "terminal": ""
+ },
+ "5G 510|13:20": {
+  "flight": "5G 510",
+  "time": "13:20",
+  "gate": "28",
+  "terminal": ""
+ },
+ "FV 6010|13:30": {
+  "flight": "FV 6010",
+  "time": "13:30",
+  "gate": "10",
+  "terminal": ""
+ },
+ "TK 1232|13:30": {
+  "flight": "TK 1232",
+  "time": "13:30",
+  "gate": "23",
+  "terminal": ""
+ },
+ "TK 3013|13:30": {
+  "flight": "TK 3013",
+  "time": "13:30",
+  "gate": "19",
+  "terminal": ""
+ },
+ "TK 3025|13:45": {
+  "flight": "TK 3025",
+  "time": "13:45",
+  "gate": "22",
+  "terminal": ""
+ },
+ "TK 3165|13:55": {
+  "flight": "TK 3165",
+  "time": "13:55",
+  "gate": "20",
+  "terminal": ""
+ },
+ "A9 938|14:00": {
+  "flight": "A9 938",
+  "time": "14:00",
+  "gate": "30",
+  "terminal": ""
+ },
+ "TK 3047|14:00": {
+  "flight": "TK 3047",
+  "time": "14:00",
+  "gate": "24",
+  "terminal": ""
  }
 }
