@@ -76,5 +76,17 @@
   "time": "03:20",
   "gate": "E10",
   "terminal": "E"
+ },
+ "MS 728|02:25": {
+  "flight": "MS 728",
+  "time": "02:25",
+  "gate": "E6",
+  "terminal": "E"
+ },
+ "YC 173|03:35": {
+  "flight": "YC 173",
+  "time": "03:35",
+  "gate": "C15",
+  "terminal": "C"
  }
 }
