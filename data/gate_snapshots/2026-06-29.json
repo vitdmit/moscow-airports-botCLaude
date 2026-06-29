@@ -142,5 +142,17 @@
   "time": "09:00",
   "gate": "D11",
   "terminal": "D"
+ },
+ "S7 1003|09:30": {
+  "flight": "S7 1003",
+  "time": "09:30",
+  "gate": "C13",
+  "terminal": "C"
+ },
+ "Y7 4400|09:35": {
+  "flight": "Y7 4400",
+  "time": "09:35",
+  "gate": "D3",
+  "terminal": "D"
  }
 }
