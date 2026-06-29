@@ -280,5 +280,11 @@
   "time": "11:30",
   "gate": "D6",
   "terminal": "D"
+ },
+ "Y7 1051|12:00": {
+  "flight": "Y7 1051",
+  "time": "12:00",
+  "gate": "D5",
+  "terminal": "D"
  }
 }
