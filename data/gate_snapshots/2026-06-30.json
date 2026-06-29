@@ -40,5 +40,23 @@
   "time": "01:10",
   "gate": "E6",
   "terminal": "E"
+ },
+ "UT 4090|01:30": {
+  "flight": "UT 4090",
+  "time": "01:30",
+  "gate": "D9",
+  "terminal": "D"
+ },
+ "YC 90|01:30": {
+  "flight": "YC 90",
+  "time": "01:30",
+  "gate": "D9",
+  "terminal": "D"
+ },
+ "S7 2571|01:45": {
+  "flight": "S7 2571",
+  "time": "01:45",
+  "gate": "C13",
+  "terminal": "C"
  }
 }
