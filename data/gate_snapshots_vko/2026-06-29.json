@@ -598,5 +598,53 @@
   "time": "12:00",
   "gate": "30",
   "terminal": ""
+ },
+ "J2 5829|12:15": {
+  "flight": "J2 5829",
+  "time": "12:15",
+  "gate": "25",
+  "terminal": ""
+ },
+ "DP 485|12:25": {
+  "flight": "DP 485",
+  "time": "12:25",
+  "gate": "16A",
+  "terminal": ""
+ },
+ "FV 6008|12:30": {
+  "flight": "FV 6008",
+  "time": "12:30",
+  "gate": "09",
+  "terminal": ""
+ },
+ "TK 414|12:30": {
+  "flight": "TK 414",
+  "time": "12:30",
+  "gate": "22",
+  "terminal": ""
+ },
+ "A4 7029|13:00": {
+  "flight": "A4 7029",
+  "time": "13:00",
+  "gate": "26",
+  "terminal": ""
+ },
+ "UT 445|13:15": {
+  "flight": "UT 445",
+  "time": "13:15",
+  "gate": "13",
+  "terminal": ""
+ },
+ "FV 6010|13:30": {
+  "flight": "FV 6010",
+  "time": "13:30",
+  "gate": "08",
+  "terminal": ""
+ },
+ "TK 1232|13:30": {
+  "flight": "TK 1232",
+  "time": "13:30",
+  "gate": "23",
+  "terminal": ""
  }
 }
