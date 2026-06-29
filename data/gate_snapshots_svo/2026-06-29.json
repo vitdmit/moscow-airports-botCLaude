@@ -322,5 +322,47 @@
   "time": "03:10",
   "gate": "141",
   "terminal": ""
+ },
+ "FV 6953|04:50": {
+  "flight": "FV 6953",
+  "time": "04:50",
+  "gate": "130",
+  "terminal": ""
+ },
+ "SU 1110|04:55": {
+  "flight": "SU 1110",
+  "time": "04:55",
+  "gate": "103",
+  "terminal": ""
+ },
+ "SU 2166|05:05": {
+  "flight": "SU 2166",
+  "time": "05:05",
+  "gate": "136",
+  "terminal": ""
+ },
+ "SU 1106|05:35": {
+  "flight": "SU 1106",
+  "time": "05:35",
+  "gate": "116",
+  "terminal": ""
+ },
+ "SU 1270|05:55": {
+  "flight": "SU 1270",
+  "time": "05:55",
+  "gate": "109",
+  "terminal": ""
+ },
+ "FV 6075|06:00": {
+  "flight": "FV 6075",
+  "time": "06:00",
+  "gate": "101",
+  "terminal": ""
+ },
+ "FV 6299|06:00": {
+  "flight": "FV 6299",
+  "time": "06:00",
+  "gate": "104",
+  "terminal": ""
  }
 }
