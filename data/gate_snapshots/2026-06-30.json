@@ -244,5 +244,41 @@
   "time": "11:45",
   "gate": "E8",
   "terminal": "E"
+ },
+ "B2 958|12:15": {
+  "flight": "B2 958",
+  "time": "12:15",
+  "gate": "E3",
+  "terminal": "E"
+ },
+ "Y7 1041|12:30": {
+  "flight": "Y7 1041",
+  "time": "12:30",
+  "gate": "D3",
+  "terminal": "D"
+ },
+ "S7 3021|12:45": {
+  "flight": "S7 3021",
+  "time": "12:45",
+  "gate": "C8",
+  "terminal": "C"
+ },
+ "D2 253|12:45": {
+  "flight": "D2 253",
+  "time": "12:45",
+  "gate": "C14",
+  "terminal": "C"
+ },
+ "S7 2157|13:05": {
+  "flight": "S7 2157",
+  "time": "13:05",
+  "gate": "C15",
+  "terminal": "C"
+ },
+ "S7 2155|13:05": {
+  "flight": "S7 2155",
+  "time": "13:05",
+  "gate": "C13",
+  "terminal": "C"
  }
 }
