@@ -140,7 +140,7 @@
  "U6 261|10:00": {
   "flight": "U6 261",
   "time": "10:00",
-  "gate": "D14",
+  "gate": "D13",
   "terminal": "D"
  },
  "3F 312|10:00": {
@@ -226,5 +226,23 @@
   "time": "11:30",
   "gate": "D14",
   "terminal": "D"
+ },
+ "U6 109|11:00": {
+  "flight": "U6 109",
+  "time": "11:00",
+  "gate": "D4",
+  "terminal": "D"
+ },
+ "S7 4263|11:45": {
+  "flight": "S7 4263",
+  "time": "11:45",
+  "gate": "E8",
+  "terminal": "E"
+ },
+ "HY 604|11:45": {
+  "flight": "HY 604",
+  "time": "11:45",
+  "gate": "E8",
+  "terminal": "E"
  }
 }
