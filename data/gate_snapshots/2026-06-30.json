@@ -82,5 +82,23 @@
   "time": "07:30",
   "gate": "C12",
   "terminal": "C"
+ },
+ "S7 3745|08:45": {
+  "flight": "S7 3745",
+  "time": "08:45",
+  "gate": "E17",
+  "terminal": "E"
+ },
+ "S7 2049|08:55": {
+  "flight": "S7 2049",
+  "time": "08:55",
+  "gate": "C5",
+  "terminal": "C"
+ },
+ "U6 371|09:00": {
+  "flight": "U6 371",
+  "time": "09:00",
+  "gate": "D4",
+  "terminal": "D"
  }
 }
