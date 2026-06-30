@@ -440,7 +440,7 @@
  "S7 3031|20:45": {
   "flight": "S7 3031",
   "time": "20:45",
-  "gate": "C18",
+  "gate": "C17",
   "terminal": "C"
  },
  "S7 3005|21:00": {
@@ -459,6 +459,24 @@
   "flight": "I8 308",
   "time": "21:10",
   "gate": "C4",
+  "terminal": "C"
+ },
+ "S7 3017|21:30": {
+  "flight": "S7 3017",
+  "time": "21:30",
+  "gate": "C17",
+  "terminal": "C"
+ },
+ "ET 761|21:30": {
+  "flight": "ET 761",
+  "time": "21:30",
+  "gate": "E13",
+  "terminal": "E"
+ },
+ "S7 3039|21:30": {
+  "flight": "S7 3039",
+  "time": "21:30",
+  "gate": "C15",
   "terminal": "C"
  }
 }
