@@ -280,5 +280,17 @@
   "time": "13:05",
   "gate": "C13",
   "terminal": "C"
+ },
+ "YC 32|12:10": {
+  "flight": "YC 32",
+  "time": "12:10",
+  "gate": "D9",
+  "terminal": "D"
+ },
+ "U6 269|13:35": {
+  "flight": "U6 269",
+  "time": "13:35",
+  "gate": "D11",
+  "terminal": "D"
  }
 }
