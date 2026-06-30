@@ -250,5 +250,131 @@
   "time": "05:55",
   "gate": "24",
   "terminal": ""
+ },
+ "PC 391|06:10": {
+  "flight": "PC 391",
+  "time": "06:10",
+  "gate": "29",
+  "terminal": ""
+ },
+ "TK 420|06:25": {
+  "flight": "TK 420",
+  "time": "06:25",
+  "gate": "22",
+  "terminal": ""
+ },
+ "A4 7029|06:30": {
+  "flight": "A4 7029",
+  "time": "06:30",
+  "gate": "18A",
+  "terminal": ""
+ },
+ "DP 993|06:50": {
+  "flight": "DP 993",
+  "time": "06:50",
+  "gate": "23A",
+  "terminal": ""
+ },
+ "NE 645|06:50": {
+  "flight": "NE 645",
+  "time": "06:50",
+  "gate": "25",
+  "terminal": ""
+ },
+ "DP 855|07:00": {
+  "flight": "DP 855",
+  "time": "07:00",
+  "gate": "24A",
+  "terminal": ""
+ },
+ "DP 423|07:05": {
+  "flight": "DP 423",
+  "time": "07:05",
+  "gate": "12A",
+  "terminal": ""
+ },
+ "4G 945|07:10": {
+  "flight": "4G 945",
+  "time": "07:10",
+  "gate": "10A",
+  "terminal": ""
+ },
+ "0E 9151|07:10": {
+  "flight": "0E 9151",
+  "time": "07:10",
+  "gate": "13",
+  "terminal": ""
+ },
+ "PC 1459|07:20": {
+  "flight": "PC 1459",
+  "time": "07:20",
+  "gate": "20",
+  "terminal": ""
+ },
+ "FV 6162|07:30": {
+  "flight": "FV 6162",
+  "time": "07:30",
+  "gate": "08",
+  "terminal": ""
+ },
+ "DP 193|07:30": {
+  "flight": "DP 193",
+  "time": "07:30",
+  "gate": "14A",
+  "terminal": ""
+ },
+ "DP 157|07:35": {
+  "flight": "DP 157",
+  "time": "07:35",
+  "gate": "15A",
+  "terminal": ""
+ },
+ "DP 835|07:35": {
+  "flight": "DP 835",
+  "time": "07:35",
+  "gate": "25A",
+  "terminal": ""
+ },
+ "ZF 511|07:40": {
+  "flight": "ZF 511",
+  "time": "07:40",
+  "gate": "18",
+  "terminal": ""
+ },
+ "TK 408|07:40": {
+  "flight": "TK 408",
+  "time": "07:40",
+  "gate": "23",
+  "terminal": ""
+ },
+ "DP 737|07:45": {
+  "flight": "DP 737",
+  "time": "07:45",
+  "gate": "19A",
+  "terminal": ""
+ },
+ "DP 209|07:50": {
+  "flight": "DP 209",
+  "time": "07:50",
+  "gate": "11A",
+  "terminal": ""
+ },
+ "UT 801|07:50": {
+  "flight": "UT 801",
+  "time": "07:50",
+  "gate": "30",
+  "terminal": ""
+ },
+ "DP 465|07:50": {
+  "flight": "DP 465",
+  "time": "07:50",
+  "gate": "12A",
+  "terminal": ""
+ },
+ "DP 839|08:00": {
+  "flight": "DP 839",
+  "time": "08:00",
+  "gate": "26A",
+  "terminal": ""
  }
 }
