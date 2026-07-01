@@ -124,5 +124,17 @@
   "time": "02:00",
   "gate": "24",
   "terminal": ""
+ },
+ "UT 399|20:20": {
+  "flight": "UT 399",
+  "time": "20:20",
+  "gate": "17",
+  "terminal": ""
+ },
+ "DP 433|23:45": {
+  "flight": "DP 433",
+  "time": "23:45",
+  "gate": "11A",
+  "terminal": ""
  }
 }
