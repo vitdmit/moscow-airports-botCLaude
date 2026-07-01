@@ -256,5 +256,53 @@
   "time": "01:55",
   "gate": "111",
   "terminal": ""
+ },
+ "SU 1054|02:10": {
+  "flight": "SU 1054",
+  "time": "02:10",
+  "gate": "107",
+  "terminal": ""
+ },
+ "SU 2148|02:15": {
+  "flight": "SU 2148",
+  "time": "02:15",
+  "gate": "143",
+  "terminal": ""
+ },
+ "SU 1466|02:20": {
+  "flight": "SU 1466",
+  "time": "02:20",
+  "gate": "114",
+  "terminal": ""
+ },
+ "SU 1172|02:20": {
+  "flight": "SU 1172",
+  "time": "02:20",
+  "gate": "103",
+  "terminal": ""
+ },
+ "FV 6717|02:25": {
+  "flight": "FV 6717",
+  "time": "02:25",
+  "gate": "104",
+  "terminal": ""
+ },
+ "FV 6591|02:55": {
+  "flight": "FV 6591",
+  "time": "02:55",
+  "gate": "103",
+  "terminal": ""
+ },
+ "FV 6155|02:55": {
+  "flight": "FV 6155",
+  "time": "02:55",
+  "gate": "104",
+  "terminal": ""
+ },
+ "JU 137|02:55": {
+  "flight": "JU 137",
+  "time": "02:55",
+  "gate": "145",
+  "terminal": ""
  }
 }

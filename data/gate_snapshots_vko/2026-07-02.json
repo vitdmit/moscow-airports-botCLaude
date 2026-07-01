@@ -136,5 +136,83 @@
   "time": "23:45",
   "gate": "11A",
   "terminal": ""
+ },
+ "TK 3015|02:05": {
+  "flight": "TK 3015",
+  "time": "02:05",
+  "gate": "20",
+  "terminal": ""
+ },
+ "TK 3037|02:20": {
+  "flight": "TK 3037",
+  "time": "02:20",
+  "gate": "22",
+  "terminal": ""
+ },
+ "TK 422|02:25": {
+  "flight": "TK 422",
+  "time": "02:25",
+  "gate": "23",
+  "terminal": ""
+ },
+ "3F 324|02:30": {
+  "flight": "3F 324",
+  "time": "02:30",
+  "gate": "27",
+  "terminal": ""
+ },
+ "4S 338|02:45": {
+  "flight": "4S 338",
+  "time": "02:45",
+  "gate": "21",
+  "terminal": ""
+ },
+ "TK 3155|02:55": {
+  "flight": "TK 3155",
+  "time": "02:55",
+  "gate": "18",
+  "terminal": ""
+ },
+ "NE 617|03:05": {
+  "flight": "NE 617",
+  "time": "03:05",
+  "gate": "26",
+  "terminal": ""
+ },
+ "UT 6315|03:05": {
+  "flight": "UT 6315",
+  "time": "03:05",
+  "gate": "12",
+  "terminal": ""
+ },
+ "11 3|03:30": {
+  "flight": "11 3",
+  "time": "03:30",
+  "gate": "29",
+  "terminal": ""
+ },
+ "VF 6668|03:30": {
+  "flight": "VF 6668",
+  "time": "03:30",
+  "gate": "27",
+  "terminal": ""
+ },
+ "TK 3007|03:55": {
+  "flight": "TK 3007",
+  "time": "03:55",
+  "gate": "20",
+  "terminal": ""
+ },
+ "TK 3123|04:00": {
+  "flight": "TK 3123",
+  "time": "04:00",
+  "gate": "21",
+  "terminal": ""
+ },
+ "PC 387|04:00": {
+  "flight": "PC 387",
+  "time": "04:00",
+  "gate": "19",
+  "terminal": ""
  }
 }
