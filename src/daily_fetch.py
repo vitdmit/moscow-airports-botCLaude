@@ -29,11 +29,21 @@ HTTP 204 «данных пока нет» и пустые фактические
   не нашёл гейт — ищем только по номеру рейса среди всех записей снапшота.
   Выбирается запись ближайшая по времени к scheduled_time. Это закрывает
   задержанные рейсы, у которых плановое время в ADB и табло расходится.
+
+ИЗМЕНЕНИЕ 2026-07 (само-лечение из снапшотов, все 3 аэропорта):
+  add_missing_flights_from_snapshot дополняет СОСТАВ рейсов из снапшота
+  живого табло по каждому аэропорту — страховка на случай, когда AeroDataBox
+  отдал день частично или пропустил аэропорт целиком (напр. при исчерпании
+  месячного бюджета). Кодшеринги (несколько номеров одного физического рейса)
+  склеиваются в ОДНУ строку по (время+терминал+гейт), а рейс не добавляется,
+  если этот гейт у ADB уже занят примерно в то же время (±20 мин) — так вылет
+  не задваивается. Бюджет AeroDataBox не тратится.
 """
 from __future__ import annotations
 
 import csv
 import os
+import re
 import sys
 import time as time_module
 from datetime import date, timedelta
@@ -56,6 +66,127 @@ CSV_FIELDS = [
 ]
 
 AIRPORT_RETRIES = 3
+
+# Допуск (мин): один и тот же гейт не может занимать два РАЗНЫХ физических
+# рейса в пределах этого окна — используется, чтобы не добавить кодшеринг,
+# который ADB уже записал под другим номером.
+GATE_TIME_TOL_MIN = 20
+
+
+def _norm_num(s: str) -> str:
+    """Нормализовать номер рейса для сравнения: 'S7  67' -> 'S767'."""
+    return re.sub(r"\s+", "", str(s).strip().upper())
+
+
+def _time_to_min(t: str) -> int | None:
+    """'14:35' -> 875. Некорректное время -> None."""
+    try:
+        h, m = str(t).strip().split(":")[:2]
+        return int(h) * 60 + int(m)
+    except (ValueError, IndexError, AttributeError):
+        return None
+
+
+def add_missing_flights_from_snapshot(rows: list[dict], day: date,
+                                      airport: str) -> int:
+    """Добрать рейсы `airport` из снапшота живого табло, которых нет в rows.
+
+    Зачем: если AeroDataBox отдал день частично (или пропустил аэропорт
+    целиком — напр. при исчерпании бюджета), недостающие рейсы часто уже
+    лежат в накопленном снапшоте табло. Сеть и бюджет AeroDataBox не нужны.
+
+    Кодшеринги: один физический рейс попадает в снапшот несколькими записями
+    (разные номера одного рейса). Склеиваем их в ОДНУ строку по ключу
+    (время, терминал, гейт) — так вылет не задваивается.
+
+    Защита от задвоения с ADB: рейс не добавляется, если
+      - любой из его номеров уже есть среди собранных, ИЛИ
+      - тот же гейт у уже собранного рейса занят в пределах ±GATE_TIME_TOL_MIN
+        (это ловит кодшеринг, записанный ADB под другим номером).
+
+    Новые строки получают пустые actual_time/destination/destination_iata
+    (как и Яндекс-дополнения) — для подсчёта загрузки гейтов этого достаточно.
+    Возвращает число добавленных строк (физических рейсов).
+
+    Ограничение: в снапшот попадают только рейсы, которым на табло объявили
+    «Выход на посадку». Рейс без публично присвоенного гейта не восстановится.
+    """
+    try:
+        from src.yandex_board import load_snapshot
+    except Exception:
+        return 0
+
+    snap = load_snapshot(day, airport)
+    if not snap:
+        return 0
+
+    # Что уже собрано по этому аэропорту: номера и занятые (гейт, минута)
+    have_nums: set[str] = set()
+    have_gate_time: list[tuple[str, int]] = []
+    for r in rows:
+        if r.get("airport") != airport:
+            continue
+        for num in str(r.get("flight_numbers", "")).split(","):
+            n = _norm_num(num)
+            if n:
+                have_nums.add(n)
+        g = str(r.get("gate", "")).strip()
+        tm = _time_to_min(r.get("scheduled_time", ""))
+        if g and tm is not None:
+            have_gate_time.append((g, tm))
+
+    # Группируем записи снапшота по (время, терминал, гейт) = один физ. рейс
+    groups: dict[tuple[str, str, str], dict] = {}
+    for v in snap.values():
+        flight = v.get("flight", "")
+        if not flight:
+            continue
+        key = (v.get("time", ""), v.get("terminal", ""), v.get("gate", ""))
+        grp = groups.setdefault(key, {
+            "time": v.get("time", ""),
+            "terminal": v.get("terminal", ""),
+            "gate": v.get("gate", ""),
+            "flights": [],
+        })
+        if _norm_num(flight) not in {_norm_num(x) for x in grp["flights"]}:
+            grp["flights"].append(flight)
+
+    added = 0
+    for grp in groups.values():
+        # уже есть по номеру рейса?
+        if any(_norm_num(fl) in have_nums for fl in grp["flights"]):
+            continue
+        # тот же гейт уже занят примерно в то же время (кодшеринг под др. номером)?
+        gate = str(grp["gate"]).strip()
+        gm = _time_to_min(grp["time"])
+        if gate and gm is not None and any(
+            g == gate and abs(t - gm) <= GATE_TIME_TOL_MIN
+            for g, t in have_gate_time
+        ):
+            continue
+
+        rows.append({
+            "airport": airport,
+            "flight_date": day.isoformat(),
+            "scheduled_time": grp["time"],
+            "actual_time": "",
+            "terminal": grp["terminal"],
+            "gate": grp["gate"],
+            "airlines": "",
+            "flight_numbers": ",".join(grp["flights"]),
+            "destination": "",
+            "destination_iata": "",
+        })
+        for fl in grp["flights"]:
+            have_nums.add(_norm_num(fl))
+        if gate and gm is not None:
+            have_gate_time.append((gate, gm))
+        added += 1
+
+    if added:
+        log.info("[%s] Из снапшота табло добрано рейсов %s: %d",
+                 day, airport, added)
+    return added
 
 
 def fill_dme_gates(rows: list[dict], day: date) -> int:
@@ -208,7 +339,8 @@ def resolve_target_day() -> date:
 
 
 def main() -> int:
-    log.info("=== daily_fetch 2026-06-24 (гейты D+D+1 + рейсы DME из Яндекса) ===")
+    log.info("=== daily_fetch 2026-07 (гейты D+D+1 + рейсы DME из Яндекса "
+             "+ само-лечение из снапшотов по 3 аэропортам) ===")
     api_key = os.environ.get("AERODATABOX_KEY", "").strip()
     if not api_key:
         log.error("Нет AERODATABOX_KEY в окружении — нечем авторизоваться")
@@ -276,6 +408,16 @@ def main() -> int:
                                              "Chrome/126.0.0.0 Safari/537.36"}) as ya_client:
         added = supplement_dme_from_yandex(all_rows, day, ya_client)
 
+    # Шаг 3: САМО-ЛЕЧЕНИЕ — добрать рейсы из снапшота живого табло по всем
+    # аэропортам (страховка на частичный/пропущенный день; кодшеринги склеиваются).
+    snap_added: dict[str, int] = {}
+    for ap in AIRPORTS:
+        n = add_missing_flights_from_snapshot(all_rows, day, ap)
+        if n:
+            snap_added[ap] = n
+    if snap_added:
+        log.info("Добрано из снапшотов табло (само-лечение): %s", snap_added)
+
     # Итоговые счётчики
     by_airport_final: dict[str, int] = {}
     for r in all_rows:
@@ -284,9 +426,9 @@ def main() -> int:
     path = write_csv(day, all_rows)
     log.info(
         "Записано %d строк в %s. По аэропортам: %s "
-        "(DME: %d от ADB + %d от Яндекса). Ошибки: %s",
+        "(DME: %d от ADB + %d от Яндекса + снапшоты %s). Ошибки: %s",
         len(all_rows), path, by_airport_final,
-        by_airport.get("DME", 0), added,
+        by_airport.get("DME", 0), added, snap_added or "0",
         failed or "нет",
     )
     return 0
