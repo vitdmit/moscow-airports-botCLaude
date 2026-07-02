@@ -7,6 +7,8 @@
      строку — логика общая с daily_fetch (add_missing_flights_from_snapshot).
   2. Обогащение гейтами DME из имеющихся gate_snapshots.
   3. Добавление пропущенных рейсов DME из исторического Яндекс.Расписания.
+  4. Восстановление авиакомпании/направления у добранных строк по истории
+     (тот же номер рейса из других дней → тот же маршрут).
 
 НОЛЬ затрат бюджета AeroDataBox. Перезаписывает CSV только если что-то изменилось.
 
@@ -114,20 +116,20 @@ def backfill_day(day: date, ya_client: httpx.Client) -> tuple[int, int]:
     if new_rows:
         rows.extend(new_rows)
 
-    # Шаг 4: восстановить авиакомпанию/направление у добранных из снапшота строк
-    # по истории (тот же номер рейса из других дней → тот же маршрут).
-    if snap_added:
-        enrich_from_history(rows)
+    # Шаг 4: восстановить авиакомпанию/направление у добранных строк по истории.
+    # Вызываем ВСЕГДА: при повторном прогоне рейсы уже в CSV (snap_added=0),
+    # но их пустые поля надо дозаполнить.
+    enriched = enrich_from_history(rows)
 
     after = _counts(rows)
     added_total = snap_added + len(new_rows)
 
-    if gates_filled or added_total:
+    if gates_filled or added_total or enriched:
         write_csv(day, rows)
         log.info(
-            "[%s] ✓  Гейтов +%d, из снапшота +%d, из Яндекса +%d.  "
-            "SVO %d→%d, VKO %d→%d, DME %d→%d",
-            day, gates_filled, snap_added, len(new_rows),
+            "[%s] ✓  Гейтов +%d, из снапшота +%d, из Яндекса +%d, "
+            "восстановлено направлений +%d.  SVO %d→%d, VKO %d→%d, DME %d→%d",
+            day, gates_filled, snap_added, len(new_rows), enriched,
             before["SVO"], after["SVO"],
             before["VKO"], after["VKO"],
             before["DME"], after["DME"],
