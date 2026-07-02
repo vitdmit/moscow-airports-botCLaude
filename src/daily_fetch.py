@@ -189,6 +189,65 @@ def add_missing_flights_from_snapshot(rows: list[dict], day: date,
     return added
 
 
+def enrich_from_history(rows: list[dict]) -> int:
+    """Заполнить пустые airlines/destination/destination_iata у строк, добранных
+    из снапшота (в снапшоте лежат только рейс/время/гейт/терминал).
+
+    Источники восстановления:
+      - направление и IATA: по номеру рейса из уже собранных дней в DAILY_DIR
+        (тот же рейс — тот же маршрут);
+      - авиакомпания: по префиксу номера (код перевозчика: S7, U6, YC, HH…),
+        имя берём наиболее частое из истории.
+
+    Ничего не перезаписывает, если поле уже заполнено. Возвращает число
+    заполненных направлений.
+    """
+    import glob as _glob
+
+    dest: dict[str, str] = {}
+    iata: dict[str, str] = {}
+    pref_air: dict[str, dict[str, int]] = {}
+    for p in _glob.glob(str(DAILY_DIR / "*.csv")):
+        try:
+            with open(p, encoding="utf-8-sig") as f:
+                for r in csv.DictReader(f):
+                    for num in str(r.get("flight_numbers", "")).split(","):
+                        k = _norm_num(num)
+                        if not k:
+                            continue
+                        d = str(r.get("destination", "")).strip()
+                        if d and k not in dest:
+                            dest[k] = d
+                            iata[k] = str(r.get("destination_iata", "")).strip()
+                        a = str(r.get("airlines", "")).strip()
+                        m = re.match(r"^[A-Z0-9]+", k)
+                        if a and m:
+                            pa = pref_air.setdefault(m.group(0), {})
+                            pa[a] = pa.get(a, 0) + 1
+        except Exception:
+            continue
+
+    air = {p: max(v, key=v.get) for p, v in pref_air.items()}
+
+    filled = 0
+    for r in rows:
+        first = _norm_num(str(r.get("flight_numbers", "")).split(",")[0])
+        if not first:
+            continue
+        if not str(r.get("destination", "")).strip() and first in dest:
+            r["destination"] = dest[first]
+            if not str(r.get("destination_iata", "")).strip():
+                r["destination_iata"] = iata.get(first, "")
+            filled += 1
+        if not str(r.get("airlines", "")).strip():
+            m = re.match(r"^[A-Z0-9]+", first)
+            if m and m.group(0) in air:
+                r["airlines"] = air[m.group(0)]
+    if filled:
+        log.info("Восстановлено направлений из истории DAILY_DIR: %d", filled)
+    return filled
+
+
 def fill_dme_gates(rows: list[dict], day: date) -> int:
     """Для рейсов DME без гейта подставить гейт из снапшота табло Яндекса.
 
@@ -417,6 +476,11 @@ def main() -> int:
             snap_added[ap] = n
     if snap_added:
         log.info("Добрано из снапшотов табло (само-лечение): %s", snap_added)
+
+    # Шаг 4: восстановить авиакомпанию/направление у добранных строк по истории
+    # (в снапшоте их нет — берём по номеру рейса из уже собранных дней).
+    if snap_added:
+        enrich_from_history(all_rows)
 
     # Итоговые счётчики
     by_airport_final: dict[str, int] = {}
