@@ -1,8 +1,12 @@
-"""Ретроактивное дополнение DME-данных за месяц.
+"""Ретроактивное дополнение данных за месяц (все 3 аэропорта).
 
-Обновляет существующие CSV в data/daily/ двумя способами:
-  1. Обогащение гейтами из имеющихся gate_snapshots (без сетевых запросов)
-  2. Добавление пропущенных рейсов из исторического Яндекс.Расписания (бесплатно)
+Обновляет существующие CSV в data/daily/ без затрат бюджета AeroDataBox:
+  1. Добор РЕЙСОВ из снапшота живого табло по SVO/VKO/DME (то, что
+     AeroDataBox не отдал — напр. при частичном сборе дня или пропуске
+     аэропорта из-за исчерпания бюджета). Кодшеринги склеиваются в одну
+     строку — логика общая с daily_fetch (add_missing_flights_from_snapshot).
+  2. Обогащение гейтами DME из имеющихся gate_snapshots.
+  3. Добавление пропущенных рейсов DME из исторического Яндекс.Расписания.
 
 НОЛЬ затрат бюджета AeroDataBox. Перезаписывает CSV только если что-то изменилось.
 
@@ -15,8 +19,8 @@
   Через GitHub Actions: Actions → «Бэкфилл DME» → Run workflow
   Вручную из корня репо: python scripts/backfill_dme.py
 
-Пример ручного запуска за конкретный диапазон:
-  BACKFILL_FROM=2026-06-01 BACKFILL_TO=2026-06-21 python scripts/backfill_dme.py
+Пример: перегнать весь июнь одним разом
+  BACKFILL_MONTH=2026-06 python scripts/backfill_dme.py
 """
 from __future__ import annotations
 
@@ -35,10 +39,15 @@ if str(_ROOT) not in sys.path:
 import httpx
 
 from src.config import DAILY_DIR
-from src.daily_fetch import fill_dme_gates, write_csv
+from src.daily_fetch import (
+    fill_dme_gates, write_csv, add_missing_flights_from_snapshot,
+)
 from src.utils import get_logger
 
 log = get_logger("backfill_dme")
+
+# Аэропорты, для которых пробуем добор рейсов из снапшота табло
+AIRPORTS_BACKFILL = ("SVO", "VKO", "DME")
 
 # Пауза между Яндекс-запросами: меньше — быстрее, но выше риск блокировки
 _YANDEX_DELAY_SEC = 4
@@ -64,6 +73,15 @@ def _prev_month() -> str:
         else f"{today.year - 1}-12"
 
 
+def _counts(rows: list[dict]) -> dict[str, int]:
+    c = {ap: 0 for ap in AIRPORTS_BACKFILL}
+    for r in rows:
+        ap = r.get("airport")
+        if ap in c:
+            c[ap] += 1
+    return c
+
+
 def backfill_day(day: date, ya_client: httpx.Client) -> tuple[int, int]:
     """Обработать один день. Возвращает (gates_filled, flights_added)."""
     from src.yandex_departures import supplement_dme
@@ -74,37 +92,45 @@ def backfill_day(day: date, ya_client: httpx.Client) -> tuple[int, int]:
         return 0, 0
 
     rows = _read_csv(csv_path)
-    dme_before = sum(1 for r in rows if r.get("airport") == "DME")
-    if dme_before == 0:
-        log.warning("[%s] Нет строк DME в CSV — пропускаем", day)
-        return 0, 0
+    before = _counts(rows)
 
-    # Шаг 1: гейты из снапшота (только файловые операции, сеть не нужна)
+    # Шаг 1: добрать РЕЙСЫ из снапшота табло по всем аэропортам
+    # (кодшеринги склеиваются, ADB-дубли не добавляются — см. daily_fetch).
+    snap_added = 0
+    for ap in AIRPORTS_BACKFILL:
+        snap_added += add_missing_flights_from_snapshot(rows, day, ap)
+
+    # Шаг 2: гейты DME из снапшота для рейсов без гейта
     gates_filled = fill_dme_gates(rows, day)
 
-    # Шаг 2: пропущенные рейсы из Яндекс.Расписания
+    # Шаг 3: пропущенные рейсы DME из Яндекс.Расписания (мелкие перевозчики)
     dme_rows = [r for r in rows if r.get("airport") == "DME"]
     try:
         new_rows = supplement_dme(dme_rows, day, client=ya_client)
     except Exception as e:
         log.warning("[%s] Яндекс не отдал данные: %s", day, e)
         new_rows = []
-
     if new_rows:
         rows.extend(new_rows)
 
-    dme_after = sum(1 for r in rows if r.get("airport") == "DME")
+    after = _counts(rows)
+    added_total = snap_added + len(new_rows)
 
-    if gates_filled or new_rows:
+    if gates_filled or added_total:
         write_csv(day, rows)
         log.info(
-            "[%s] ✓  Гейтов: +%d  Рейсов: +%d  DME: %d → %d",
-            day, gates_filled, len(new_rows), dme_before, dme_after,
+            "[%s] ✓  Гейтов +%d, из снапшота +%d, из Яндекса +%d.  "
+            "SVO %d→%d, VKO %d→%d, DME %d→%d",
+            day, gates_filled, snap_added, len(new_rows),
+            before["SVO"], after["SVO"],
+            before["VKO"], after["VKO"],
+            before["DME"], after["DME"],
         )
     else:
-        log.info("[%s] — без изменений (DME: %d)", day, dme_before)
+        log.info("[%s] — без изменений (SVO %d, VKO %d, DME %d)",
+                 day, before["SVO"], before["VKO"], before["DME"])
 
-    return gates_filled, len(new_rows)
+    return gates_filled, added_total
 
 
 def main() -> int:
@@ -123,7 +149,7 @@ def main() -> int:
         log.info("BACKFILL_MONTH не задан → беру прошлый месяц: %s", m)
         start, end = _month_range(m)
 
-    log.info("=== Backfill DME: %s — %s ===", start, end)
+    log.info("=== Backfill (SVO/VKO/DME из снапшотов): %s — %s ===", start, end)
 
     total_gates = total_flights = processed = 0
 
