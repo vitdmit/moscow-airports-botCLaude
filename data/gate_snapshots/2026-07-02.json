@@ -190,5 +190,11 @@
   "time": "10:00",
   "gate": "D14",
   "terminal": "D"
+ },
+ "3F 312|10:00": {
+  "flight": "3F 312",
+  "time": "10:00",
+  "gate": "E10",
+  "terminal": "E"
  }
 }
