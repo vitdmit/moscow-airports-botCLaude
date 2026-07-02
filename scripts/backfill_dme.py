@@ -41,6 +41,7 @@ import httpx
 from src.config import DAILY_DIR
 from src.daily_fetch import (
     fill_dme_gates, write_csv, add_missing_flights_from_snapshot,
+    enrich_from_history,
 )
 from src.utils import get_logger
 
@@ -112,6 +113,11 @@ def backfill_day(day: date, ya_client: httpx.Client) -> tuple[int, int]:
         new_rows = []
     if new_rows:
         rows.extend(new_rows)
+
+    # Шаг 4: восстановить авиакомпанию/направление у добранных из снапшота строк
+    # по истории (тот же номер рейса из других дней → тот же маршрут).
+    if snap_added:
+        enrich_from_history(rows)
 
     after = _counts(rows)
     added_total = snap_added + len(new_rows)
