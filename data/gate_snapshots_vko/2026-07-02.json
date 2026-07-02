@@ -616,5 +616,83 @@
   "time": "14:00",
   "gate": "30",
   "terminal": ""
+ },
+ "DP 115|14:05": {
+  "flight": "DP 115",
+  "time": "14:05",
+  "gate": "12A",
+  "terminal": ""
+ },
+ "ZF 3009|14:05": {
+  "flight": "ZF 3009",
+  "time": "14:05",
+  "gate": "22A",
+  "terminal": ""
+ },
+ "TK 418|14:30": {
+  "flight": "TK 418",
+  "time": "14:30",
+  "gate": "24",
+  "terminal": ""
+ },
+ "FV 6026|14:30": {
+  "flight": "FV 6026",
+  "time": "14:30",
+  "gate": "08",
+  "terminal": ""
+ },
+ "NE 643|14:45": {
+  "flight": "NE 643",
+  "time": "14:45",
+  "gate": "25",
+  "terminal": ""
+ },
+ "B2 984|14:55": {
+  "flight": "B2 984",
+  "time": "14:55",
+  "gate": "29",
+  "terminal": ""
+ },
+ "TK 3109|14:55": {
+  "flight": "TK 3109",
+  "time": "14:55",
+  "gate": "23",
+  "terminal": ""
+ },
+ "TK 3067|15:00": {
+  "flight": "TK 3067",
+  "time": "15:00",
+  "gate": "22",
+  "terminal": ""
+ },
+ "TK 3027|15:00": {
+  "flight": "TK 3027",
+  "time": "15:00",
+  "gate": "21",
+  "terminal": ""
+ },
+ "PC 389|15:05": {
+  "flight": "PC 389",
+  "time": "15:05",
+  "gate": "19",
+  "terminal": ""
+ },
+ "FV 6028|15:30": {
+  "flight": "FV 6028",
+  "time": "15:30",
+  "gate": "10",
+  "terminal": ""
+ },
+ "6R 544|15:45": {
+  "flight": "6R 544",
+  "time": "15:45",
+  "gate": "12",
+  "terminal": ""
+ },
+ "DP 189|15:55": {
+  "flight": "DP 189",
+  "time": "15:55",
+  "gate": "13A",
+  "terminal": ""
  }
 }
