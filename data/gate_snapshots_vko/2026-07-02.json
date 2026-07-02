@@ -766,5 +766,65 @@
   "time": "18:00",
   "gate": "21",
   "terminal": ""
+ },
+ "FV 6176|18:30": {
+  "flight": "FV 6176",
+  "time": "18:30",
+  "gate": "08",
+  "terminal": ""
+ },
+ "UT 275|18:35": {
+  "flight": "UT 275",
+  "time": "18:35",
+  "gate": "12",
+  "terminal": ""
+ },
+ "23 89|19:00": {
+  "flight": "23 89",
+  "time": "19:00",
+  "gate": "10A",
+  "terminal": ""
+ },
+ "A4 7035|19:00": {
+  "flight": "A4 7035",
+  "time": "19:00",
+  "gate": "11A",
+  "terminal": ""
+ },
+ "DP 967|19:00": {
+  "flight": "DP 967",
+  "time": "19:00",
+  "gate": "19A",
+  "terminal": ""
+ },
+ "DP 263|19:15": {
+  "flight": "DP 263",
+  "time": "19:15",
+  "gate": "13A",
+  "terminal": ""
+ },
+ "B2 986|19:15": {
+  "flight": "B2 986",
+  "time": "19:15",
+  "gate": "29",
+  "terminal": ""
+ },
+ "TK 416|19:25": {
+  "flight": "TK 416",
+  "time": "19:25",
+  "gate": "22",
+  "terminal": ""
+ },
+ "FV 6178|19:30": {
+  "flight": "FV 6178",
+  "time": "19:30",
+  "gate": "10",
+  "terminal": ""
+ },
+ "UT 357|19:30": {
+  "flight": "UT 357",
+  "time": "19:30",
+  "gate": "16",
+  "terminal": ""
  }
 }
