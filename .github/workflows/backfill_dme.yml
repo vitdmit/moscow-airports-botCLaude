@@ -1,6 +1,7 @@
-name: Бэкфилл DME (гейты + рейсы из Яндекса)
-# Ретроактивно дополняет CSV в data/daily/ гейтами из снапшотов
-# и рейсами из Яндекс.Расписания. Бюджет AeroDataBox НЕ расходуется.
+name: Бэкфилл DME (снапшоты, все аэропорты)
+# Ретроактивно дополняет CSV в data/daily/ рейсами и гейтами из снапшотов
+# табло по SVO/VKO/DME и рейсами DME из Яндекс.Расписания.
+# Бюджет AeroDataBox НЕ расходуется.
 # Запускать вручную: Actions → этот workflow → Run workflow.
 
 on:
@@ -18,6 +19,15 @@ on:
         description: 'До YYYY-MM-DD (используется вместе с from_date)'
         required: false
         default: ''
+
+# Сериализуем с дневным сбором (daily.yml) — общая группа записи в data/,
+# чтобы бэкфилл и дневной сбор не пушили одновременно и не роняли друг друга.
+concurrency:
+  group: airports-write
+  cancel-in-progress: false
+
+permissions:
+  contents: write
 
 jobs:
   backfill:
@@ -42,9 +52,17 @@ jobs:
       - name: Commit updated CSVs
         run: |
           git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/daily/*.csv
-          git diff --staged --quiet \
-            && echo "Нет изменений — коммит не нужен" \
-            || git commit -m "backfill: DME обновлено за ${{ github.event.inputs.month || github.event.inputs.from_date || 'прошлый месяц' }}"
-          git push
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/daily
+          if git diff --cached --quiet; then
+            echo "Нет изменений — коммит не нужен."
+            exit 0
+          fi
+          git commit -m "backfill: добор из снапшотов за ${{ github.event.inputs.month || github.event.inputs.from_date || 'прошлый месяц' }}"
+          for i in 1 2 3; do
+            git pull --rebase --autostash && git push && exit 0
+            echo "push retry $i…"
+            sleep $((RANDOM % 5 + 2))
+          done
+          echo "push failed after 3 retries" >&2
+          exit 1
