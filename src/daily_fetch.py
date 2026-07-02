@@ -146,8 +146,11 @@ def add_missing_flights_from_snapshot(rows: list[dict], day: date,
             "time": v.get("time", ""),
             "terminal": v.get("terminal", ""),
             "gate": v.get("gate", ""),
+            "destination": "",
             "flights": [],
         })
+        if not grp["destination"] and str(v.get("destination", "")).strip():
+            grp["destination"] = str(v.get("destination", "")).strip()
         if _norm_num(flight) not in {_norm_num(x) for x in grp["flights"]}:
             grp["flights"].append(flight)
 
@@ -176,6 +179,9 @@ def add_missing_flights_from_snapshot(rows: list[dict], day: date,
             "flight_numbers": ",".join(grp["flights"]),
             "destination": "",
             "destination_iata": "",
+            # Направление с доски (рус.) — запасной вариант, если по истории
+            # найти маршрут не удастся. Не пишется в CSV (extrasaction=ignore).
+            "_snap_dest": grp.get("destination", ""),
         })
         for fl in grp["flights"]:
             have_nums.add(_norm_num(fl))
@@ -243,6 +249,10 @@ def enrich_from_history(rows: list[dict]) -> int:
             m = re.match(r"^[A-Z0-9]+", first)
             if m and m.group(0) in air:
                 r["airlines"] = air[m.group(0)]
+        # запасной вариант: направление с доски (рус.), если в истории не нашли
+        if not str(r.get("destination", "")).strip() \
+                and str(r.get("_snap_dest", "")).strip():
+            r["destination"] = str(r.get("_snap_dest", "")).strip()
     if filled:
         log.info("Восстановлено направлений из истории DAILY_DIR: %d", filled)
     return filled
