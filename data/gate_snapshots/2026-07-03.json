@@ -160,5 +160,29 @@
   "time": "09:30",
   "gate": "C7",
   "terminal": "C"
+ },
+ "U6 371|09:00": {
+  "flight": "U6 371",
+  "time": "09:00",
+  "gate": "D6",
+  "terminal": "D"
+ },
+ "U6 143|09:40": {
+  "flight": "U6 143",
+  "time": "09:40",
+  "gate": "E17",
+  "terminal": "E"
+ },
+ "HH 708|09:40": {
+  "flight": "HH 708",
+  "time": "09:40",
+  "gate": "E3",
+  "terminal": "E"
+ },
+ "Y7 533|09:45": {
+  "flight": "Y7 533",
+  "time": "09:45",
+  "gate": "E7",
+  "terminal": "E"
  }
 }
