@@ -1,8 +1,12 @@
 name: Daily fetch (AeroDataBox)
 
 # Раз в сутки. Берём ПОЗАВЧЕРАШНИЙ день: к утру данные FIDS по всем
-# аэропортам уже полностью наполнены (DME дозревает до суток). Запуск в
-# 06:00 UTC = 09:00 МСК — время некритично, данные давно готовы.
+# аэропортам уже полностью наполнены. Запуск в 06:00 UTC = 09:00 МСК.
+#
+# ИЗМЕНЕНИЕ 2026-07: после сбора идёт проверка полноты последних 14 дней
+# против медианы дня недели + автодосбор до 2 дырявых дней за запуск.
+# Если после этого неполные дни остались — workflow становится КРАСНЫМ
+# (GitHub пришлёт письмо), но собранные данные всё равно закоммичены.
 on:
   schedule:
     - cron: "0 6 * * *"
@@ -23,7 +27,7 @@ permissions:
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -40,6 +44,11 @@ jobs:
           AERODATABOX_KEY: ${{ secrets.AERODATABOX_KEY }}
           FETCH_DATE: ${{ github.event.inputs.fetch_date }}
         run: python -m src.daily_fetch
+
+      - name: Completeness check + auto-heal
+        env:
+          AERODATABOX_KEY: ${{ secrets.AERODATABOX_KEY }}
+        run: python -m src.completeness_check
 
       - name: Commit daily CSV
         run: |
@@ -58,3 +67,12 @@ jobs:
           done
           echo "push failed after 3 retries" >&2
           exit 1
+
+      - name: Alarm if incomplete days remain
+        run: |
+          if [ -f /tmp/completeness_flag.txt ]; then
+            echo "ОСТАЛИСЬ НЕПОЛНЫЕ ДНИ:"
+            cat /tmp/completeness_flag.txt
+            exit 1
+          fi
+          echo "Полнота в норме."

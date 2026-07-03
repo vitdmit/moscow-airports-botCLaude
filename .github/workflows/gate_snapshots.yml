@@ -18,6 +18,9 @@ concurrency:
   group: gate-snapshots
   cancel-in-progress: false
 
+permissions:
+  contents: write
+
 jobs:
   snapshot:
     runs-on: ubuntu-latest
