@@ -490,5 +490,11 @@
   "time": "10:00",
   "gate": "11A",
   "terminal": ""
+ },
+ "NE 645|08:35": {
+  "flight": "NE 645",
+  "time": "08:35",
+  "gate": "26",
+  "terminal": ""
  }
 }
