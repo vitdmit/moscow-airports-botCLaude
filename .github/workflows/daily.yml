@@ -48,13 +48,14 @@ jobs:
       - name: Completeness check + auto-heal
         env:
           AERODATABOX_KEY: ${{ secrets.AERODATABOX_KEY }}
+          FETCH_DATE: ${{ github.event.inputs.fetch_date }}
         run: python -m src.completeness_check
 
       - name: Commit daily CSV
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/daily data/aerodatabox_usage.json
+          git add data/daily data/aerodatabox_usage.json data/completeness_exceptions.json
           if git diff --cached --quiet; then
             echo "Нет изменений для коммита."
             exit 0
@@ -71,8 +72,8 @@ jobs:
       - name: Alarm if incomplete days remain
         run: |
           if [ -f /tmp/completeness_flag.txt ]; then
-            echo "ОСТАЛИСЬ НЕПОЛНЫЕ ДНИ:"
+            echo "НОВЫЕ НЕПОЛНЫЕ ДНИ (пересоберутся в следующих запусках):"
             cat /tmp/completeness_flag.txt
             exit 1
           fi
-          echo "Полнота в норме."
+          echo "Полнота в норме (известные дыры источника: data/completeness_exceptions.json)."
