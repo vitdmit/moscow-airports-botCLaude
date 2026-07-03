@@ -38,7 +38,7 @@ AIRPORTS = ("SVO", "VKO", "DME")
 # заблокировать). Штатный расход: 9 запросов/день * ~30 = 270, плюс запас на
 # ручные пересборы. Счётчик считает по календарному месяцу и сам обнуляется
 # 1-го числа (см. _month() / remaining_budget()).
-MONTHLY_BUDGET = 700
+MONTHLY_BUDGET = 650
 USAGE_FILE = DATA_DIR / "aerodatabox_usage.json"
 
 DEPARTED_STATUSES = {"departed", "enroute", "arrived"}
@@ -519,15 +519,12 @@ def fetch_airport_day(api_key: str, airport: str, day: date,
         (d0, d0 + timedelta(hours=12)),
         (d0 + timedelta(hours=12), d0 + timedelta(hours=24)),
     ]
-    # окно 3 добавляем, только если (day+1) уже завершился (день <= позавчера
-    # относительно сегодняшней даты MSK)
-    today_msk = datetime.now(tz=timezone(timedelta(hours=3))).date()
-    if (day + timedelta(days=1)) < today_msk:
-        windows.append((d0 + timedelta(hours=24), d0 + timedelta(hours=30)))
-    else:
-        log.info("[%s] %s: окно утра след. дня пропущено (день ещё не "
-                 "завершён в истории; хвост соберётся при сборе %s)",
-                 airport, day, day + timedelta(days=1))
+    # ИЗМЕНЕНИЕ 2026-07: окно 3 ((day+1) 00:00-06:00) убрано. Его строки имеют
+    # плановую дату day+1 и ПОЛНОСТЬЮ отбрасывались фильтром ниже
+    # (kept = flight_date == day) — то есть 3 запроса/день (~90/мес, треть
+    # штатного расхода) тратились впустую. День рейса определяется по
+    # ПЛАНОВОЙ дате — так же, как в ручном учёте коллег, поэтому окон 1-2
+    # достаточно: они покрывают все плановые времена суток day.
     payloads = []
     empty_windows = 0
     for idx, (f, t) in enumerate(windows):
