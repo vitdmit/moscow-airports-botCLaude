@@ -766,5 +766,53 @@
   "time": "18:00",
   "gate": "26",
   "terminal": ""
+ },
+ "FV 6176|18:30": {
+  "flight": "FV 6176",
+  "time": "18:30",
+  "gate": "08",
+  "terminal": ""
+ },
+ "DP 263|18:50": {
+  "flight": "DP 263",
+  "time": "18:50",
+  "gate": "14A",
+  "terminal": ""
+ },
+ "A4 7035|19:00": {
+  "flight": "A4 7035",
+  "time": "19:00",
+  "gate": "13",
+  "terminal": ""
+ },
+ "UT 357|19:30": {
+  "flight": "UT 357",
+  "time": "19:30",
+  "gate": "17",
+  "terminal": ""
+ },
+ "FV 6178|19:30": {
+  "flight": "FV 6178",
+  "time": "19:30",
+  "gate": "09",
+  "terminal": ""
+ },
+ "R3 474|19:30": {
+  "flight": "R3 474",
+  "time": "19:30",
+  "gate": "15",
+  "terminal": ""
+ },
+ "TK 416|19:55": {
+  "flight": "TK 416",
+  "time": "19:55",
+  "gate": "22",
+  "terminal": ""
+ },
+ "DP 729|20:00": {
+  "flight": "DP 729",
+  "time": "20:00",
+  "gate": "23A",
+  "terminal": ""
  }
 }
