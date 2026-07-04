@@ -136,5 +136,47 @@
   "time": "02:00",
   "gate": "19",
   "terminal": ""
+ },
+ "TK 3015|02:05": {
+  "flight": "TK 3015",
+  "time": "02:05",
+  "gate": "24",
+  "terminal": ""
+ },
+ "TK 3037|02:20": {
+  "flight": "TK 3037",
+  "time": "02:20",
+  "gate": "20",
+  "terminal": ""
+ },
+ "TK 422|02:25": {
+  "flight": "TK 422",
+  "time": "02:25",
+  "gate": "22",
+  "terminal": ""
+ },
+ "3F 324|02:30": {
+  "flight": "3F 324",
+  "time": "02:30",
+  "gate": "25",
+  "terminal": ""
+ },
+ "TK 3155|02:55": {
+  "flight": "TK 3155",
+  "time": "02:55",
+  "gate": "23",
+  "terminal": ""
+ },
+ "TK 3007|03:50": {
+  "flight": "TK 3007",
+  "time": "03:50",
+  "gate": "21",
+  "terminal": ""
+ },
+ "PC 387|04:00": {
+  "flight": "PC 387",
+  "time": "04:00",
+  "gate": "19",
+  "terminal": ""
  }
 }
