@@ -460,5 +460,35 @@
   "time": "18:35",
   "gate": "D7",
   "terminal": "D"
+ },
+ "HH 708|19:40": {
+  "flight": "HH 708",
+  "time": "19:40",
+  "gate": "E4",
+  "terminal": "E"
+ },
+ "S7 2511|19:45": {
+  "flight": "S7 2511",
+  "time": "19:45",
+  "gate": "C7",
+  "terminal": "C"
+ },
+ "U6 2771|19:45": {
+  "flight": "U6 2771",
+  "time": "19:45",
+  "gate": "E9",
+  "terminal": "E"
+ },
+ "S7 1195|19:45": {
+  "flight": "S7 1195",
+  "time": "19:45",
+  "gate": "C4",
+  "terminal": "C"
+ },
+ "U6 93|19:45": {
+  "flight": "U6 93",
+  "time": "19:45",
+  "gate": "D14",
+  "terminal": "D"
  }
 }
