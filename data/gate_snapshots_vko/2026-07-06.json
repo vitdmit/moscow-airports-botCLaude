@@ -98,19 +98,19 @@
  "TK 3085|02:00": {
   "flight": "TK 3085",
   "time": "02:00",
-  "gate": "20",
+  "gate": "26",
   "terminal": ""
  },
  "6R 4249|00:40": {
   "flight": "6R 4249",
   "time": "00:40",
-  "gate": "12A",
+  "gate": "13",
   "terminal": ""
  },
  "7R 4249|00:40": {
   "flight": "7R 4249",
   "time": "00:40",
-  "gate": "12A",
+  "gate": "13",
   "terminal": ""
  }
 }
