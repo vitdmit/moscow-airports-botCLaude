@@ -88,5 +88,11 @@
   "time": "03:05",
   "gate": "D6",
   "terminal": "D"
+ },
+ "J2 186|00:40": {
+  "flight": "J2 186",
+  "time": "00:40",
+  "gate": "E6",
+  "terminal": "E"
  }
 }
