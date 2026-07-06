@@ -442,5 +442,65 @@
   "time": "10:00",
   "gate": "14",
   "terminal": ""
+ },
+ "UT 455|10:05": {
+  "flight": "UT 455",
+  "time": "10:05",
+  "gate": "17",
+  "terminal": ""
+ },
+ "UT 397|10:10": {
+  "flight": "UT 397",
+  "time": "10:10",
+  "gate": "10",
+  "terminal": ""
+ },
+ "UT 783|10:30": {
+  "flight": "UT 783",
+  "time": "10:30",
+  "gate": "21",
+  "terminal": ""
+ },
+ "UT 595|10:50": {
+  "flight": "UT 595",
+  "time": "10:50",
+  "gate": "13",
+  "terminal": ""
+ },
+ "KA 556|10:55": {
+  "flight": "KA 556",
+  "time": "10:55",
+  "gate": "26",
+  "terminal": ""
+ },
+ "X1 2274|10:55": {
+  "flight": "X1 2274",
+  "time": "10:55",
+  "gate": "26",
+  "terminal": ""
+ },
+ "DV 802|11:00": {
+  "flight": "DV 802",
+  "time": "11:00",
+  "gate": "18",
+  "terminal": ""
+ },
+ "DP 963|11:00": {
+  "flight": "DP 963",
+  "time": "11:00",
+  "gate": "26A",
+  "terminal": ""
+ },
+ "UT 295|11:30": {
+  "flight": "UT 295",
+  "time": "11:30",
+  "gate": "11",
+  "terminal": ""
+ },
+ "A9 935|12:00": {
+  "flight": "A9 935",
+  "time": "12:00",
+  "gate": "30",
+  "terminal": ""
  }
 }
