@@ -346,5 +346,101 @@
   "time": "08:00",
   "gate": "08",
   "terminal": ""
+ },
+ "4S 338|08:10": {
+  "flight": "4S 338",
+  "time": "08:10",
+  "gate": "21",
+  "terminal": ""
+ },
+ "A4 7009|08:40": {
+  "flight": "A4 7009",
+  "time": "08:40",
+  "gate": "22A",
+  "terminal": ""
+ },
+ "4G 259|08:50": {
+  "flight": "4G 259",
+  "time": "08:50",
+  "gate": "10A",
+  "terminal": ""
+ },
+ "HY 9628|09:05": {
+  "flight": "HY 9628",
+  "time": "09:05",
+  "gate": "24",
+  "terminal": ""
+ },
+ "B2 982|09:10": {
+  "flight": "B2 982",
+  "time": "09:10",
+  "gate": "29",
+  "terminal": ""
+ },
+ "DP 735|09:20": {
+  "flight": "DP 735",
+  "time": "09:20",
+  "gate": "23A",
+  "terminal": ""
+ },
+ "3F 322|09:40": {
+  "flight": "3F 322",
+  "time": "09:40",
+  "gate": "20",
+  "terminal": ""
+ },
+ "UT 809|09:40": {
+  "flight": "UT 809",
+  "time": "09:40",
+  "gate": "25",
+  "terminal": ""
+ },
+ "A4 7053|09:45": {
+  "flight": "A4 7053",
+  "time": "09:45",
+  "gate": "18A",
+  "terminal": ""
+ },
+ "DV 810|09:50": {
+  "flight": "DV 810",
+  "time": "09:50",
+  "gate": "19",
+  "terminal": ""
+ },
+ "UT 575|09:50": {
+  "flight": "UT 575",
+  "time": "09:50",
+  "gate": "15",
+  "terminal": ""
+ },
+ "HY 9620|09:50": {
+  "flight": "HY 9620",
+  "time": "09:50",
+  "gate": "22",
+  "terminal": ""
+ },
+ "R3 473|09:50": {
+  "flight": "R3 473",
+  "time": "09:50",
+  "gate": "12",
+  "terminal": ""
+ },
+ "UT 745|09:50": {
+  "flight": "UT 745",
+  "time": "09:50",
+  "gate": "24",
+  "terminal": ""
+ },
+ "UT 463|10:00": {
+  "flight": "UT 463",
+  "time": "10:00",
+  "gate": "16",
+  "terminal": ""
+ },
+ "UT 373|10:00": {
+  "flight": "UT 373",
+  "time": "10:00",
+  "gate": "14",
+  "terminal": ""
  }
 }
