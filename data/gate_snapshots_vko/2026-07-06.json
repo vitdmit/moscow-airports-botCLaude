@@ -826,5 +826,11 @@
   "time": "21:55",
   "gate": "13A",
   "terminal": ""
+ },
+ "UT 363|20:40": {
+  "flight": "UT 363",
+  "time": "20:40",
+  "gate": "16",
+  "terminal": ""
  }
 }
