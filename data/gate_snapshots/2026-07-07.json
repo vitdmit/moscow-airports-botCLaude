@@ -388,5 +388,11 @@
   "time": "17:15",
   "gate": "C14",
   "terminal": "C"
+ },
+ "HH 708|17:30": {
+  "flight": "HH 708",
+  "time": "17:30",
+  "gate": "E4",
+  "terminal": "E"
  }
 }
