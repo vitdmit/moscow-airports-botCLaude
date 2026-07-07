@@ -400,5 +400,11 @@
   "time": "17:45",
   "gate": "D14",
   "terminal": "D"
+ },
+ "Y7 107|18:00": {
+  "flight": "Y7 107",
+  "time": "18:00",
+  "gate": "D3",
+  "terminal": "D"
  }
 }
