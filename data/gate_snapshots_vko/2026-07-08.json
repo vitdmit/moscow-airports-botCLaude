@@ -220,5 +220,47 @@
   "time": "03:50",
   "gate": "26",
   "terminal": ""
+ },
+ "TK 3029|04:05": {
+  "flight": "TK 3029",
+  "time": "04:05",
+  "gate": "23",
+  "terminal": ""
+ },
+ "TK 3121|04:10": {
+  "flight": "TK 3121",
+  "time": "04:10",
+  "gate": "24",
+  "terminal": ""
+ },
+ "0E 9151|04:50": {
+  "flight": "0E 9151",
+  "time": "04:50",
+  "gate": "13",
+  "terminal": ""
+ },
+ "UT 6315|05:00": {
+  "flight": "UT 6315",
+  "time": "05:00",
+  "gate": "14",
+  "terminal": ""
+ },
+ "PC 1457|05:30": {
+  "flight": "PC 1457",
+  "time": "05:30",
+  "gate": "21",
+  "terminal": ""
+ },
+ "A9 931|05:30": {
+  "flight": "A9 931",
+  "time": "05:30",
+  "gate": "30",
+  "terminal": ""
+ },
+ "VF 278|05:50": {
+  "flight": "VF 278",
+  "time": "05:50",
+  "gate": "24",
+  "terminal": ""
  }
 }
