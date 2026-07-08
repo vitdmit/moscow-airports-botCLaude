@@ -550,5 +550,11 @@
   "time": "22:00",
   "gate": "E18",
   "terminal": "E"
+ },
+ "I8 308|21:10": {
+  "flight": "I8 308",
+  "time": "21:10",
+  "gate": "C4",
+  "terminal": "C"
  }
 }
