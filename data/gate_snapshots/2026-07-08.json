@@ -122,7 +122,19 @@
  "S7 1003|09:30": {
   "flight": "S7 1003",
   "time": "09:30",
-  "gate": "C6",
+  "gate": "C12",
   "terminal": "C"
+ },
+ "Y7 105|09:50": {
+  "flight": "Y7 105",
+  "time": "09:50",
+  "gate": "D7",
+  "terminal": "D"
+ },
+ "S7 3749|09:55": {
+  "flight": "S7 3749",
+  "time": "09:55",
+  "gate": "E19",
+  "terminal": "E"
  }
 }
