@@ -572,13 +572,13 @@
  "X1 2272|12:00": {
   "flight": "X1 2272",
   "time": "12:00",
-  "gate": "25",
+  "gate": "25A",
   "terminal": ""
  },
  "KA 504|12:00": {
   "flight": "KA 504",
   "time": "12:00",
-  "gate": "25",
+  "gate": "25A",
   "terminal": ""
  }
 }
