@@ -8,13 +8,13 @@
  "DP 433|23:45": {
   "flight": "DP 433",
   "time": "23:45",
-  "gate": "14A",
+  "gate": "12A",
   "terminal": ""
  },
  "DP 1435|23:55": {
   "flight": "DP 1435",
   "time": "23:55",
-  "gate": "08",
+  "gate": "13A",
   "terminal": ""
  },
  "NE 641|00:15": {
@@ -945,6 +945,108 @@
   "flight": "DP 205",
   "time": "21:55",
   "gate": "11A",
+  "terminal": ""
+ },
+ "A4 7071|22:05": {
+  "flight": "A4 7071",
+  "time": "22:05",
+  "gate": "26",
+  "terminal": ""
+ },
+ "NE 647|22:05": {
+  "flight": "NE 647",
+  "time": "22:05",
+  "gate": "27",
+  "terminal": ""
+ },
+ "HY 9616|22:20": {
+  "flight": "HY 9616",
+  "time": "22:20",
+  "gate": "25",
+  "terminal": ""
+ },
+ "UT 807|22:25": {
+  "flight": "UT 807",
+  "time": "22:25",
+  "gate": "29A",
+  "terminal": ""
+ },
+ "FV 6184|22:30": {
+  "flight": "FV 6184",
+  "time": "22:30",
+  "gate": "09",
+  "terminal": ""
+ },
+ "R3 687|22:40": {
+  "flight": "R3 687",
+  "time": "22:40",
+  "gate": "16A",
+  "terminal": ""
+ },
+ "DP 713|22:55": {
+  "flight": "DP 713",
+  "time": "22:55",
+  "gate": "24A",
+  "terminal": ""
+ },
+ "TK 3121|23:00": {
+  "flight": "TK 3121",
+  "time": "23:00",
+  "gate": "18",
+  "terminal": ""
+ },
+ "NE 603|23:15": {
+  "flight": "NE 603",
+  "time": "23:15",
+  "gate": "24",
+  "terminal": ""
+ },
+ "FV 6186|23:30": {
+  "flight": "FV 6186",
+  "time": "23:30",
+  "gate": "10",
+  "terminal": ""
+ },
+ "DV 814|23:40": {
+  "flight": "DV 814",
+  "time": "23:40",
+  "gate": "19",
+  "terminal": ""
+ },
+ "DP 413|23:45": {
+  "flight": "DP 413",
+  "time": "23:45",
+  "gate": "15A",
+  "terminal": ""
+ },
+ "S7 4141|23:50": {
+  "flight": "S7 4141",
+  "time": "23:50",
+  "gate": "25",
+  "terminal": ""
+ },
+ "J2 806|23:50": {
+  "flight": "J2 806",
+  "time": "23:50",
+  "gate": "25",
+  "terminal": ""
+ },
+ "PC 1581|23:50": {
+  "flight": "PC 1581",
+  "time": "23:50",
+  "gate": "21",
+  "terminal": ""
+ },
+ "UT 559|23:55": {
+  "flight": "UT 559",
+  "time": "23:55",
+  "gate": "16A",
+  "terminal": ""
+ },
+ "A4 7207|23:55": {
+  "flight": "A4 7207",
+  "time": "23:55",
+  "gate": "22A",
   "terminal": ""
  }
 }
