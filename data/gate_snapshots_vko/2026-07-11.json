@@ -484,5 +484,11 @@
   "time": "10:00",
   "gate": "16",
   "terminal": ""
+ },
+ "NE 647|09:30": {
+  "flight": "NE 647",
+  "time": "09:30",
+  "gate": "22A",
+  "terminal": ""
  }
 }
