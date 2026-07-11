@@ -380,13 +380,34 @@ def supplement_dme_from_yandex(all_rows: list[dict], day: date,
         return 0
 
 
+# Порядок аэропортов в итоговом CSV — как в AIRPORTS (SVO, VKO, DME)
+_AIRPORT_ORDER = {ap: i for i, ap in enumerate(AIRPORTS)}
+
+
+def _sort_key(r: dict) -> tuple:
+    """Ключ сортировки строк CSV: аэропорт (SVO→VKO→DME), время, терминал, гейт.
+
+    ИСПРАВЛЕНИЕ 2026-07-11: строки, добавленные ПОСЛЕ основного сбора
+    (Яндекс-дополнение DME, само-лечение из снапшотов), раньше просто
+    дописывались в конец файла — внизу возникал второй блок SVO/VKO/DME
+    вперемешку. Теперь перед записью весь файл сортируется единообразно.
+    Ни одна строка при сортировке не теряется и не меняется.
+    """
+    return (
+        _AIRPORT_ORDER.get(str(r.get("airport", "")), 99),
+        str(r.get("scheduled_time", "")),
+        str(r.get("terminal", "")),
+        str(r.get("gate", "")),
+    )
+
+
 def write_csv(day: date, rows: list[dict]) -> str:
     DAILY_DIR.mkdir(parents=True, exist_ok=True)
     path = DAILY_DIR / f"{day.isoformat()}.csv"
     with path.open("w", encoding="utf-8-sig", newline="") as f:
         w = csv.DictWriter(f, fieldnames=CSV_FIELDS, extrasaction="ignore")
         w.writeheader()
-        for r in rows:
+        for r in sorted(rows, key=_sort_key):
             w.writerow(r)
     return str(path)
 
@@ -486,6 +507,17 @@ def main() -> int:
             snap_added[ap] = n
     if snap_added:
         log.info("Добрано из снапшотов табло (само-лечение): %s", snap_added)
+    # СТРАХОВКА 2026-07-11: если снапшот добрал слишком много — ADB отдал день
+    # частично (как DME 2026-07-09: 27 от ADB + 81 из снапшота). Счёт строк
+    # при этом нормальный и completeness_check дыру не видит. Кричим в лог:
+    # такие дни стоит пересобрать вручную (FETCH_DATE), у добранных строк
+    # нет actual_time.
+    for ap, n in snap_added.items():
+        n_adb = by_airport.get(ap, 0)
+        if n > 25 or (n_adb and n > n_adb):
+            log.error("СТРАХОВКА: [%s] само-лечение добрало %d строк при %d "
+                      "от ADB — день пришёл частичным. Пересобери вручную: "
+                      "Run workflow c FETCH_DATE=%s.", ap, n, n_adb, day)
 
     # Шаг 4: восстановить авиакомпанию/направление у добранных строк по истории
     # (в снапшоте их нет — берём по номеру рейса из уже собранных дней).
