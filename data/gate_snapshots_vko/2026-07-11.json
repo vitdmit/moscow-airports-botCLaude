@@ -490,5 +490,89 @@
   "time": "09:30",
   "gate": "22A",
   "terminal": ""
+ },
+ "UT 455|10:05": {
+  "flight": "UT 455",
+  "time": "10:05",
+  "gate": "11A",
+  "terminal": ""
+ },
+ "UT 397|10:10": {
+  "flight": "UT 397",
+  "time": "10:10",
+  "gate": "17",
+  "terminal": ""
+ },
+ "J2 5829|10:20": {
+  "flight": "J2 5829",
+  "time": "10:20",
+  "gate": "19",
+  "terminal": ""
+ },
+ "UT 783|10:30": {
+  "flight": "UT 783",
+  "time": "10:30",
+  "gate": "20",
+  "terminal": ""
+ },
+ "FV 6004|10:30": {
+  "flight": "FV 6004",
+  "time": "10:30",
+  "gate": "08",
+  "terminal": ""
+ },
+ "UT 249|10:35": {
+  "flight": "UT 249",
+  "time": "10:35",
+  "gate": "11",
+  "terminal": ""
+ },
+ "0E 9151|10:40": {
+  "flight": "0E 9151",
+  "time": "10:40",
+  "gate": "13",
+  "terminal": ""
+ },
+ "TC 423|10:40": {
+  "flight": "TC 423",
+  "time": "10:40",
+  "gate": "22",
+  "terminal": ""
+ },
+ "6R 623|11:00": {
+  "flight": "6R 623",
+  "time": "11:00",
+  "gate": "15",
+  "terminal": ""
+ },
+ "DP 835|11:00": {
+  "flight": "DP 835",
+  "time": "11:00",
+  "gate": "23A",
+  "terminal": ""
+ },
+ "23 89|11:15": {
+  "flight": "23 89",
+  "time": "11:15",
+  "gate": "10A",
+  "terminal": ""
+ },
+ "FV 6006|11:30": {
+  "flight": "FV 6006",
+  "time": "11:30",
+  "gate": "09",
+  "terminal": ""
+ },
+ "UT 295|11:30": {
+  "flight": "UT 295",
+  "time": "11:30",
+  "gate": "14",
+  "terminal": ""
+ },
+ "A9 935|12:00": {
+  "flight": "A9 935",
+  "time": "12:00",
+  "gate": "30",
+  "terminal": ""
  }
 }
