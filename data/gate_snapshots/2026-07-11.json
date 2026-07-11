@@ -76,5 +76,17 @@
   "time": "08:35",
   "gate": "C12",
   "terminal": "C"
+ },
+ "U6 2141|08:30": {
+  "flight": "U6 2141",
+  "time": "08:30",
+  "gate": "E9",
+  "terminal": "E"
+ },
+ "HH 702|08:35": {
+  "flight": "HH 702",
+  "time": "08:35",
+  "gate": "E3",
+  "terminal": "E"
  }
 }
