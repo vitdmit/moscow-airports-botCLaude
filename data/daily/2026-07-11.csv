@@ -118,7 +118,7 @@ SVO,2026-07-11,08:50,08:50,B,123,"Rossiya,Aeroflot","FV 6415,SU 6415",Volgograd,
 SVO,2026-07-11,08:50,09:39,D,3,Pobeda,DP 6807,Cheboksary,CSY
 SVO,2026-07-11,08:55,09:01,B,104,Aeroflot,SU 1538,Tomsk,TOF
 SVO,2026-07-11,08:55,08:49,D,14,Smartavia,5N 251,Kaliningrad,KGD
-SVO,2026-07-11,09:00,09:00,B,101,"Rossiya,Aeroflot","FV 6167,SU 6167,SU 6801",Saint-Petersburg,LED
+SVO,2026-07-11,09:00,09:00,B,101,"Rossiya,Aeroflot","FV 6167,SU 6801,SU 6167",Saint-Petersburg,LED
 SVO,2026-07-11,09:05,09:03,B,106,"Rossiya,Aeroflot","FV 6529,SU 6529",Nizhnekamsk,NBC
 SVO,2026-07-11,09:05,10:40,D,13,Pobeda,DP 6905,Vladikavkaz,OGZ
 SVO,2026-07-11,09:10,09:02,C,142,Aeroflot,SU 1830,Minsk,MSQ
@@ -498,7 +498,7 @@ VKO,2026-07-11,10:30,10:51,A,20,UTAir,UT 783,Antalya,AYT
 VKO,2026-07-11,10:35,11:53,A,11,"UTAir,Alrosa,RusLine","UT 249,6R 4249,7R 4249",Sochi,AER
 VKO,2026-07-11,10:40,,,13,Северо-Запад,0E 9151,Сан-Бернардино,
 VKO,2026-07-11,10:40,10:55,A,22,Air Tanzania,TC 423,Zanzibar,ZNZ
-VKO,2026-07-11,11:00,11:14,A,15,"Alrosa,Aeroflot,RusLine,Yakutia","6R 623,SU 6014,7R 6623,R3 5623",Saint-Petersburg,LED
+VKO,2026-07-11,11:00,11:14,A,15,"Alrosa,Aeroflot,Yakutia,RusLine","6R 623,SU 6014,R3 5623,7R 6623",Saint-Petersburg,LED
 VKO,2026-07-11,11:00,18:17,A,23A,Pobeda,DP 835,Gazipaşa,GZP
 VKO,2026-07-11,11:15,11:21,A,10A,Vologda Air Company,ВГ 2389,Vologda,VGD
 VKO,2026-07-11,11:30,11:51,A,09,"Rossiya,Aeroflot","FV 6006,SU 6006",Saint-Petersburg,LED
