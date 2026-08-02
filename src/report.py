@@ -1,23 +1,30 @@
-"""Генерация Excel-отчёта загрузки гейтов: помесячно + год-к-году.
+"""Отчёт загрузки гейтов: ДВА базиса сравнения, без мешанины источников.
 
-Вкладки:
-  Сводка        — все аэропорты, рейсов по месяцам (обзор сверху).
-  SVO / VKO / DME — по каждому: терминал -> зона (МВЛ/ВВЛ) -> гейт,
-                    доля гейта внутри зоны по месяцам + Δ год-к-году.
+Проблема старой версии: доля точки считалась как «гейты точки / весь терминал»
+из единой склейки история(коллеги) + бот. У коллег в терминале учтены только
+свои гейты, у бота — все. При переходе июнь(коллеги)->июль(бот) знаменатель
+скачком менялся, и доли рушились. Плюс склейка не дедуплицировалась (пересечение
+конца июня считалось дважды).
 
-Метрика в ячейках — доля гейта внутри его (терминал, зона) за месяц, %.
-Сумма долей гейтов одной (терминал, зона) за месяц = 100%.
+Новая версия считает КАЖДУЮ метрику на одном согласованном базисе:
+
+  1. «Весь аэропорт» — только данные бота (он собирает все гейты). Доступно с
+     конца мая 2026. Доля точки = гейты точки / все рейсы терминала.
+
+  2. «Наши гейты» (как у коллег) — только гейты, которые ведут коллеги
+     (набор TRACKED). Источник по дате: где есть история коллег — берём её
+     (июнь и раньше), дальше — бот. Пересечение дат дедуплицируется в пользу
+     коллег. Доля точки = гейты точки / наши гейты терминала.
+
+Так июнь остаётся «как у коллег», а июль сравним с июнем внутри каждого базиса.
 
 Запуск:
-    python -m src.report                      # весь период
-    python -m src.report --from 2025-01 --to 2026-05
-    python -m src.report --out report.xlsx
-
-Источник — единое хранилище (история + ежедневные сборы) через analytics.load_all().
+    python -m src.report --to 2026-07
 """
 from __future__ import annotations
 
 import argparse
+import re
 from datetime import date
 
 import pandas as pd
@@ -25,333 +32,292 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
-from src.analytics import load_all
-from src.zones import zone
-from src.points import POINTS, expand_gates
+# ---- точки Винегрет (аэропорт, терминал, спецификация гейтов) --------------
+POINTS = [
+    {"point": "АБ460",      "airport": "VKO", "terminal": "A", "gates": "11-12"},
+    {"point": "Кофеин ВВЛ", "airport": "VKO", "terminal": "A", "gates": "13"},
+    {"point": "Бад",        "airport": "VKO", "terminal": "A", "gates": "15-16"},
+    {"point": "АБ99",       "airport": "VKO", "terminal": "A", "gates": "21-22"},
+    {"point": "Ачарули",    "airport": "VKO", "terminal": "A", "gates": "23-24"},
+    {"point": "Бир3/Кофеин МВЛ", "airport": "VKO", "terminal": "A", "gates": "24-25"},
+    {"point": "Баттерфляй", "airport": "DME", "terminal": "C", "gates": "C5-C7"},
+    {"point": "АБ131",      "airport": "DME", "terminal": "D", "gates": "D3-D8"},
+    {"point": "Гурмэ Т2",   "airport": "DME", "terminal": "E", "gates": "E13,E14"},
+    {"point": "Гурмэ В",    "airport": "SVO", "terminal": "B", "gates": "117-121"},
+    {"point": "АБ600",      "airport": "SVO", "terminal": "D", "gates": "D14-D17"},
+]
 
+# ---- гейты, которые ведут коллеги (канонические ключи) ---------------------
+# Знаменатель базиса «наши гейты». Меняются редко; при добавлении коллегами
+# нового гейта — дописать сюда.
+TRACKED = {
+    "VKO": {"11", "12", "13", "15", "16", "18", "19", "20",
+            "21", "22", "23", "24", "25"},
+    "DME": {"C3", "C4", "C5", "C6", "C7", "C8", "C12", "C13", "C14", "C15",
+            "C16", "C17", "C18", "C19", "D3", "D4", "D5", "D6", "D7", "D8",
+            "D9", "D10", "D11", "D13", "D14", "D16", "D17",
+            "E8", "E9", "E10", "E12", "E13", "E14"},
+    "SVO": {"117", "118", "119", "120", "121",
+            "124", "125", "126", "127", "128", "129", "130", "131", "132",
+            "133", "134", "135", "136", "137", "138", "139", "140", "141",
+            "142", "143", "144", "145", "146", "D14", "D15", "D16", "D17"},
+}
+
+
+def canon_gate(airport: str, terminal, gate) -> str | None:
+    """Единый ключ гейта для бота и коллег.
+    VKO: только цифры (11A и 11 -> '11', '08' -> '8').
+    SVO: гейты терминала D 14-17 и 'D14' -> 'D14'; прочие цифры -> число;
+         диапазонные ярлыки коллег ('124-129,134-139') остаются как есть.
+    DME: 'C5','D3','E13' как есть (uppercase)."""
+    if gate is None:
+        return None
+    g = str(gate).strip().upper()
+    if g in ("", "—", "-", "NONE", "NAN"):
+        return None
+    t = str(terminal or "").strip().upper()
+    if airport == "VKO":
+        d = "".join(ch for ch in g if ch.isdigit())
+        return str(int(d)) if d else None
+    if airport == "SVO":
+        m = re.match(r"^D0*(\d+)$", g)
+        if m:
+            return "D" + m.group(1)
+        if g.isdigit():
+            n = int(g)
+            if t == "D" and n in (14, 15, 16, 17):
+                return "D" + str(n)
+            return str(n)
+        return g
+    return g
+
+
+def _canon_num(prefix: str, num: int) -> str:
+    return f"{prefix.upper()}{num}"
+
+
+def expand_spec(spec: str) -> set[str]:
+    """Спецификацию точки ('11-12','C5-C7','D14-D17','E13,E14','13') развернуть
+    в множество канонических ключей."""
+    out: set[str] = set()
+    for tok in str(spec).split(","):
+        tok = tok.strip().upper()
+        if not tok:
+            continue
+        if "-" in tok:
+            a, b = tok.split("-", 1)
+            ma = re.match(r"^([A-ZА-Я]*)0*(\d+)[A-ZА-Я]?$", a)
+            mb = re.match(r"^([A-ZА-Я]*)0*(\d+)[A-ZА-Я]?$", b)
+            if not ma or not mb:
+                continue
+            prefix = ma.group(1) or mb.group(1)
+            lo, hi = sorted([int(ma.group(2)), int(mb.group(2))])
+            for n in range(lo, hi + 1):
+                out.add(_canon_num(prefix, n))
+        else:
+            m = re.match(r"^([A-ZА-Я]*)0*(\d+)[A-ZА-Я]?$", tok)
+            if m:
+                out.add(_canon_num(m.group(1), int(m.group(2))))
+    return out
+
+
+POINT_GATES = {p["point"]: expand_spec(p["gates"]) for p in POINTS}
+
+# ---- стили -----------------------------------------------------------------
 FONT = "Arial"
 HDR_FILL = PatternFill("solid", fgColor="1F4E78")
 HDR_FONT = Font(FONT, bold=True, color="FFFFFF", size=10)
-SUB_FILL = PatternFill("solid", fgColor="D9E1F2")
-ZONE_FILL = PatternFill("solid", fgColor="E2EFDA")
-TOTAL_FILL = PatternFill("solid", fgColor="FCE4D6")
-TITLE_FONT = Font(FONT, bold=True, size=14, color="1F4E78")
+TITLE_FONT = Font(FONT, bold=True, size=13, color="1F4E78")
 BASE = Font(FONT, size=10)
 BOLD = Font(FONT, bold=True, size=10)
 GREY = Font(FONT, size=9, color="808080")
+GREEN = Font(FONT, size=10, bold=True, color="006100")
+RED = Font(FONT, size=10, bold=True, color="9C0006")
 THIN = Side(style="thin", color="D0D0D0")
 BORDER = Border(THIN, THIN, THIN, THIN)
 CENTER = Alignment(horizontal="center", vertical="center")
-LEFT = Alignment(horizontal="left", vertical="center")
 
 
-def _prep(df: pd.DataFrame, dfrom: str | None, dto: str | None) -> pd.DataFrame:
+def _prep(df: pd.DataFrame, dfrom, dto) -> pd.DataFrame:
     d = df.copy()
+    d["flight_date"] = pd.to_datetime(d["flight_date"], errors="coerce")
+    d = d[d["flight_date"].notna()].copy()
     d["ym"] = d["flight_date"].dt.strftime("%Y-%m")
     if dfrom:
         d = d[d["ym"] >= dfrom]
     if dto:
         d = d[d["ym"] <= dto]
-    d["zone"] = d["destination"].apply(zone)
-    d["gate"] = d["gate"].fillna("—").astype(str).str.strip().replace("", "—")
-    d["terminal"] = d["terminal"].fillna("—").astype(str).str.strip().replace("", "—")
+    d["airport"] = d["airport"].astype(str).str.strip()
+    d["terminal"] = d["terminal"].fillna("").astype(str).str.strip()
+    if "src" not in d.columns:
+        d["src"] = "daily"
+    d["cgate"] = [canon_gate(a, t, g)
+                  for a, t, g in zip(d["airport"], d["terminal"], d["gate"])]
+    d["daykey"] = d["airport"] + "|" + d["flight_date"].dt.strftime("%Y-%m-%d")
     return d
 
 
-def _style_header(ws, row, headers, start_col=1):
-    for i, h in enumerate(headers):
-        c = ws.cell(row, start_col + i, h)
-        c.fill = HDR_FILL
-        c.font = HDR_FONT
-        c.border = BORDER
-        c.alignment = CENTER
+def _whole(d: pd.DataFrame) -> pd.DataFrame:
+    """Базис «весь аэропорт»: только бот."""
+    return d[d["src"] == "daily"].copy()
 
 
-def build_summary(wb, d):
+def _tracked(d: pd.DataFrame) -> pd.DataFrame:
+    """Базис «наши гейты»: коллеги где есть (по дате), иначе бот, только гейты
+    из TRACKED. Пересечение дат — в пользу коллег (дедуп)."""
+    hist_days = set(d.loc[d["src"] == "history", "daykey"])
+    keep = ~((d["src"] == "daily") & (d["daykey"].isin(hist_days)))
+    d = d[keep].copy()
+    ok = [src == "history" or cg in TRACKED.get(ap, set())
+          for ap, cg, src in zip(d["airport"], d["cgate"], d["src"])]
+    return d[pd.Series(ok, index=d.index)].copy()
+
+
+def _full_months(d: pd.DataFrame, min_days: int = 26) -> list[str]:
+    g = d.groupby("ym")["flight_date"].apply(lambda s: s.dt.date.nunique())
+    return sorted([m for m, n in g.items() if n >= min_days])
+
+
+# ---- Сводка ----------------------------------------------------------------
+def build_summary(wb, whole, tracked):
     ws = wb.active
     ws.title = "Сводка"
-    ws.cell(1, 1, "Загрузка гейтов московских аэропортов — сводка по месяцам").font = TITLE_FONT
-    ws.cell(2, 1, "Рейсов (фактически вылетевших) по аэропортам и месяцам. "
-                  "Деление на зоны и гейты — на отдельных вкладках.").font = GREY
-
-    months = sorted(d["ym"].unique())
-    piv = d.pivot_table(index="airport", columns="ym", values="gate",
-                        aggfunc="count", fill_value=0)
-    piv = piv.reindex(columns=months, fill_value=0)
-
-    r0 = 4
-    _style_header(ws, r0, ["Аэропорт"] + months)
-    airports = [a for a in ["SVO", "VKO", "DME"] if a in piv.index]
-    for i, ap in enumerate(airports):
-        r = r0 + 1 + i
-        c = ws.cell(r, 1, ap)
-        c.font = BOLD
-        c.border = BORDER
-        for j, m in enumerate(months):
-            cell = ws.cell(r, 2 + j, int(piv.loc[ap, m]))
-            cell.font = BASE
-            cell.border = BORDER
-            cell.alignment = CENTER
-    # строка ИТОГО формулой
-    rt = r0 + 1 + len(airports)
-    ws.cell(rt, 1, "ИТОГО").font = BOLD
-    ws.cell(rt, 1).fill = TOTAL_FILL
-    ws.cell(rt, 1).border = BORDER
-    for j in range(len(months)):
-        col = get_column_letter(2 + j)
-        cell = ws.cell(rt, 2 + j, f"=SUM({col}{r0+1}:{col}{rt-1})")
-        cell.font = BOLD
-        cell.fill = TOTAL_FILL
-        cell.border = BORDER
-        cell.alignment = CENTER
-
+    ws.cell(1, 1, "Загрузка гейтов — сводка по месяцам, два базиса").font = TITLE_FONT
+    ws.cell(2, 1, "«Весь аэропорт» — все рейсы (данные бота). «Наши гейты» — "
+                  "только гейты, что ведут коллеги (июнь и ранее — их данные, "
+                  "далее — бот). Числа несопоставимы между базисами, сопоставимы "
+                  "по месяцам внутри одного базиса.").font = GREY
+    r = 4
+    maxcols = 1
+    for title, data in [("ВЕСЬ АЭРОПОРТ (бот, все гейты)", whole),
+                        ("НАШИ ГЕЙТЫ (как у коллег)", tracked)]:
+        months = sorted(set(data["ym"]))
+        maxcols = max(maxcols, len(months))
+        ws.cell(r, 1, title).font = BOLD
+        r += 1
+        _hdr(ws, r, ["Аэропорт"] + months)
+        piv = (data.pivot_table(index="airport", columns="ym", values="cgate",
+                                aggfunc="count", fill_value=0)
+               .reindex(columns=months, fill_value=0))
+        for ap in [a for a in ["SVO", "VKO", "DME"] if a in piv.index]:
+            r += 1
+            ws.cell(r, 1, ap).font = BOLD
+            ws.cell(r, 1).border = BORDER
+            for j, m in enumerate(months):
+                c = ws.cell(r, 2 + j, int(piv.loc[ap, m]))
+                c.font = BASE
+                c.border = BORDER
+                c.alignment = CENTER
+        r += 2
     ws.column_dimensions["A"].width = 12
-    for j in range(len(months)):
+    for j in range(maxcols):
         ws.column_dimensions[get_column_letter(2 + j)].width = 9
     ws.freeze_panes = "B5"
 
 
-def build_airport_sheet(wb, d, airport, n_weeks=8):
-    """Детальный лист аэропорта в формате коллег: гейты построчно,
-    сгруппированы по терминалу и зоне (ВВЛ/МВЛ). По колонкам — последние
-    n_weeks недель + все месяцы, в каждом периоде пара «кол-во | %».
-    % = доля гейта внутри (терминал, зона) за период. Снизу строка ИТОГО."""
-    sub = d[d["airport"] == airport].copy()
-    if sub.empty:
-        return
-    ws = wb.create_sheet(airport)
-    sub["week"] = sub["flight_date"].dt.strftime("%G-W%V")
-    weeks = sorted(sub["week"].unique())[-n_weeks:]
-    months = sorted(sub["ym"].unique())
-
-    ws.cell(1, 1, f"{airport} — детальная загрузка гейтов по зонам").font = TITLE_FONT
-    ws.cell(2, 1, f"Кол-во рейсов и доля гейта (%) внутри своей зоны терминала. "
-                  f"Периоды: последние {len(weeks)} недель и все месяцы. "
-                  f"Сумма % гейтов одной зоны за период = 100%.").font = GREY
-
-    # периоды: (метка, тип, значение-колонка в данных)
-    periods = [("W:" + w, "week", w) for w in weeks] + \
-              [("M:" + m, "ym", m) for m in months]
-
-    # шапка: 3 строки. R4 — группа период (merged на 2 колонки), R5 — кол-во/%
-    r_grp, r_sub, r_data = 4, 5, 6
-    ws.cell(r_grp, 1, "Терминал").font = HDR_FONT
-    ws.cell(r_grp, 1).fill = HDR_FILL
-    ws.cell(r_grp, 2, "Зона").font = HDR_FONT
-    ws.cell(r_grp, 2).fill = HDR_FILL
-    ws.cell(r_grp, 3, "Гейт").font = HDR_FONT
-    ws.cell(r_grp, 3).fill = HDR_FILL
-    for c in (1, 2, 3):
-        ws.cell(r_grp, c).alignment = CENTER
-        ws.cell(r_grp, c).border = BORDER
-        ws.merge_cells(start_row=r_grp, start_column=c, end_row=r_sub, end_column=c)
-    col = 4
-    for label, _, _ in periods:
-        nice = label[2:].replace("W", "нед.") if label.startswith("W:") else label[2:]
-        ws.merge_cells(start_row=r_grp, start_column=col, end_row=r_grp, end_column=col + 1)
-        gc = ws.cell(r_grp, col, nice)
-        gc.fill = HDR_FILL; gc.font = HDR_FONT; gc.alignment = CENTER; gc.border = BORDER
-        for off, t in enumerate(["кол", "%"]):
-            sc = ws.cell(r_sub, col + off, t)
-            sc.fill = SUB_FILL; sc.font = Font(FONT, bold=True, size=8)
-            sc.alignment = CENTER; sc.border = BORDER
-        col += 2
-    last_col = col - 1
-
-    # данные: число рейсов (терминал,зона,гейт,период) и знаменатель (терминал,зона,период)
-    def counts(period_type):
-        n = sub.groupby(["terminal", "zone", "gate", period_type]).size()
-        den = sub.groupby(["terminal", "zone", period_type]).size()
-        return n, den
-    wn, wden = counts("week")
-    mn, mden = counts("ym")
-
-    row = r_data
-    zone_order = {"ВВЛ": 0, "МВЛ": 1, "?": 2}
-    for term in sorted(sub["terminal"].unique()):
-        for z in sorted(sub[sub.terminal == term]["zone"].unique(),
-                        key=lambda x: zone_order.get(x, 9)):
-            zlabel = {"ВВЛ": "Внутренние (ВВЛ)", "МВЛ": "Международные (МВЛ)",
-                      "?": "Не классиф."}.get(z, z)
-            # заголовок зоны
-            ws.cell(row, 1, f"Терм. {term}").font = BOLD
-            ws.cell(row, 2, zlabel).font = BOLD
-            for c in range(1, last_col + 1):
-                ws.cell(row, c).fill = ZONE_FILL
-            row += 1
-            zgates = sorted(sub[(sub.terminal == term) & (sub.zone == z)]["gate"].unique())
-            block_start = row
-            for gate in zgates:
-                ws.cell(row, 3, gate).font = BASE
-                ws.cell(row, 3).alignment = CENTER; ws.cell(row, 3).border = BORDER
-                c = 4
-                for label, ptype, pval in periods:
-                    if ptype == "week":
-                        cnt = int(wn.get((term, z, gate, pval), 0))
-                        den = int(wden.get((term, z, pval), 0))
-                    else:
-                        cnt = int(mn.get((term, z, gate, pval), 0))
-                        den = int(mden.get((term, z, pval), 0))
-                    pct = (cnt / den * 100) if den else 0
-                    cc = ws.cell(row, c, cnt if cnt else None)
-                    cc.font = BASE; cc.alignment = CENTER; cc.border = BORDER
-                    pc = ws.cell(row, c + 1, round(pct, 0) / 100 if cnt else None)
-                    pc.number_format = "0%"; pc.font = BASE
-                    pc.alignment = CENTER; pc.border = BORDER
-                    c += 2
-                row += 1
-            # ИТОГО зоны
-            ws.cell(row, 2, "ИТОГО зоны").font = BOLD
-            for c in range(1, last_col + 1):
-                ws.cell(row, c).fill = TOTAL_FILL
-            cc = 4
-            for label, ptype, pval in periods:
-                den = int((wden if ptype == "week" else mden).get((term, z, pval), 0))
-                tc = ws.cell(row, cc, den if den else None)
-                tc.font = BOLD; tc.alignment = CENTER; tc.border = BORDER
-                ws.cell(row, cc + 1, None).border = BORDER
-                cc += 2
-            row += 2
-
-    ws.column_dimensions["A"].width = 11
-    ws.column_dimensions["B"].width = 18
-    ws.column_dimensions["C"].width = 7
-    for c in range(4, last_col + 1):
-        ws.column_dimensions[get_column_letter(c)].width = 5.5
-    ws.freeze_panes = ws.cell(r_data, 4).coordinate
-
-
-def _point_share_series(d, point, available):
-    """Для точки: доля её гейтов внутри (терминал) по месяцам.
-    Берём долю в ТЕРМИНАЛЕ (а не зоне) — пасспоток мимо точки идёт по всему
-    терминалу независимо от направления рейса."""
-    gates = expand_gates(point["gates"], available)
-    if not gates:
-        return None, []
-    sub = d[(d.airport == point["airport"]) & (d.terminal == point["terminal"])]
-    months = sorted(sub["ym"].unique())
-    # числитель: рейсы с гейтов точки; знаменатель: рейсы терминала
-    num = (sub[sub.gate.isin(gates)].groupby("ym").size())
+# ---- Точки -----------------------------------------------------------------
+def _series(data, point):
+    """Для точки по месяцам: (кол-во рейсов на её гейтах, знаменатель терминала)."""
+    ap, term = point["airport"], point["terminal"]
+    gates = POINT_GATES[point["point"]]
+    sub = data[(data["airport"] == ap) & (data["terminal"] == term)]
+    num = sub[sub["cgate"].isin(gates)].groupby("ym").size()
     den = sub.groupby("ym").size()
-    share = (num / den * 100).reindex(months).fillna(0)
-    cnt = num.reindex(months).fillna(0).astype(int)
-    return pd.DataFrame({"ym": months,
-                         "share": share.values,
-                         "n": cnt.values}), gates
+    return num, den
 
 
-def build_points_sheet(wb, d):
-    """Фокус-вкладка: только точки Винегрет. Доля пасспотока (гейты точки в
-    терминале) по месяцам + Δ к прошлому месяцу и к тому же месяцу год назад."""
-    ws = wb.create_sheet("Точки Винегрет", 1)  # сразу после Сводки
-    ws.cell(1, 1, "Точки Винегрет — доля пасспотока по гейтам рядом с точкой").font = TITLE_FONT
-    ws.cell(2, 1, "Доля = рейсов с гейтов точки ÷ рейсов терминала за месяц. "
-                  "Δ мес — к прошлому месяцу; Δ г/г — к тому же месяцу год назад "
-                  "(процентные пункты). Это доля пасспотока мимо точки.").font = GREY
+def build_points(wb, whole, tracked):
+    ws = wb.create_sheet("Точки Винегрет", 1)
+    ws.cell(1, 1, "Точки Винегрет — доля пасспотока, два базиса").font = TITLE_FONT
+    ws.cell(2, 1, "По месяцам: рейсов на гейтах точки; доля в наших гейтах "
+                  "терминала (как у коллег); доля во всём терминале (бот). "
+                  "Δ — к прошлому полному месяцу по базису «наши гейты».").font = GREY
 
-    months_all = sorted(d["ym"].unique())
-    full = _full_months(d)
+    months = sorted(set(whole["ym"]) | set(tracked["ym"]))[-6:]
+    full = _full_months(tracked)
     last = full[-1] if full else None
     prev = full[-2] if len(full) >= 2 else None
-    yoy = None
-    if last:
-        cand = f"{int(last[:4])-1}-{last[5:]}"
-        yoy = cand if cand in full else None
 
-    # последние до 6 месяцев для компактности (по всем, но неполный пометим)
-    show_months = months_all[-6:]
-    incomplete = set(months_all) - set(full)
     r0 = 4
-    headers = (["Точка", "Аэропорт", "Гейты"]
-               + [m + ("*" if m in incomplete else "") for m in show_months]
-               + ["Δ мес, пп", "Δ г/г, пп"])
-    _style_header(ws, r0, headers)
+    hdr = ["Точка", "Аэр", "Гейты"]
+    for m in months:
+        hdr += [f"{m}\nрейсов", f"{m}\n%наши", f"{m}\n%всего"]
+    hdr += ["Δ наши, пп"]
+    _hdr(ws, r0, hdr)
+    ws.row_dimensions[r0].height = 26
 
-    avail = {ap: set(d[d.airport == ap].gate.dropna().astype(str))
-             for ap in ["VKO", "DME", "SVO"]}
-    row = r0 + 1
+    row = r0
     for p in POINTS:
-        series, gates = _point_share_series(d, p, avail[p["airport"]])
-        if series is None:
-            continue
-        smap = series.set_index("ym")["share"]
-        ws.cell(row, 1, p["point"]).font = BOLD
-        ws.cell(row, 1).border = BORDER
-        ws.cell(row, 2, p["airport"]).font = BASE
-        ws.cell(row, 2).border = BORDER; ws.cell(row, 2).alignment = CENTER
-        gc = ws.cell(row, 3, ",".join(gates))
-        gc.font = Font(FONT, size=8); gc.border = BORDER
-        for j, m in enumerate(show_months):
-            v = smap.get(m, 0)
-            cell = ws.cell(row, 4 + j, round(v, 1) if v else None)
-            cell.number_format = '0.0"%"'; cell.font = BASE
-            cell.border = BORDER; cell.alignment = CENTER
-        # Δ месяц
-        cm = 4 + len(show_months)
-        dmes = (smap.get(last, 0) - smap.get(prev, 0)) if (last and prev) else None
-        dyoy = (smap.get(last, 0) - smap.get(yoy, 0)) if (last and yoy) else None
-        for off, val in [(0, dmes), (1, dyoy)]:
-            cell = ws.cell(row, cm + off)
-            if val is not None:
-                cell.value = round(val, 1)
-                cell.number_format = '+0.0;-0.0'
-                # подсветка значимых изменений (|Δ| >= 3 пп)
-                if val >= 3:
-                    cell.fill = PatternFill("solid", fgColor="C6EFCE")
-                    cell.font = Font(FONT, size=10, color="006100", bold=True)
-                elif val <= -3:
-                    cell.fill = PatternFill("solid", fgColor="FFC7CE")
-                    cell.font = Font(FONT, size=10, color="9C0006", bold=True)
-                else:
-                    cell.font = BASE
-            cell.border = BORDER; cell.alignment = CENTER
         row += 1
-
-    if incomplete:
-        ws.cell(row + 1, 1, "* месяц неполный (данные не за все дни) — "
-                "в расчёт Δ не берётся.").font = GREY
+        num_t, den_t = _series(tracked, p)
+        num_w, den_w = _series(whole, p)
+        ws.cell(row, 1, p["point"]).font = BOLD
+        ws.cell(row, 2, p["airport"]).font = BASE
+        ws.cell(row, 3, ",".join(sorted(POINT_GATES[p["point"]]))).font = Font(FONT, size=8)
+        for c in (1, 2, 3):
+            ws.cell(row, c).border = BORDER
+        col = 4
+        share_t = {}
+        for m in months:
+            n = int(num_t.get(m, 0))
+            dt_ = int(den_t.get(m, 0))
+            dw = int(den_w.get(m, 0))
+            nw = int(num_w.get(m, 0))
+            pt = (n / dt_ * 100) if dt_ else 0
+            pw = (nw / dw * 100) if dw else 0
+            share_t[m] = pt
+            for off, val, fmt in [(0, n or None, None),
+                                  (1, round(pt, 1) if n else None, '0.0"%"'),
+                                  (2, round(pw, 1) if nw else None, '0.0"%"')]:
+                c = ws.cell(row, col + off, val)
+                c.font = BASE
+                c.alignment = CENTER
+                c.border = BORDER
+                if fmt:
+                    c.number_format = fmt
+            col += 3
+        c = ws.cell(row, col)
+        if last and prev:
+            dv = round(share_t.get(last, 0) - share_t.get(prev, 0), 1)
+            c.value = dv
+            c.number_format = "+0.0;-0.0"
+            c.font = GREEN if dv >= 3 else RED if dv <= -3 else BASE
+        c.border = BORDER
+        c.alignment = CENTER
 
     ws.column_dimensions["A"].width = 16
-    ws.column_dimensions["B"].width = 10
-    ws.column_dimensions["C"].width = 26
-    for j in range(len(show_months)):
-        ws.column_dimensions[get_column_letter(4 + j)].width = 9
-    ws.column_dimensions[get_column_letter(4 + len(show_months))].width = 11
-    ws.column_dimensions[get_column_letter(5 + len(show_months))].width = 11
+    ws.column_dimensions["B"].width = 6
+    ws.column_dimensions["C"].width = 22
+    for j in range(len(months) * 3 + 1):
+        ws.column_dimensions[get_column_letter(4 + j)].width = 8
     ws.freeze_panes = ws.cell(r0 + 1, 4).coordinate
 
 
-def _full_months(d, min_days: int = 26) -> list[str]:
-    """Месяцы, где есть данные минимум за min_days дней — считаем полными.
-    Неполный текущий месяц (напр. 2 дня) исключаем, чтобы не искажать Δ."""
-    days = d.groupby("ym")["flight_date"].apply(lambda s: s.dt.date.nunique())
-    return sorted([m for m, n in days.items() if n >= min_days])
+def _hdr(ws, r, headers):
+    for i, h in enumerate(headers, 1):
+        c = ws.cell(r, i, h)
+        c.fill = HDR_FILL
+        c.font = HDR_FONT
+        c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+        c.border = BORDER
 
 
-def make_digest(d) -> list[str]:
-    """Краткий текстовый дайджест важных изменений по точкам за последний
-    ПОЛНЫЙ месяц. Антипод 'портянки': только значимое (|Δ| >= 3 пп)."""
-    months = _full_months(d)
-    if len(months) < 2:
+def make_digest(tracked) -> list[str]:
+    full = _full_months(tracked)
+    if len(full) < 2:
         return ["Недостаточно полных месяцев для дайджеста."]
-    last, prev = months[-1], months[-2]
-    yoy = f"{int(last[:4])-1}-{last[5:]}"
-    yoy = yoy if yoy in months else None
-    avail = {ap: set(d[d.airport == ap].gate.dropna().astype(str))
-             for ap in ["VKO", "DME", "SVO"]}
-    lines = [f"Дайджест за {last} (изменения доли пасспотока у точек):"]
+    last, prev = full[-1], full[-2]
+    lines = [f"Дайджест за {last} (доля в наших гейтах терминала, базис коллег):"]
     ups, downs = [], []
     for p in POINTS:
-        series, _ = _point_share_series(d, p, avail[p["airport"]])
-        if series is None:
-            continue
-        smap = series.set_index("ym")["share"]
-        cur = smap.get(last, 0)
-        dm = cur - smap.get(prev, 0)
-        line = f"{p['point']} ({p['airport']}): {cur:.1f}%"
+        num, den = _series(tracked, p)
+        cur = (num.get(last, 0) / den.get(last, 1) * 100) if den.get(last, 0) else 0
+        pv = (num.get(prev, 0) / den.get(prev, 1) * 100) if den.get(prev, 0) else 0
+        dm = cur - pv
         if abs(dm) >= 3:
-            arrow = "▲" if dm > 0 else "▼"
-            (ups if dm > 0 else downs).append(f"  {arrow} {line}, {dm:+.1f} пп к прошлому месяцу")
+            (ups if dm > 0 else downs).append(
+                f"  {'▲' if dm > 0 else '▼'} {p['point']} ({p['airport']}): "
+                f"{cur:.1f}%, {dm:+.1f} пп")
     if ups:
         lines.append("Рост:")
         lines += ups
@@ -359,35 +325,36 @@ def make_digest(d) -> list[str]:
         lines.append("Снижение:")
         lines += downs
     if not ups and not downs:
-        lines.append("  Существенных изменений (≥3 пп) нет — загрузка стабильна.")
+        lines.append("  Существенных изменений (≥3 пп) нет.")
     return lines
 
 
-def build_report(out_path, dfrom=None, dto=None):
-    df = load_all()
-    if df.empty:
+def build_report(out_path, dfrom=None, dto=None, _df=None):
+    if _df is None:
+        from src.analytics import load_all
+        _df = load_all()
+    if _df is None or _df.empty:
         raise SystemExit("Хранилище пусто — нет данных для отчёта.")
-    d = _prep(df, dfrom, dto)
+    d = _prep(_df, dfrom, dto)
+    whole = _whole(d)
+    tracked = _tracked(d)
     wb = Workbook()
-    build_summary(wb, d)
-    build_points_sheet(wb, d)
-    for ap in ["SVO", "VKO", "DME"]:
-        build_airport_sheet(wb, d, ap)
+    build_summary(wb, whole, tracked)
+    build_points(wb, whole, tracked)
     wb.save(out_path)
-    digest = make_digest(d)
-    info = {
-        "рейсов": len(d),
+    return {
+        "рейсов_всего": int(len(d)),
+        "рейсов_бот": int(len(whole)),
+        "рейсов_наши_гейты": int(len(tracked)),
         "период": f"{d['ym'].min()}..{d['ym'].max()}",
-        "не классифицировано (зона ?)": int((d["zone"] == "?").sum()),
-        "дайджест": digest,
+        "дайджест": make_digest(tracked),
     }
-    return info
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--from", dest="dfrom", default=None, help="с месяца YYYY-MM")
-    ap.add_argument("--to", dest="dto", default=None, help="по месяц YYYY-MM")
+    ap.add_argument("--from", dest="dfrom", default=None)
+    ap.add_argument("--to", dest="dto", default=None)
     ap.add_argument("--out", default="Загрузка_гейтов_отчет.xlsx")
     args = ap.parse_args()
     info = build_report(args.out, args.dfrom, args.dto)
