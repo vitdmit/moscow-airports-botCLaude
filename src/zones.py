@@ -173,8 +173,10 @@ LATIN = {
 }
 
 
-def _norm(name: str) -> str:
-    s = (name or "").strip().lower()
+def _norm(name) -> str:
+    if not isinstance(name, str):
+        return ""
+    s = name.strip().lower()
     s = s.replace("ё", "е")
     s = re.sub(r"\s+", " ", s)
     return s
