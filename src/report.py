@@ -227,70 +227,117 @@ def _series(data, point):
 
 
 def build_points(wb, whole, tracked):
-    ws = wb.create_sheet("Точки Винегрет", 1)
-    ws.cell(1, 1, "Точки Винегрет — доля пасспотока, два базиса").font = TITLE_FONT
-    ws.cell(2, 1, "По месяцам: рейсов на гейтах точки; доля в наших гейтах "
-                  "терминала (как у коллег); доля во всём терминале (бот). "
-                  "Δ — к прошлому полному месяцу по базису «наши гейты».").font = GREY
+    """Главный лист: загрузка НАШИХ гейтов у точек (базис коллег), динамика
+    к прошлому месяцу и к тому же месяцу год назад."""
+    ws = wb.create_sheet("Точки — динамика", 1)
+    ws.cell(1, 1, "Точки Винегрет — загрузка наших гейтов, динамика").font = TITLE_FONT
+    ws.cell(2, 1, "Базис «наши гейты» (как у коллег). Рейсы на гейтах точки за "
+                  "последний полный месяц против прошлого месяца и того же месяца "
+                  "год назад. Доля = гейты точки ÷ наши гейты терминала. "
+                  "«н/д» — гейт не вёлся у коллег в том периоде.").font = GREY
 
-    months = sorted(set(whole["ym"]) | set(tracked["ym"]))[-6:]
     full = _full_months(tracked)
-    last = full[-1] if full else None
-    prev = full[-2] if len(full) >= 2 else None
+    if not full:
+        ws.cell(4, 1, "Недостаточно полных месяцев данных.").font = BASE
+        return
+    L = full[-1]
+    P = full[-2] if len(full) >= 2 else None
+    tym = set(tracked["ym"])
+    YA = f"{int(L[:4]) - 1}-{L[5:]}"
+    YA = YA if YA in tym else None
 
     r0 = 4
-    hdr = ["Точка", "Аэр", "Гейты"]
-    for m in months:
-        hdr += [f"{m}\nрейсов", f"{m}\n%наши", f"{m}\n%всего"]
-    hdr += ["Δ наши, пп"]
-    _hdr(ws, r0, hdr)
+    _hdr(ws, r0, ["Точка", "Аэр", "Гейты точки",
+                  (YA + "\nрейсов") if YA else "год назад",
+                  (P + "\nрейсов") if P else "пр. месяц",
+                  L + "\nрейсов", "Δ мес, %", "Δ год, %", "Доля " + L])
     ws.row_dimensions[r0].height = 26
 
     row = r0
     for p in POINTS:
         row += 1
-        num_t, den_t = _series(tracked, p)
-        num_w, den_w = _series(whole, p)
-        ws.cell(row, 1, p["point"]).font = BOLD
-        ws.cell(row, 2, p["airport"]).font = BASE
-        ws.cell(row, 3, ",".join(sorted(POINT_GATES[p["point"]]))).font = Font(FONT, size=8)
-        for c in (1, 2, 3):
-            ws.cell(row, c).border = BORDER
-        col = 4
-        share_t = {}
-        for m in months:
-            n = int(num_t.get(m, 0))
-            dt_ = int(den_t.get(m, 0))
-            dw = int(den_w.get(m, 0))
-            nw = int(num_w.get(m, 0))
-            pt = (n / dt_ * 100) if dt_ else 0
-            pw = (nw / dw * 100) if dw else 0
-            share_t[m] = pt
-            for off, val, fmt in [(0, n or None, None),
-                                  (1, round(pt, 1) if n else None, '0.0"%"'),
-                                  (2, round(pw, 1) if nw else None, '0.0"%"')]:
-                c = ws.cell(row, col + off, val)
-                c.font = BASE
+        num, den = _series(tracked, p)
+        cL = int(num.get(L, 0))
+        cP = int(num.get(P, 0)) if P else 0
+        cYA = int(num.get(YA, 0)) if YA else 0
+        share = (cL / int(den.get(L, 0)) * 100) if den.get(L, 0) else 0
+        mom = (cL - cP) / cP * 100 if (P and cP) else None
+        yoy = (cL - cYA) / cYA * 100 if (YA and cYA) else None
+        vals = [p["point"], p["airport"], ",".join(sorted(POINT_GATES[p["point"]])),
+                (cYA if YA else "—"), (cP if P else "—"), cL,
+                (f"{mom:+.0f}%" if mom is not None else "н/д"),
+                (f"{yoy:+.0f}%" if yoy is not None else "н/д"),
+                round(share, 1)]
+        for i, v in enumerate(vals, 1):
+            c = ws.cell(row, i, v)
+            c.border = BORDER
+            c.font = BASE
+            if i >= 2:
                 c.alignment = CENTER
-                c.border = BORDER
-                if fmt:
-                    c.number_format = fmt
-            col += 3
-        c = ws.cell(row, col)
-        if last and prev:
-            dv = round(share_t.get(last, 0) - share_t.get(prev, 0), 1)
-            c.value = dv
-            c.number_format = "+0.0;-0.0"
-            c.font = GREEN if dv >= 3 else RED if dv <= -3 else BASE
-        c.border = BORDER
-        c.alignment = CENTER
+            if i == 1:
+                c.font = BOLD
+            if i == 3:
+                c.font = Font(FONT, size=8)
+            if i == 9:
+                c.number_format = '0.0"%"'
+            if i == 7 and mom is not None:
+                c.font = GREEN if mom >= 0 else RED
+            if i == 8 and yoy is not None:
+                c.font = GREEN if yoy >= 0 else RED
 
+    for i, w in enumerate([16, 5, 22, 11, 11, 11, 9, 9, 9], 1):
+        ws.column_dimensions[get_column_letter(i)].width = w
+    ws.freeze_panes = "D5"
+
+
+def build_reference(wb, whole):
+    """Справочный лист: весь аэропорт (все гейты и рейсы, данные бота)."""
+    ws = wb.create_sheet("Справочно — весь аэропорт")
+    ws.cell(1, 1, "Справочно: весь аэропорт (все гейты и рейсы, данные бота)").font = TITLE_FONT
+    ws.cell(2, 1, "Бот собирает все гейты аэропорта. Несопоставимо с листом точек "
+                  "(там только гейты коллег). Доля точки = гейты точки ÷ все рейсы "
+                  "терминала.").font = GREY
+    months = sorted(set(whole["ym"]))[-6:]
+    _hdr(ws, 4, ["Аэропорт"] + months)
+    piv = (whole.pivot_table(index="airport", columns="ym", values="cgate",
+                             aggfunc="count", fill_value=0)
+           .reindex(columns=months, fill_value=0))
+    r = 4
+    for ap in [a for a in ["SVO", "VKO", "DME"] if a in piv.index]:
+        r += 1
+        ws.cell(r, 1, ap).font = BOLD
+        ws.cell(r, 1).border = BORDER
+        for j, m in enumerate(months):
+            c = ws.cell(r, 2 + j, int(piv.loc[ap, m]))
+            c.font = BASE
+            c.border = BORDER
+            c.alignment = CENTER
+    r += 2
+    ws.cell(r, 1, "Доля точки во ВСЁМ терминале (бот), %").font = BOLD
+    r += 1
+    _hdr(ws, r, ["Точка", "Аэр"] + months)
+    r += 1
+    for p in POINTS:
+        num, den = _series(whole, p)
+        ws.cell(r, 1, p["point"]).font = BOLD
+        ws.cell(r, 2, p["airport"]).font = BASE
+        ws.cell(r, 1).border = BORDER
+        ws.cell(r, 2).border = BORDER
+        ws.cell(r, 2).alignment = CENTER
+        for j, m in enumerate(months):
+            n = int(num.get(m, 0))
+            d = int(den.get(m, 0))
+            sh = (n / d * 100) if d else 0
+            c = ws.cell(r, 3 + j, round(sh, 1) if n else None)
+            c.number_format = '0.0"%"'
+            c.font = BASE
+            c.border = BORDER
+            c.alignment = CENTER
+        r += 1
     ws.column_dimensions["A"].width = 16
     ws.column_dimensions["B"].width = 6
-    ws.column_dimensions["C"].width = 22
-    for j in range(len(months) * 3 + 1):
-        ws.column_dimensions[get_column_letter(4 + j)].width = 8
-    ws.freeze_panes = ws.cell(r0 + 1, 4).coordinate
+    for j in range(len(months)):
+        ws.column_dimensions[get_column_letter(3 + j)].width = 9
 
 
 def _hdr(ws, r, headers):
@@ -341,6 +388,7 @@ def build_report(out_path, dfrom=None, dto=None, _df=None):
     wb = Workbook()
     build_summary(wb, whole, tracked)
     build_points(wb, whole, tracked)
+    build_reference(wb, whole)
     wb.save(out_path)
     return {
         "рейсов_всего": int(len(d)),
