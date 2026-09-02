@@ -1,0 +1,81 @@
+name: Диагностика статусов (без записи данных)
+
+# Ручной прогон. Тянет указанные даты по одному аэропорту и печатает,
+# что реально отдаёт AeroDataBox ДО фильтра статусов.
+#
+# Зачем: проверяем гипотезу, что часть рейсов теряется не в API, а в
+# белом списке DEPARTED_STATUSES = {departed, enroute, arrived} в
+# src/aerodatabox.py. Всё, что не в нём и не в чёрном списке отмен,
+# выпадает молча. Это объясняло бы и ровный недобор по DME, и провалы
+# целыми блоками часов (26.08 нет 18:00-22:00, 27.08 нет 12:00-14:00).
+#
+# В data/daily НИЧЕГО не пишет. Коммитит только счётчик расхода квоты,
+# чтобы израсходованные запросы не потерялись в учёте лимита.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dates:
+        description: "Даты через запятую, YYYY-MM-DD"
+        required: true
+        default: "2026-08-26,2026-08-27"
+      airport:
+        description: "Аэропорт: DME, SVO или VKO"
+        required: false
+        default: "DME"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: airports-write
+  cancel-in-progress: false
+
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Diagnose
+        env:
+          AERODATABOX_KEY: ${{ secrets.AERODATABOX_KEY }}
+          DIAG_DATES: ${{ github.event.inputs.dates }}
+          DIAG_AIRPORT: ${{ github.event.inputs.airport }}
+        run: |
+          set -eo pipefail
+          python -m src.diag_statuses 2>&1 | tee diag.txt
+
+      - name: Показать в сводке запуска
+        if: always()
+        run: |
+          echo "## Диагностика статусов" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          cat diag.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Учесть израсходованные запросы
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/aerodatabox_usage.json
+          if git diff --cached --quiet; then
+            echo "счётчик не изменился"
+            exit 0
+          fi
+          git commit -m "diag: учёт запросов диагностики $(date -u +'%Y-%m-%dT%H:%M')"
+          for i in 1 2 3; do
+            git pull --rebase --autostash && git push && exit 0
+            sleep 3
+          done
+          exit 1
