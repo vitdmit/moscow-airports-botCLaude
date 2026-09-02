@@ -46,7 +46,7 @@ def _load_history() -> pd.DataFrame:
     df = pd.read_parquet(src) if src.suffix == ".parquet" else pd.read_csv(src)
     # отсекаем будущие (план, не факт), если столбец есть
     if "is_future" in df.columns:
-        df = df[~df["is_future"].astype(bool)]
+        df = df[df["is_future"].astype(str).str.strip().str.lower() != "true"]
     keep = [c for c in CORE if c in df.columns]
     df = df[keep].copy()
     df["src"] = "history"
