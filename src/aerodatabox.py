@@ -237,7 +237,7 @@ def build_day_rows(airport: str, payloads: list[dict],
             if item.get("isCargo"):
                 continue
             status = item.get("status") or ""
-            if _is_excluded(status) or not _is_departed(status):
+            if _is_excluded(status):  # 02.09.2026: режем только отменённые и диверсии
                 continue
 
             # При withLeg=false вылетная инфа лежит в "movement";
