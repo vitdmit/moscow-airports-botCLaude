@@ -1,0 +1,79 @@
+name: Пересбор диапазона дат (AeroDataBox)
+
+# Ручной прогон. Пересобирает каждый день диапазона по всем трём аэропортам
+# заново и перезаписывает CSV в data/daily.
+#
+# Зачем: сырые ответы API мы не храним, поэтому правки логики отбора рейсов
+# чинят только будущие дни. Прошлое лечится повторным запросом.
+#
+# РАСХОД: 6 запросов на каждый день диапазона (2 окна x 3 аэропорта).
+# Внутренний месячный лимит 650, остаток смотри в data/aerodatabox_usage.json.
+# Перед запуском на месяц убедись, что остатка хватит и на ежедневный сбор.
+
+on:
+  workflow_dispatch:
+    inputs:
+      from_date:
+        description: "С даты YYYY-MM-DD"
+        required: true
+        default: ""
+      to_date:
+        description: "По дату YYYY-MM-DD включительно"
+        required: true
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: airports-write
+  cancel-in-progress: false
+
+jobs:
+  refetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Refetch range
+        env:
+          AERODATABOX_KEY: ${{ secrets.AERODATABOX_KEY }}
+          FROM_DATE: ${{ github.event.inputs.from_date }}
+          TO_DATE: ${{ github.event.inputs.to_date }}
+        run: |
+          d="$FROM_DATE"
+          while [ "$(date -d "$d" +%s)" -le "$(date -d "$TO_DATE" +%s)" ]; do
+            echo "::group::$d"
+            FETCH_DATE="$d" python -m src.daily_fetch || echo "день $d не собрался, идём дальше"
+            echo "::endgroup::"
+            d=$(date -d "$d + 1 day" +%F)
+          done
+
+      - name: Commit refetched CSVs
+        if: always()
+        env:
+          FROM_DATE: ${{ github.event.inputs.from_date }}
+          TO_DATE: ${{ github.event.inputs.to_date }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/daily data/aerodatabox_usage.json
+          if git diff --cached --quiet; then
+            echo "нет изменений"
+            exit 0
+          fi
+          git commit -m "refetch: пересбор $FROM_DATE..$TO_DATE после правки фильтра статусов"
+          for i in 1 2 3; do
+            git pull --rebase --autostash && git push && exit 0
+            sleep 5
+          done
+          exit 1
