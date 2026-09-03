@@ -139,6 +139,13 @@ def summarize(airport: str, rows: list[dict]) -> list[dict]:
             first = r["gate"][0].upper()
             if first.isalpha():
                 term = first
+        # В Домодедово международная зона это только терминал E. Проверено по
+        # data/daily за июнь-сентябрь: из гейтов E ушло 2936 международных
+        # рейсов, из гейтов C и D ни одного. Гейт есть не у всех рейсов
+        # (у отменённых его нет вовсе), поэтому у части МВЛ терминал получался
+        # "н/д" и Домодедово разваливалось на две строки вместо одной.
+        if airport == "DME" and z == "МВЛ":
+            term = "E"
         key = (z, term)
         a = acc[key]
         a["planned"] += 1
@@ -180,6 +187,9 @@ def build_ops_day(day: date, airports=("SVO", "VKO", "DME")) -> str:
         if not payloads:
             log.warning("[%s] нет payload'ов за %s, аэропорт пропущен", ap, day)
             continue
+        # Сутки разделены раньше, в fetch_airport_day по окнам запроса: в ответе
+        # API лежат и вчерашние рейсы, уехавшие за полночь, и утренние
+        # рейсы следующих суток. До правки 03.09.2026 они попадали в сводку.
         rows.extend(summarize(ap, collapse(payloads)))
     if not rows:
         log.error("Сводка за %s пустая, нечего писать", day)
