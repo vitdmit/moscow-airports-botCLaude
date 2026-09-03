@@ -1,0 +1,62 @@
+name: Диагностика полей времени (без записи в daily)
+
+# Выгружает за одни сутки по трём аэропортам все поля времени, метки
+# качества и статусы рейсов в data/diag/times_<дата>.csv.
+#
+# Зачем: понять, что каждый аэропорт называет фактическим временем вылета.
+# Без этого процент задержек между аэропортами несопоставим.
+#
+# РАСХОД: 6 запросов (2 окна x 3 аэропорта). data/daily не трогает.
+
+on:
+  workflow_dispatch:
+    inputs:
+      diag_date:
+        description: "Дата YYYY-MM-DD"
+        required: true
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: airports-write
+  cancel-in-progress: false
+
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Diagnose time fields
+        env:
+          AERODATABOX_KEY: ${{ secrets.AERODATABOX_KEY }}
+          DIAG_DATE: ${{ github.event.inputs.diag_date }}
+        run: python -m src.diag_times
+
+      - name: Commit diagnostics
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/diag data/aerodatabox_usage.json
+          if git diff --cached --quiet; then
+            echo "нет изменений"
+            exit 0
+          fi
+          git commit -m "diag: поля времени за ${{ github.event.inputs.diag_date }}"
+          for i in 1 2 3; do
+            git pull --rebase --autostash && git push && exit 0
+            sleep 5
+          done
+          exit 1
