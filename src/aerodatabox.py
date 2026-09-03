@@ -72,6 +72,61 @@ def remaining_budget() -> int:
     return max(0, MONTHLY_BUDGET - _load_usage().get(_month(), 0))
 
 
+LATE_HOUR = 18  # с этого часа рейс считаем «поздним», он может уйти за полночь
+
+
+def _belongs_to_day(item: dict, window_idx: int, has_tail: bool) -> bool:
+    """Относится ли рейс из окна window_idx к собираемым суткам.
+
+    API отбирает рейсы в окно по ФАКТИЧЕСКОМУ времени и вдобавок иногда
+    подставляет в scheduledTime дату окна запроса, а не реальную. Поэтому дате
+    в ответе не доверяем и разделяем сутки по времени суток:
+
+      окно 1 (00:00-12:00): поздний вечер здесь это ВЧЕРАШНИЙ рейс, ушедший
+        после полуночи. Такие выбрасываем, иначе в сутках оказывается два
+        одинаковых рейса: свой и вчерашний (за июнь-сентябрь так задвоилось
+        72 строки, все между 22:00 и 02:00).
+      окно 2 (12:00-24:00): всё своё.
+      окно 3 ((day+1) 00:00-06:00): наоборот, своим считаем только поздний
+        вечер, это наши рейсы, уехавшие за полночь. Утренние рейсы следующих
+        суток отбрасываем.
+    """
+    dep = item.get("movement") or item.get("departure") or {}
+    sched = _parse_local((dep.get("scheduledTime") or {}).get("local"))
+    if sched is None:
+        return False
+    late = sched.hour >= LATE_HOUR
+    if window_idx == 0:
+        return not late
+    if has_tail and window_idx == 2:
+        return late
+    return True
+
+
+def _filter_payloads_by_window(payloads: list, has_tail: bool) -> list:
+    out = []
+    for idx, payload in enumerate(payloads):
+        deps = [it for it in (payload.get("departures") or [])
+                if _belongs_to_day(it, idx, has_tail)]
+        p = dict(payload)
+        p["departures"] = deps
+        out.append(p)
+    return out
+
+
+def _tail_window_affordable(airports: int = 3, per_day: int = 2) -> bool:
+    """Хватит ли бюджета на третье окно (ночной хвост) без риска для месяца.
+
+    Штатный сбор до конца месяца стоит airports * per_day запросов в сутки.
+    Третье окно берём только если после резерва на эти сутки ещё что-то есть.
+    """
+    import calendar
+    today = date.today()
+    days_left = calendar.monthrange(today.year, today.month)[1] - today.day + 1
+    reserve = days_left * airports * per_day
+    return remaining_budget() - reserve >= airports
+
+
 def _bump_usage(n: int = 1) -> int:
     usage = _load_usage()
     m = _month()
@@ -529,6 +584,24 @@ def fetch_airport_day(api_key: str, airport: str, day: date,
     # штатного расхода) тратились впустую. День рейса определяется по
     # ПЛАНОВОЙ дате — так же, как в ручном учёте коллег, поэтому окон 1-2
     # достаточно: они покрывают все плановые времена суток day.
+    # ВОЗВРАТ ОКНА 3, 03.09.2026. Комментарий выше был неверен. Диагностика
+    # (src/diag_times.py, data/diag/times_2026-09-01.csv) показала, что API
+    # отбирает рейсы в окно по ФАКТИЧЕСКОМУ времени, а не по плановому: в
+    # окнах 01.09 пришло 7 рейсов Шереметьева и 9 Внукова с плановой датой
+    # 31.08, они ушли после полуночи. Значит наши собственные ночные хвосты
+    # лежат в окне следующих суток, а мы его не запрашивали и теряли их:
+    # около 8 рейсов в сутки по SVO и 9 по VKO, это 1.8% и 5.5% месяца.
+    # За 31.08 из 16 таких рейсов 14 ушли до 01:00, крайний в 02:06,
+    # поэтому окна до 06:00 хватает с запасом.
+    #
+    # Окно 3 стоит один запрос на аэропорт в сутки, 90 в месяц. Берём его,
+    # только если после этого останется чем добрать оставшиеся дни месяца
+    # штатными двумя окнами. В сентябре 2026 запас съеден пересборами,
+    # поэтому окно 3 само включится с 1 октября.
+    if day + timedelta(days=1) < date.today() and _tail_window_affordable():
+        nd = d0 + timedelta(days=1)
+        windows.append((nd, nd + timedelta(hours=6)))
+
     payloads = []
     empty_windows = 0
     for idx, (f, t) in enumerate(windows):
@@ -550,12 +623,23 @@ def fetch_airport_day(api_key: str, airport: str, day: date,
     if empty_windows == len(windows):
         raise NoDataYetError(
             f"[{airport}] HTTP 204: все окна за {day} пусты — данных нет")
+    has_tail = len(windows) > 2
+    raw_total = sum(len(p.get("departures") or []) for p in payloads)
+    payloads = _filter_payloads_by_window(payloads, has_tail)
+    clean_total = sum(len(p.get("departures") or []) for p in payloads)
+    log.info("[%s] %s: в ответе %d записей, после разделения суток осталось %d",
+             airport, day, raw_total, clean_total)
     LAST_PAYLOADS[airport] = payloads
-    rows = build_day_rows(airport, payloads)
-    # оставляем только фактически вылетевшие именно в этот день
+    # Плановую дату принудительно ставим day: чужие сутки уже отфильтрованы
+    # по окнам, а дата в ответе API ненадёжна.
+    rows = build_day_rows(airport, payloads, target_day=day)
     target = day.isoformat()
     kept = [r for r in rows if r["flight_date"] == target]
     dropped = len(rows) - len(kept)
     log.info("[%s] %s: собрано %d (отброшено %d вне суток по факту)",
              airport, day, len(kept), dropped)
+    if has_tail:
+        tail = len(payloads[2].get("departures") or [])
+        log.info("[%s] %s: ночное окно добавило %d рейсов, уехавших за полночь",
+                 airport, day, tail)
     return kept
