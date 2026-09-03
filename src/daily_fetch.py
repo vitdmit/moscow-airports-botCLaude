@@ -537,6 +537,14 @@ def main() -> int:
         by_airport.get("DME", 0), added, snap_added or "0",
         failed or "нет",
     )
+    # Операционная сводка (план, отмены, задержки по зонам и терминалам).
+    # Считается из тех же ответов API, лишних запросов не делает.
+    try:
+        from src.ops_report import build_ops_day
+        build_ops_day(day)
+    except Exception as exc:
+        log.error("Операционная сводка не собралась: %s", exc)
+
     return 0
 
 
