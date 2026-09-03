@@ -8,12 +8,13 @@
    "planned": 227,
    "canceled": 3,
    "diverted": 0,
-   "delay_15_60": 102,
+   "delay_15_60": 11,
    "delay_60_180": 16,
-   "delay_180_plus": 7,
-   "delayed_total": 125,
-   "on_time": 99,
-   "departed": 224
+   "delay_180_plus": 4,
+   "delayed_total": 31,
+   "on_time": 193,
+   "departed": 224,
+   "no_fact": 0
   },
   {
    "airport": "SVO",
@@ -27,7 +28,8 @@
    "delay_180_plus": 0,
    "delayed_total": 0,
    "on_time": 0,
-   "departed": 0
+   "departed": 0,
+   "no_fact": 0
   },
   {
    "airport": "SVO",
@@ -36,12 +38,13 @@
    "planned": 47,
    "canceled": 0,
    "diverted": 0,
-   "delay_15_60": 19,
-   "delay_60_180": 17,
+   "delay_15_60": 16,
+   "delay_60_180": 10,
    "delay_180_plus": 2,
-   "delayed_total": 38,
-   "on_time": 9,
-   "departed": 47
+   "delayed_total": 28,
+   "on_time": 19,
+   "departed": 47,
+   "no_fact": 0
   },
   {
    "airport": "SVO",
@@ -50,12 +53,13 @@
    "planned": 108,
    "canceled": 0,
    "diverted": 0,
-   "delay_15_60": 67,
+   "delay_15_60": 10,
    "delay_60_180": 7,
    "delay_180_plus": 0,
-   "delayed_total": 74,
-   "on_time": 34,
-   "departed": 108
+   "delayed_total": 17,
+   "on_time": 91,
+   "departed": 108,
+   "no_fact": 0
   },
   {
    "airport": "VKO",
@@ -69,7 +73,8 @@
    "delay_180_plus": 4,
    "delayed_total": 42,
    "on_time": 8,
-   "departed": 50
+   "departed": 50,
+   "no_fact": 0
   },
   {
    "airport": "VKO",
@@ -83,7 +88,8 @@
    "delay_180_plus": 4,
    "delayed_total": 89,
    "on_time": 9,
-   "departed": 98
+   "departed": 98,
+   "no_fact": 0
   },
   {
    "airport": "DME",
@@ -97,35 +103,98 @@
    "delay_180_plus": 0,
    "delayed_total": 0,
    "on_time": 0,
-   "departed": 0
+   "departed": 0,
+   "no_fact": 0
+  },
+  {
+   "airport": "DME",
+   "zone": "ВВЛ",
+   "terminal": "C",
+   "planned": 22,
+   "canceled": 0,
+   "diverted": 0,
+   "delay_15_60": 4,
+   "delay_60_180": 0,
+   "delay_180_plus": 0,
+   "delayed_total": 4,
+   "on_time": 18,
+   "departed": 22,
+   "no_fact": 0
+  },
+  {
+   "airport": "DME",
+   "zone": "ВВЛ",
+   "terminal": "D",
+   "planned": 16,
+   "canceled": 0,
+   "diverted": 0,
+   "delay_15_60": 6,
+   "delay_60_180": 0,
+   "delay_180_plus": 0,
+   "delayed_total": 6,
+   "on_time": 10,
+   "departed": 16,
+   "no_fact": 0
+  },
+  {
+   "airport": "DME",
+   "zone": "ВВЛ",
+   "terminal": "E",
+   "planned": 1,
+   "canceled": 0,
+   "diverted": 0,
+   "delay_15_60": 1,
+   "delay_60_180": 0,
+   "delay_180_plus": 0,
+   "delayed_total": 1,
+   "on_time": 0,
+   "departed": 1,
+   "no_fact": 0
   },
   {
    "airport": "DME",
    "zone": "ВВЛ",
    "terminal": "н/д",
-   "planned": 48,
+   "planned": 9,
    "canceled": 0,
    "diverted": 0,
-   "delay_15_60": 13,
+   "delay_15_60": 2,
    "delay_60_180": 0,
    "delay_180_plus": 0,
-   "delayed_total": 13,
-   "on_time": 35,
-   "departed": 48
+   "delayed_total": 2,
+   "on_time": 7,
+   "departed": 9,
+   "no_fact": 0
+  },
+  {
+   "airport": "DME",
+   "zone": "МВЛ",
+   "terminal": "E",
+   "planned": 18,
+   "canceled": 0,
+   "diverted": 0,
+   "delay_15_60": 9,
+   "delay_60_180": 0,
+   "delay_180_plus": 0,
+   "delayed_total": 9,
+   "on_time": 9,
+   "departed": 18,
+   "no_fact": 0
   },
   {
    "airport": "DME",
    "zone": "МВЛ",
    "terminal": "н/д",
-   "planned": 26,
+   "planned": 8,
    "canceled": 4,
    "diverted": 0,
-   "delay_15_60": 10,
+   "delay_15_60": 1,
    "delay_60_180": 0,
    "delay_180_plus": 0,
-   "delayed_total": 10,
-   "on_time": 12,
-   "departed": 22
+   "delayed_total": 1,
+   "on_time": 3,
+   "departed": 4,
+   "no_fact": 0
   }
  ]
 }
