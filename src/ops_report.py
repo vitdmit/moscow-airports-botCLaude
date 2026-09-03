@@ -37,7 +37,7 @@ DIVERT_STATUSES = {"diverted"}
 DELAY_BUCKETS = (("15_60", 15, 60), ("60_180", 60, 180), ("180_plus", 180, 10 ** 9))
 
 FIELDS = ("planned", "canceled", "diverted", "delay_15_60", "delay_60_180",
-          "delay_180_plus", "delayed_total", "on_time", "departed")
+          "delay_180_plus", "delayed_total", "on_time", "departed", "no_fact")
 
 
 def _terminal_of(dep: dict) -> str:
@@ -66,12 +66,16 @@ def collapse(payloads: list[dict]) -> list[dict]:
             iata = arr.get("iata") or ""
             key = (sched.strftime("%H:%M"), _norm_dest(dest, iata))
 
+            # ВАЖНО. Задержку считаем ТОЛЬКО по revisedTime — это фактическое
+            # время отправления от гейта. runwayTime это отрыв от полосы, он
+            # больше планового на время руления (во Внукове медиана 31 минута),
+            # и по нему 80% рейсов ложно выглядят задержанными.
+            # Если revisedTime нет, рейс в базу задержек не идёт: считаем его
+            # в no_fact и в проценте задержек не учитываем.
             revised = _parse_local((dep.get("revisedTime") or {}).get("local"))
-            runway = _parse_local((dep.get("runwayTime") or {}).get("local"))
-            fact = runway or revised
             delay = None
-            if fact is not None:
-                delay = _minutes(fact) - _minutes(sched)
+            if revised is not None:
+                delay = _minutes(revised) - _minutes(sched)
                 if delay > 720:
                     delay -= 1440
                 elif delay <= -720:
@@ -81,10 +85,12 @@ def collapse(payloads: list[dict]) -> list[dict]:
             g = groups.get(key)
             if g is None:
                 g = {"sched": sched.strftime("%H:%M"), "dest": dest,
-                     "terminal": "н/д", "status": "", "delay": None}
+                     "terminal": "н/д", "gate": "", "status": "", "delay": None}
                 groups[key] = g
             if g["terminal"] == "н/д":
                 g["terminal"] = _terminal_of(dep)
+            if not g["gate"]:
+                g["gate"] = str(dep.get("gate") or "").strip()
             # отмена и уход на запасной перебивают любой другой статус
             if status in CANCEL_STATUSES or status in DIVERT_STATUSES:
                 g["status"] = status
@@ -100,7 +106,14 @@ def summarize(airport: str, rows: list[dict]) -> list[dict]:
     acc: dict[tuple, dict] = defaultdict(lambda: {f: 0 for f in FIELDS})
     for r in rows:
         z = zone(r["dest"]) or "?"
-        key = (z, r["terminal"])
+        # У DME терминал отдельным полем не приходит, берём первую букву гейта
+        # (D13 -> D). Так же делает основной сбор.
+        term = r["terminal"]
+        if term == "н/д" and r.get("gate"):
+            first = r["gate"][0].upper()
+            if first.isalpha():
+                term = first
+        key = (z, term)
         a = acc[key]
         a["planned"] += 1
         st = r["status"]
@@ -112,7 +125,10 @@ def summarize(airport: str, rows: list[dict]) -> list[dict]:
             continue
         a["departed"] += 1
         d = r["delay"]
-        if d is None or d < 15:
+        if d is None:
+            a["no_fact"] += 1
+            continue
+        if d < 15:
             a["on_time"] += 1
             continue
         a["delayed_total"] += 1
