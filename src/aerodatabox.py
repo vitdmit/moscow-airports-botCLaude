@@ -111,15 +111,24 @@ def _belongs_to_day(item: dict, window_idx: int, has_tail: bool) -> bool:
     return True
 
 
-def _filter_payloads_by_window(payloads: list, has_tail: bool) -> list:
-    out = []
-    for idx, payload in enumerate(payloads):
+def _filter_payloads_by_window(pairs: list, has_tail: bool):
+    """pairs это [(номер окна, ответ)]. Отдаёт (очищенные ответы, сколько
+    рейсов дало ночное окно).
+
+    Номер окна храним явно. Любое окно может ответить 204 и выпасть из
+    списка, тогда позиция в списке перестаёт совпадать с номером окна,
+    а правило разделения суток завязано именно на номер.
+    """
+    out, tail = [], 0
+    for idx, payload in pairs:
         deps = [it for it in (payload.get("departures") or [])
                 if _belongs_to_day(it, idx, has_tail)]
         p = dict(payload)
         p["departures"] = deps
         out.append(p)
-    return out
+        if has_tail and idx == 2:
+            tail = len(deps)
+    return out, tail
 
 
 def _tail_window_affordable(airports: int = 3, per_day: int = 2) -> bool:
@@ -626,7 +635,7 @@ def fetch_airport_day(api_key: str, airport: str, day: date,
         if idx > 0:
             _time.sleep(REQUEST_PAUSE_SEC)  # не упираться в rate limit «в секунду»
         try:
-            payloads.append(fetch_window(api_key, airport, f, t, client=client))
+            payloads.append((idx, fetch_window(api_key, airport, f, t, client=client)))
         except NoDataYetError:
             # 204 в ОТДЕЛЬНОМ окне = в этом окне рейсов/данных нет. Это не повод
             # ронять весь день: окна 1-2 могут содержать данные. Пропускаем окно.
@@ -639,8 +648,8 @@ def fetch_airport_day(api_key: str, airport: str, day: date,
         raise NoDataYetError(
             f"[{airport}] HTTP 204: все окна за {day} пусты — данных нет")
     has_tail = len(windows) > 2
-    raw_total = sum(len(p.get("departures") or []) for p in payloads)
-    payloads = _filter_payloads_by_window(payloads, has_tail)
+    raw_total = sum(len(p.get("departures") or []) for _, p in payloads)
+    payloads, tail = _filter_payloads_by_window(payloads, has_tail)
     clean_total = sum(len(p.get("departures") or []) for p in payloads)
     log.info("[%s] %s: в ответе %d записей, после разделения суток осталось %d",
              airport, day, raw_total, clean_total)
@@ -654,7 +663,6 @@ def fetch_airport_day(api_key: str, airport: str, day: date,
     log.info("[%s] %s: собрано %d (отброшено %d вне суток по факту)",
              airport, day, len(kept), dropped)
     if has_tail:
-        tail = len(payloads[2].get("departures") or [])
         log.info("[%s] %s: ночное окно добавило %d рейсов, уехавших за полночь",
                  airport, day, tail)
     return kept
