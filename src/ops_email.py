@@ -66,13 +66,23 @@ def rollup(rows: list[dict], keys) -> dict:
     return acc
 
 
-def avg_over(days: list[dict], keys) -> dict:
+def avg_over(days: list[dict], keys, skip_unknown: bool = False) -> dict:
     """Суммы за набор предыдущих дней, из них считаются средние доли."""
     acc: dict = defaultdict(zero)
     for d in days:
         for r in d["rows"]:
+            if skip_unknown and r["zone"] == "?":
+                continue
             acc[tuple(r[k] for k in keys)] = add(acc[tuple(r[k] for k in keys)], r)
     return acc
+
+
+def place(ap: str, zone_name: str, terminal: str = "") -> str:
+    """Подпись строки. Терминал н/д не пишем: в Домодедово источник его не даёт."""
+    s = "%s, %s" % (NAMES.get(ap, ap), zone_name)
+    if terminal and terminal != "н/д":
+        s += ", терминал %s" % terminal
+    return s
 
 
 def cell(v: str, bad: bool = False) -> str:
@@ -119,12 +129,18 @@ def build(day: date) -> tuple[str, str, str]:
     base_days = days[1:]
     ndays = len(base_days)
 
+    # Строки с нераспознанным направлением в разрезы по зонам не пускаем:
+    # это единичные грузовые борта без пункта назначения. В итог по
+    # аэропортам они входят, под таблицей стоит сноска с их числом.
+    known = [r for r in today_rows if r["zone"] != "?"]
+    unknown_planned = sum(r["planned"] for r in today_rows if r["zone"] == "?")
+
     by_ap = rollup(today_rows, ["airport"])
-    by_ap_zone = rollup(today_rows, ["airport", "zone"])
-    by_full = rollup(today_rows, ["airport", "zone", "terminal"])
+    by_ap_zone = rollup(known, ["airport", "zone"])
+    by_full = rollup(known, ["airport", "zone", "terminal"])
     b_ap = avg_over(base_days, ["airport"])
-    b_ap_zone = avg_over(base_days, ["airport", "zone"])
-    b_full = avg_over(base_days, ["airport", "zone", "terminal"])
+    b_ap_zone = avg_over(base_days, ["airport", "zone"], skip_unknown=True)
+    b_full = avg_over(base_days, ["airport", "zone", "terminal"], skip_unknown=True)
 
     total = zero()
     for r in today_rows:
@@ -154,15 +170,22 @@ def build(day: date) -> tuple[str, str, str]:
     parts.append("<h2>По зонам</h2>")
     rows_out = []
     for (ap, z), r in sorted(by_ap_zone.items()):
-        rows_out.append(("%s, %s" % (NAMES.get(ap, ap), z), r, b_ap_zone.get((ap, z)), False))
+        rows_out.append((place(ap, z), r, b_ap_zone.get((ap, z)), False))
     parts.append(table(rows_out, b_total, "Аэропорт и зона", ndays))
 
     parts.append("<h2>По терминалам</h2>")
     rows_out = []
     for (ap, z, t), r in sorted(by_full.items()):
-        rows_out.append(("%s, %s, терминал %s" % (NAMES.get(ap, ap), z, t), r,
-                         b_full.get((ap, z, t)), False))
+        rows_out.append((place(ap, z, t), r, b_full.get((ap, z, t)), False))
     parts.append(table(rows_out, b_total, "Аэропорт, зона, терминал", ndays))
+    if unknown_planned:
+        parts.append('<p class="note">Рейсов, по которым источник не дал пункта '
+                     'назначения: %d. В разрезы по зонам и терминалам они не '
+                     'попали, в итог по аэропортам входят.</p>' % unknown_planned)
+    if any(t == "н/д" for (_, _, t) in by_full):
+        parts.append('<p class="note">Там, где строка без терминала, источник его '
+                     'не отдал: по Домодедово это обычное дело, разрез идёт '
+                     'только по зонам.</p>')
     parts.append('<p class="note">Во вложении тот же разрез в CSV. '
                  'Отчёт формируется автоматически, данные приходят с задержкой '
                  'в двое суток.</p>')
