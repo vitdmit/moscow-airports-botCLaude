@@ -89,12 +89,14 @@ def table(rows_out: list[tuple], base: dict, keys_label: str, ndays: int) -> str
          "</tr>" % (keys_label, ndays, ndays)]
     for i, (label, r, b, is_total) in enumerate(rows_out):
         cls = ' class="tot"' if is_total else (' class="zebra"' if i % 2 else "")
+        base_r = r["departed"] - r["no_fact"]
+        bbase = (b["departed"] - b["no_fact"]) if b else 0
         bp = pct(b["canceled"], b["planned"]) if b and b["planned"] else "н/д"
-        bd = pct(b["delayed_total"], b["departed"]) if b and b["departed"] else "н/д"
+        bd = pct(b["delayed_total"], bbase) if bbase else "н/д"
         cp = 100.0 * r["canceled"] / r["planned"] if r["planned"] else 0
-        cd = 100.0 * r["delayed_total"] / r["departed"] if r["departed"] else 0
+        cd = 100.0 * r["delayed_total"] / base_r if base_r else 0
         bpv = 100.0 * b["canceled"] / b["planned"] if b and b["planned"] else None
-        bdv = 100.0 * b["delayed_total"] / b["departed"] if b and b["departed"] else None
+        bdv = 100.0 * b["delayed_total"] / bbase if bbase else None
         h.append("<tr%s><td class=\"l\">%s</td><td>%d</td><td>%d</td>%s<td>%s</td>"
                  "<td>%d</td><td>%d</td><td>%d</td>%s<td>%s</td><td>%s</td></tr>"
                  % (cls, label, r["planned"], r["canceled"],
@@ -102,9 +104,9 @@ def table(rows_out: list[tuple], base: dict, keys_label: str, ndays: int) -> str
                          bpv is not None and cp > bpv * 1.3 and r["canceled"] > 2),
                     bp,
                     r["delay_15_60"], r["delay_60_180"], r["delay_180_plus"],
-                    cell(pct(r["delayed_total"], r["departed"]),
+                    cell(pct(r["delayed_total"], base_r),
                          bdv is not None and cd > bdv * 1.3 and r["delayed_total"] > 5),
-                    bd, pct(r["on_time"], r["departed"])))
+                    bd, pct(r["on_time"], base_r)))
     h.append("</table>")
     return "".join(h)
 
@@ -135,7 +137,9 @@ def build(day: date) -> tuple[str, str, str]:
     parts = ["<style>%s</style>" % CSS,
              "<h2>Вылеты из аэропортов Москвы, %s</h2>" % human(day)]
     parts.append('<p class="note">Данные нашего бота по расписанию вылетов. '
-                 'Задержка считается от планового времени: три градации. '
+                 'Задержка считается от планового времени отправления до фактического, '
+                 'три градации. Рейсы, по которым источник не дал факта отправления, '
+                 'в базу для процента задержек не берутся. '
                  'Столбцы «среднее» — по %d предыдущим суткам, которые есть в базе.</p>'
                  % ndays if ndays else
                  '<p class="note">Данные нашего бота по расписанию вылетов. '
@@ -170,17 +174,19 @@ def build(day: date) -> tuple[str, str, str]:
         w.writerow(["дата", "аэропорт", "зона", "терминал", "запланировано",
                     "отменено", "отменено_%", "ушли_на_запасной",
                     "задержка_15_60", "задержка_1_3ч", "задержка_больше_3ч",
-                    "задержано_всего", "задержано_%", "вылетело", "вовремя_%"])
+                    "задержано_всего", "задержано_%", "вылетело", "вовремя_%",
+                    "без_факта_вылета"])
         for (ap, z, t), r in sorted(by_full.items()):
+            b_r = r["departed"] - r["no_fact"]
             w.writerow([day.isoformat(), ap, z, t, r["planned"], r["canceled"],
                         pct(r["canceled"], r["planned"]), r["diverted"],
                         r["delay_15_60"], r["delay_60_180"], r["delay_180_plus"],
-                        r["delayed_total"], pct(r["delayed_total"], r["departed"]),
-                        r["departed"], pct(r["on_time"], r["departed"])])
+                        r["delayed_total"], pct(r["delayed_total"], b_r),
+                        r["departed"], pct(r["on_time"], b_r), r["no_fact"]])
     subject = ("Вылеты %s: запланировано %d, отменено %d (%s), задержано %s"
                % (day.strftime("%d.%m.%Y"), total["planned"], total["canceled"],
                   pct(total["canceled"], total["planned"]),
-                  pct(total["delayed_total"], total["departed"])))
+                  pct(total["delayed_total"], total["departed"] - total["no_fact"])))
     return body, csv_path, subject
 
 
