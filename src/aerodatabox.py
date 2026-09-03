@@ -187,6 +187,13 @@ def fetch_window(api_key: str, airport: str, from_local: datetime,
                 last_err = AeroDataBoxError("HTTP 429: rate limit")
                 _time.sleep(wait)
                 continue
+            # Пишем в лог остаток квоты со стороны RapidAPI. Наш внутренний
+            # счётчик это оценка, а здесь настоящий лимит тарифа. Нужно, чтобы
+            # решить, когда включать ночное окно (плюс 90 запросов в месяц).
+            _left = r.headers.get("x-ratelimit-requests-remaining")
+            _lim = r.headers.get("x-ratelimit-requests-limit")
+            if _left is not None:
+                log.info("квота RapidAPI: осталось %s из %s", _left, _lim)
             r.raise_for_status()
             if r.status_code == 204:
                 # 204 No Content — данных за этот период ещё нет в истории API
