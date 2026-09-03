@@ -37,6 +37,7 @@ jobs:
     timeout-minutes: 20
     env:
       SMTP_HOST: ${{ secrets.SMTP_HOST }}
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
 
@@ -86,7 +87,7 @@ jobs:
         run: python -m src.ops_email
 
       - name: Отправить письмо
-        if: ${{ env.SMTP_HOST != '' && steps.ops.outcome == 'success' }}
+        if: ${{ env.SMTP_HOST != '' && env.SMTP_PASSWORD != '' && steps.ops.outcome == 'success' }}
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.SMTP_HOST }}
