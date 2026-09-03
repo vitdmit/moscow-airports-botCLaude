@@ -76,6 +76,37 @@ def _minutes(t) -> int:
     return t.hour * 60 + t.minute
 
 
+def zone_by_place(airport: str, terminal: str, gate: str):
+    """Зона по месту вылета. Возвращает 'ВВЛ', 'МВЛ' или None, если правила нет.
+
+    Место вылета важнее направления: пассажир сидит там, где сидит, а поле
+    направления у API врёт на стыковочных рейсах. Пример: NordStar Y7 533 из
+    Домодедова уходит с гейта E (международная зона), а направление приходит
+    24 раза как Красноярск и 2 раза как Тайюань. Это один и тот же рейс с
+    промежуточной посадкой, пассажиры проходят границу в Домодедове.
+
+    Проверено по data/daily за май-сентябрь 2026:
+      SVO: гейты 1-123 это терминал B, 124-146 терминал C, терминал D свой.
+           В терминале C 10 538 рейсов, международных из них 9627 в полосе
+           гейтов 126-145, а в терминалах B и D международных нет ни одного.
+      DME: из гейтов E ушло 2936 международных, из гейтов C и D ни одного.
+      VKO: терминал A обслуживает обе зоны, правила нет.
+    """
+    t = (terminal or "").strip().upper()
+    g = (gate or "").strip().upper()
+    if airport == "SVO":
+        if t == "C":
+            return "МВЛ"
+        if t in ("B", "D"):
+            return "ВВЛ"
+    elif airport == "DME":
+        if g.startswith("E") or t == "E":
+            return "МВЛ"
+        if g[:1] in ("C", "D") or t in ("C", "D"):
+            return "ВВЛ"
+    return None
+
+
 def collapse(payloads: list[dict]) -> list[dict]:
     """Схлопнуть кодшеринги: один борт = одна запись."""
     groups: dict[tuple, dict] = {}
@@ -131,7 +162,6 @@ def summarize(airport: str, rows: list[dict]) -> list[dict]:
     """Свернуть записи в строки аэропорт-зона-терминал."""
     acc: dict[tuple, dict] = defaultdict(lambda: {f: 0 for f in FIELDS})
     for r in rows:
-        z = zone(r["dest"]) or "?"
         # У DME терминал отдельным полем не приходит, берём первую букву гейта
         # (D13 -> D). Так же делает основной сбор.
         term = r["terminal"]
@@ -139,6 +169,8 @@ def summarize(airport: str, rows: list[dict]) -> list[dict]:
             first = r["gate"][0].upper()
             if first.isalpha():
                 term = first
+        # Зона: сначала по месту вылета, направление только если правила нет.
+        z = zone_by_place(airport, term, r.get("gate")) or zone(r["dest"]) or "?"
         # В Домодедово международная зона это только терминал E. Проверено по
         # data/daily за июнь-сентябрь: из гейтов E ушло 2936 международных
         # рейсов, из гейтов C и D ни одного. Гейт есть не у всех рейсов
