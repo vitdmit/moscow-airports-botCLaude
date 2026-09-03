@@ -44,6 +44,10 @@ USAGE_FILE = DATA_DIR / "aerodatabox_usage.json"
 DEPARTED_STATUSES = {"departed", "enroute", "arrived"}
 EXCLUDED_STATUSES = {"canceled", "cancelled", "diverted", "canceleduncertain"}
 
+# Сырые ответы последнего сбора по каждому аэропорту. Нужны src/ops_report.py,
+# чтобы посчитать план, отмены и задержки без повторных запросов к API.
+LAST_PAYLOADS: dict = {}
+
 # Пауза между запросами (секунд) — чтобы не упереться в rate limit «в секунду».
 REQUEST_PAUSE_SEC = 3
 # Сколько раз повторить запрос при HTTP 429 (rate limit) и пауза перед повтором.
@@ -546,6 +550,7 @@ def fetch_airport_day(api_key: str, airport: str, day: date,
     if empty_windows == len(windows):
         raise NoDataYetError(
             f"[{airport}] HTTP 204: все окна за {day} пусты — данных нет")
+    LAST_PAYLOADS[airport] = payloads
     rows = build_day_rows(airport, payloads)
     # оставляем только фактически вылетевшие именно в этот день
     target = day.isoformat()
