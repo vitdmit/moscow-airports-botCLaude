@@ -99,7 +99,11 @@ jobs:
           username: ${{ secrets.SMTP_USER }}
           password: ${{ secrets.SMTP_PASSWORD }}
           from: Отчёт по вылетам <${{ secrets.SMTP_USER }}>
-          to: ${{ secrets.OPS_MAIL_TO }}
+          # Получатели списком прямо здесь, а не в секрете: так их видно в
+          # файле и все они попадают в поле «Кому» одного письма. Через
+          # запятую, без пробелов после запятой. Секрет OPS_MAIL_TO больше
+          # не используется, но оставлен в репозитории на всякий случай.
+          to: vdmitriev@gkvinegret.ru,rahmetov@gkvinegret.ru,kkashirina@gkvinegret.ru,apan@gkvinegret.ru,ffilippov@gkvinegret.ru
           subject: ${{ steps.ops.outputs.subject }}
           html_body: file:///tmp/ops_body.html
           convert_markdown: false
