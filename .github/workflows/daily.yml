@@ -14,9 +14,12 @@ name: Daily fetch (AeroDataBox)
 # Письмо отправляется, только если в секретах задан SMTP_HOST.
 # Нужные секреты: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, OPS_MAIL_TO.
 # secure: true — это SSL (обычно порт 465). Для STARTTLS на 587 поставить false.
+# ЗАПУСК. Расписание GitHub убрано 04.09.2026: оно не гарантированное, под
+# нагрузкой прогон задерживается или пропускается совсем. 04.09 так и вышло,
+# письмо в 9 утра не пришло. Единственный триггер теперь задача в cron-job.org
+# ("Ежедневный сбор рейсов", 8:25 МСК), она бьёт минута в минуту. Два триггера
+# держать нельзя: получится два сбора и два письма в сутки.
 on:
-  schedule:
-    - cron: "0 6 * * *"
   workflow_dispatch:
     inputs:
       fetch_date:
@@ -99,7 +102,6 @@ jobs:
           to: ${{ secrets.OPS_MAIL_TO }}
           subject: ${{ steps.ops.outputs.subject }}
           html_body: file:///tmp/ops_body.html
-          attachments: ${{ steps.ops.outputs.csv }}
           convert_markdown: false
 
       - name: Alarm if incomplete days remain
