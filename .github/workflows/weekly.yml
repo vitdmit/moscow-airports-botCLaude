@@ -1,0 +1,91 @@
+name: Недельный дашборд по вылетам
+
+# Собирает PDF за отчётную неделю (Пн-Вс) из data/ops_daily и рассылает
+# письмом с вложением. К API не обращается вообще: считает по уже
+# собранным сводкам, расход запросов нулевой.
+#
+# ЗАПУСК. Расписание GitHub здесь не ставим по той же причине, что и в
+# daily.yml: оно не гарантированное. Триггер это задача в cron-job.org
+# ("Недельный дашборд по вылетам", вторник 10:00 МСК). Вторник, потому что
+# сводка за воскресенье приходит с лагом в двое суток и неделя закрывается
+# только во вторник утром, после ежедневного прогона.
+#
+# Порядок во вторник: сначала ежедневная задача в 8:25, она дособирает
+# воскресенье, потом эта в 10:00.
+#
+# Вход week_end: воскресенье отчётной недели, YYYY-MM-DD. Пусто = последняя
+# неделя, у которой есть все семь сводок.
+# Вход mail_to: получатели через запятую. Пусто = боевой список.
+on:
+  workflow_dispatch:
+    inputs:
+      week_end:
+        description: "Воскресенье отчётной недели YYYY-MM-DD (пусто = последняя закрытая)"
+        required: false
+        default: ""
+      mail_to:
+        description: "Кому слать, через запятую (пусто = боевой список)"
+        required: false
+        default: ""
+
+concurrency:
+  group: airports-weekly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  weekly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SMTP_HOST: ${{ secrets.SMTP_HOST }}
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+      MAIL_DEFAULT: vdmitriev@gkvinegret.ru,rahmetov@gkvinegret.ru,kkashirina@gkvinegret.ru,apan@gkvinegret.ru,ffilippov@gkvinegret.ru
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Системные библиотеки для weasyprint
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz0b libfribidi0 \
+            fonts-dejavu-core
+
+      - name: Install deps
+        run: pip install -r requirements.txt duckdb==1.5.5 weasyprint==69.0
+
+      - name: Собрать дашборд
+        id: wk
+        env:
+          WEEK_END: ${{ github.event.inputs.week_end }}
+        run: python -m src.weekly_report
+
+      - name: Определить получателей
+        id: to
+        run: |
+          IN="${{ github.event.inputs.mail_to }}"
+          if [ -z "$IN" ]; then IN="$MAIL_DEFAULT"; fi
+          echo "list=$IN" >> "$GITHUB_OUTPUT"
+
+      - name: Отправить письмо
+        if: ${{ env.SMTP_HOST != '' && env.SMTP_PASSWORD != '' }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_HOST }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          secure: true
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          from: Отчёт по вылетам <${{ secrets.SMTP_USER }}>
+          to: ${{ steps.to.outputs.list }}
+          subject: ${{ steps.wk.outputs.subject }}
+          html_body: file:///tmp/weekly_body.html
+          attachments: ${{ steps.wk.outputs.pdf }}
+          convert_markdown: false
