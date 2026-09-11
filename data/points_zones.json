@@ -1,0 +1,30 @@
+{
+ "_как_пользоваться": "Соответствие точек Винегрет зонам вылета. Нужно, чтобы недельный отчёт связывал задержки с конкретными точками: задержанный рейс держит пассажира в зоне дольше. Заполняется руками, автоматика сюда ничего не дописывает.",
+ "_поля": "airport: SVO, VKO, DME. zone: ВВЛ, МВЛ, прилёт. terminal: только для Шереметьева (B, C, D), иначе null. gates: строка вида '8-17' или null. checked: true когда зона подтверждена, строки с false в отчёт не идут.",
+ "_прилёт": "Точки в зоне прилёта данными по вылетам не покрываются, они помечены zone: прилёт и в разрез не попадают.",
+ "points": [
+  {"name": "Кофеин ВВЛ", "airport": "VKO", "zone": "ВВЛ", "terminal": null, "gates": "8-17", "checked": false},
+  {"name": "Кофеин МВЛ", "airport": "VKO", "zone": "МВЛ", "terminal": null, "gates": "18-30", "checked": false},
+  {"name": "Кофеин зона прилёта", "airport": "VKO", "zone": "прилёт", "terminal": null, "gates": null, "checked": false},
+  {"name": "Кофеин 3м", "airport": "SVO", "zone": "ВВЛ", "terminal": "B", "gates": null, "checked": false},
+  {"name": "Кофеин 23м", "airport": "SVO", "zone": "ВВЛ", "terminal": "B", "gates": null, "checked": false},
+  {"name": "Кофеин ДМД", "airport": "DME", "zone": null, "terminal": null, "gates": null, "checked": false},
+  {"name": "Едим Летим", "airport": "DME", "zone": null, "terminal": null, "gates": null, "checked": false},
+  {"name": "Хамовники", "airport": null, "zone": null, "terminal": null, "gates": null, "checked": false},
+  {"name": "Баттерфляй", "airport": null, "zone": null, "terminal": null, "gates": null, "checked": false},
+  {"name": "Бад", "airport": null, "zone": null, "terminal": null, "gates": null, "checked": false},
+  {"name": "Фостерс", "airport": null, "zone": null, "terminal": null, "gates": null, "checked": false},
+  {"name": "Бир 1", "airport": null, "zone": null, "terminal": null, "gates": null, "checked": false},
+  {"name": "Бир 3", "airport": null, "zone": null, "terminal": null, "gates": null, "checked": false},
+  {"name": "Ачарули", "airport": null, "zone": null, "terminal": null, "gates": null, "checked": false},
+  {"name": "Гурмэ Т2", "airport": null, "zone": null, "terminal": null, "gates": null, "checked": false},
+  {"name": "Гурмэ В", "airport": null, "zone": null, "terminal": null, "gates": null, "checked": false},
+  {"name": "Гурмэ С", "airport": null, "zone": null, "terminal": null, "gates": null, "checked": false},
+  {"name": "АБ460", "airport": null, "zone": null, "terminal": null, "gates": null, "checked": false},
+  {"name": "АБ99", "airport": null, "zone": null, "terminal": null, "gates": null, "checked": false},
+  {"name": "АБ131", "airport": null, "zone": null, "terminal": null, "gates": null, "checked": false},
+  {"name": "АБ120", "airport": null, "zone": null, "terminal": null, "gates": null, "checked": false},
+  {"name": "АБ123", "airport": null, "zone": null, "terminal": null, "gates": null, "checked": false},
+  {"name": "АБ600", "airport": null, "zone": null, "terminal": null, "gates": null, "checked": false}
+ ]
+}
