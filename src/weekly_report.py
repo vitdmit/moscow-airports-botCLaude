@@ -145,6 +145,16 @@ class Agg:
         return self._q("SELECT zone, terminal, %s FROM t WHERE airport = 'SVO' "
                        "AND zone <> '?' GROUP BY 1,2 ORDER BY 1,2" % self.M)
 
+    def by_zone_day(self) -> list[dict]:
+        return self._q("SELECT airport, zone, CAST(date AS VARCHAR) AS date, %s "
+                       "FROM t WHERE zone <> '?' GROUP BY 1,2,3 ORDER BY 1,2,3"
+                       % self.M)
+
+    def svo_terminals_day(self) -> list[dict]:
+        return self._q("SELECT zone, terminal, CAST(date AS VARCHAR) AS date, %s "
+                       "FROM t WHERE airport = 'SVO' AND zone <> '?' "
+                       "GROUP BY 1,2,3 ORDER BY 1,2,3" % self.M)
+
     def by_weekday(self) -> list[dict]:
         return self._q("SELECT dayofweek(CAST(date AS DATE)) AS wd, %s FROM t "
                        "GROUP BY 1 ORDER BY 1" % self.M)
@@ -203,6 +213,8 @@ def collect_facts(end: date) -> dict:
                 "by_airport_day": a.by_airport_day(),
                 "by_zone": a.by_zone(),
                 "svo_terminals": a.svo_terminals(),
+                "by_zone_day": a.by_zone_day(),
+                "svo_terminals_day": a.svo_terminals_day(),
                 "unknown_planned": a.unknown()}
 
     return {"week_end": end.isoformat(),
@@ -429,6 +441,13 @@ def render_html(facts: dict, analysis: dict) -> tuple[str, str, str]:
     for r in cur["by_airport_day"]:
         ap_day.setdefault(r["airport"], []).append(r["dpct"])
 
+    zone_day: dict[tuple, list[float]] = {}
+    for r in cur.get("by_zone_day") or []:
+        zone_day.setdefault((r["airport"], r["zone"]), []).append(r["dpct"])
+    term_day: dict[tuple, list[float]] = {}
+    for r in cur.get("svo_terminals_day") or []:
+        term_day.setdefault((r["zone"], r["terminal"]), []).append(r["dpct"])
+
     ap = cur["by_airport"]
     terms = cur["svo_terminals"]
     zones = cur["by_zone"]
@@ -476,7 +495,9 @@ def render_html(facts: dict, analysis: dict) -> tuple[str, str, str]:
     rows = []
     for r in zones:
         rows.append(("%s, %s" % (NAMES.get(r["airport"], r["airport"]), r["zone"]),
-                     r, zone_prev.get((r["airport"], r["zone"])), "", False))
+                     r, zone_prev.get((r["airport"], r["zone"])),
+                     spark(zone_day.get((r["airport"], r["zone"]), []), h=15),
+                     False))
     p.append(metric_table(rows, "Аэропорт и зона", show_delta))
     unk = cur.get("unknown_planned") or 0
     if unk:
@@ -487,7 +508,9 @@ def render_html(facts: dict, analysis: dict) -> tuple[str, str, str]:
     rows = []
     for r in terms:
         rows.append(("%s, терминал %s" % (r["zone"], r["terminal"]), r,
-                     term_prev.get((r["zone"], r["terminal"])), "", False))
+                     term_prev.get((r["zone"], r["terminal"])),
+                     spark(term_day.get((r["zone"], r["terminal"]), []), h=15),
+                     False))
     p.append(metric_table(rows, "Зона и терминал", show_delta))
 
     p.append("<h2>По суткам</h2>")
