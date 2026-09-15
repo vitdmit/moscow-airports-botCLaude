@@ -47,6 +47,7 @@ jobs:
       - name: Refetch range
         env:
           AERODATABOX_KEY: ${{ secrets.AERODATABOX_KEY }}
+          YANDEX_PROXY: ${{ secrets.YANDEX_PROXY }}
           FROM_DATE: ${{ github.event.inputs.from_date }}
           TO_DATE: ${{ github.event.inputs.to_date }}
         run: |
