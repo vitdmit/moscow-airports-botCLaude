@@ -481,21 +481,6 @@ def _fetch_adb(airports: list[str], day: date) -> tuple[list[dict], list[str]]:
     return rows_all, failed
 
 
-def _neighbor_numbers(day: date, airport: str) -> set:
-    """Номера рейсов аэропорта в CSV предыдущих суток (защита от задвоения).
-
-    Следующие сутки не берём: при пересборе диапазона по порядку там ещё
-    лежат старые строки. Рейсы, ушедшие после полуночи, и так есть на
-    странице Яндекса за текущие сутки."""
-    nums = set()
-    for d in (day - timedelta(days=1),):
-        for r in _existing_rows(d, [airport]):
-            for n in str(r.get("flight_numbers", "")).split(","):
-                if n.strip():
-                    nums.add(n.strip())
-    return nums
-
-
 def main() -> int:
     """Сбор суток.
 
@@ -545,7 +530,9 @@ def main() -> int:
             continue
         if ap in yandex:
             rows = yandex_fids.csv_rows(ap, day, yandex[ap])
-            extra = yandex_fids.adb_extra(ap, ap_adb, _neighbor_numbers(day, ap))
+            # Соседние сутки для защиты от задвоения не смотрим: ежедневный
+            # рейс, которого нет у Яндекса (R8 484), иначе терялся бы через день.
+            extra = yandex_fids.adb_extra(ap, ap_adb)
             all_rows.extend(rows)
             all_rows.extend(extra)
             prepared[ap] = (yandex_fids.ops_flights(yandex[ap])
