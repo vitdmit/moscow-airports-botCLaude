@@ -347,6 +347,45 @@ def zone_by_place(airport: str, terminal=None, gate=None):
     return None
 
 
-def zone_of(airport: str, dest: str, terminal=None, gate=None) -> str:
-    """Главная точка входа. Сначала место вылета, потом направление."""
-    return zone_by_place(airport, terminal, gate) or zone(dest) or "?"
+def zone_of(airport: str, dest: str, terminal=None, gate=None,
+            dest_iata=None) -> str:
+    """Главная точка входа. Сначала место вылета, потом направление,
+    потом код IATA назначения."""
+    z = zone_by_place(airport, terminal, gate)
+    if z:
+        return z
+    z = zone(dest)
+    if z in ("ВВЛ", "МВЛ"):
+        return z
+    return zone_by_iata(dest_iata) or "?"
+
+
+# --- зона по коду IATA аэропорта назначения, добавлено 15.09.2026 ---------
+# Запасной путь, когда город не распознан (zone() вернула "?"). Нужен для
+# табло Яндекса: города там в родительном падеже или экзотические
+# («Караганды», «Кисони»), а код IATA есть всегда. Страна берётся из пакета
+# airportsdata. Исключения по решениям проекта: Крым внутренний, Байконур
+# внутренний (как в RU_CITIES), Сухум международный (решение 03.09.2026).
+IATA_ZONE_OVERRIDE = {"SIP": "ВВЛ", "BXY": "ВВЛ", "SUI": "МВЛ"}
+_IATA_COUNTRY = None
+
+
+def zone_by_iata(iata):
+    """'ВВЛ', 'МВЛ' или None, если код неизвестен."""
+    global _IATA_COUNTRY
+    code = (iata or "").strip().upper()
+    if not code:
+        return None
+    if code in IATA_ZONE_OVERRIDE:
+        return IATA_ZONE_OVERRIDE[code]
+    if _IATA_COUNTRY is None:
+        try:
+            import airportsdata
+            _IATA_COUNTRY = {k: v.get("country") for k, v in
+                             airportsdata.load("IATA").items()}
+        except Exception:
+            _IATA_COUNTRY = {}
+    country = _IATA_COUNTRY.get(code)
+    if not country:
+        return None
+    return "ВВЛ" if country == "RU" else "МВЛ"
