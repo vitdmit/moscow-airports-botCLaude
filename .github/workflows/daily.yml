@@ -55,12 +55,14 @@ jobs:
       - name: Fetch flights
         env:
           AERODATABOX_KEY: ${{ secrets.AERODATABOX_KEY }}
+          YANDEX_PROXY: ${{ secrets.YANDEX_PROXY }}
           FETCH_DATE: ${{ github.event.inputs.fetch_date }}
         run: python -m src.daily_fetch
 
       - name: Completeness check + auto-heal
         env:
           AERODATABOX_KEY: ${{ secrets.AERODATABOX_KEY }}
+          YANDEX_PROXY: ${{ secrets.YANDEX_PROXY }}
           FETCH_DATE: ${{ github.event.inputs.fetch_date }}
         run: python -m src.completeness_check
 
