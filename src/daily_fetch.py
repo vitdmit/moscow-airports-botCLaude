@@ -481,49 +481,92 @@ def _fetch_adb(airports: list[str], day: date) -> tuple[list[dict], list[str]]:
     return rows_all, failed
 
 
+def _neighbor_numbers(day: date, airport: str) -> set:
+    """Номера рейсов аэропорта в CSV предыдущих суток (защита от задвоения).
+
+    Следующие сутки не берём: при пересборе диапазона по порядку там ещё
+    лежат старые строки. Рейсы, ушедшие после полуночи, и так есть на
+    странице Яндекса за текущие сутки."""
+    nums = set()
+    for d in (day - timedelta(days=1),):
+        for r in _existing_rows(d, [airport]):
+            for n in str(r.get("flight_numbers", "")).split(","):
+                if n.strip():
+                    nums.add(n.strip())
+    return nums
+
+
 def main() -> int:
-    """Сбор суток. С 15.09.2026 основной источник табло Яндекс Расписаний
-    (src/yandex_fids.py), AeroDataBox только запасной, если Яндекс не отдал
-    сутки по аэропорту. Если не отдал никто, прежние строки аэропорта в CSV
-    сохраняются, чтобы пересбор не стирал данные."""
+    """Сбор суток.
+
+    С 15.09.2026 основа табло Яндекс Расписаний (src/yandex_fids.py): план,
+    отмены, факт, гейт. К нему дописываются рейсы AeroDataBox, которых на
+    табло нет (часть перевозчиков Яндекс не показывает). Если Яндекс сутки
+    не отдал, аэропорт берётся из AeroDataBox целиком. Если не отдал никто,
+    прежние строки аэропорта в CSV сохраняются."""
     from src import yandex_fids
-    from src.config import BROWSER_HEADERS
 
     day = resolve_target_day()
-    log.info("=== daily_fetch 2026-09: сбор за %s, источник табло Яндекса ===", day)
+    log.info("=== daily_fetch 2026-09: сбор за %s, Яндекс + AeroDataBox ===", day)
+
+    yandex: dict[str, list[dict]] = {}
+    with yandex_fids.make_client() as yc:
+        for airport in AIRPORTS:
+            try:
+                yandex[airport] = yandex_fids.fetch_day(airport, day, yc)
+            except yandex_fids.YandexError as e:
+                log.error("[%s] Яндекс не отдал сутки %s: %s", airport, day, e)
+
+    adb_rows, adb_failed = _fetch_adb(list(AIRPORTS), day)
+
+    # Сутки, уже собранные по Яндексу, не заменяем одним AeroDataBox, если в
+    # этот раз Яндекс не ответил (капча): Яндекс полнее, AeroDataBox по DME
+    # теряет целые блоки часов.
+    prev_sources: dict = {}
+    try:
+        from src.ops_report import OPS_DIR
+        import json as _json
+        pf = OPS_DIR / ("%s.json" % day.isoformat())
+        if pf.exists():
+            prev_sources = _json.loads(pf.read_text(encoding="utf-8")).get("sources") or {}
+    except Exception as exc:
+        log.warning("не прочитал источники прежней сводки: %s", exc)
 
     all_rows: list[dict] = []
     prepared: dict[str, list[dict]] = {}
-    need_adb: list[str] = []
     source: dict[str, str] = {}
-
-    with httpx.Client(timeout=REQUEST_TIMEOUT_SEC, headers=BROWSER_HEADERS,
-                      follow_redirects=True) as yc:
-        for airport in AIRPORTS:
-            try:
-                flights = yandex_fids.fetch_day(airport, day, yc)
-            except yandex_fids.YandexError as e:
-                log.error("[%s] Яндекс не отдал сутки %s: %s", airport, day, e)
-                need_adb.append(airport)
-                continue
-            all_rows.extend(yandex_fids.csv_rows(airport, day, flights))
-            prepared[airport] = yandex_fids.ops_flights(flights)
-            source[airport] = "yandex"
-
     failed: list[str] = []
-    if need_adb:
-        adb_rows, failed = _fetch_adb(need_adb, day)
-        all_rows.extend(adb_rows)
-        for ap in need_adb:
-            if ap not in failed:
-                source[ap] = "aerodatabox"
+    for ap in AIRPORTS:
+        ap_adb = [r for r in adb_rows if r.get("airport") == ap]
+        if ap not in yandex and "yandex" in str(prev_sources.get(ap, "")):
+            log.warning("[%s] %s уже собраны по Яндексу (%s), оставляю их",
+                        ap, day, prev_sources[ap])
+            failed.append(ap)
+            continue
+        if ap in yandex:
+            rows = yandex_fids.csv_rows(ap, day, yandex[ap])
+            extra = yandex_fids.adb_extra(ap, ap_adb, _neighbor_numbers(day, ap))
+            all_rows.extend(rows)
+            all_rows.extend(extra)
+            prepared[ap] = (yandex_fids.ops_flights(yandex[ap])
+                            + yandex_fids.ops_from_csv(extra))
+            source[ap] = "yandex %d + aerodatabox %d" % (len(rows), len(extra))
+            if extra:
+                log.info("[%s] %s: из AeroDataBox дописано %d рейсов, которых нет у Яндекса: %s",
+                         ap, day, len(extra),
+                         ", ".join(r.get("flight_numbers", "") for r in extra))
+        elif ap_adb:
+            all_rows.extend(ap_adb)
+            source[ap] = "aerodatabox %d" % len(ap_adb)
+        else:
+            failed.append(ap)
+
     if failed:
         kept = _existing_rows(day, failed)
         all_rows.extend(kept)
         for ap in failed:
             source[ap] = "прежние строки (%d)" % sum(1 for r in kept if r["airport"] == ap)
-        log.error("СТРАХОВКА: за %s не собраны %s ни из Яндекса, ни из "
-                  "AeroDataBox. Оставлены прежние строки.", day, failed)
+        log.warning("За %s оставлены прежние строки по %s", day, failed)
 
     if not all_rows:
         log.error("Ни одной строки за %s", day)
