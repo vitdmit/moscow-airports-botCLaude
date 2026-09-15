@@ -428,23 +428,27 @@ def resolve_target_day() -> date:
     return day_before_yesterday_msk()
 
 
-def main() -> int:
-    log.info("=== daily_fetch 2026-07 (гейты D+D+1 + рейсы DME из Яндекса "
-             "+ само-лечение из снапшотов по 3 аэропортам) ===")
+def _existing_rows(day: date, airports: list[str]) -> list[dict]:
+    """Строки уже записанного CSV за день по указанным аэропортам."""
+    path = DAILY_DIR / f"{day.isoformat()}.csv"
+    if not path.exists() or not airports:
+        return []
+    with path.open(encoding="utf-8-sig", newline="") as f:
+        return [r for r in csv.DictReader(f) if r.get("airport") in airports]
+
+
+def _fetch_adb(airports: list[str], day: date) -> tuple[list[dict], list[str]]:
+    """Запасной путь: сутки из AeroDataBox (прежний сбор без изменений)."""
     api_key = os.environ.get("AERODATABOX_KEY", "").strip()
     if not api_key:
-        log.error("Нет AERODATABOX_KEY в окружении — нечем авторизоваться")
-        return 1
-
-    day = resolve_target_day()
-    log.info("Сбор за %s. Остаток бюджета: %d/%d",
-             day, remaining_budget(), MONTHLY_BUDGET)
-
-    all_rows: list[dict] = []
+        log.error("Нет AERODATABOX_KEY, запасной источник недоступен для %s", airports)
+        return [], list(airports)
+    log.info("AeroDataBox за %s по %s. Остаток бюджета: %d/%d",
+             day, airports, remaining_budget(), MONTHLY_BUDGET)
+    rows_all: list[dict] = []
     failed: list[str] = []
-
     with httpx.Client(timeout=REQUEST_TIMEOUT_SEC) as client:
-        for i, airport in enumerate(AIRPORTS):
+        for i, airport in enumerate(airports):
             rows = None
             for att in range(1, AIRPORT_RETRIES + 1):
                 try:
@@ -458,93 +462,86 @@ def main() -> int:
                               airport, att, AIRPORT_RETRIES, e)
                     if att < AIRPORT_RETRIES:
                         time_module.sleep(10 * att)
-            if rows is not None:
-                all_rows.extend(rows)
+            if rows:
+                rows_all.extend(rows)
             else:
                 failed.append(airport)
-            if i < len(AIRPORTS) - 1:
+            if i < len(airports) - 1:
                 time_module.sleep(4)
+    got = [a for a in airports if a not in failed]
+    if "DME" in got:
+        filled = fill_dme_gates(rows_all, day)
+        if filled:
+            log.info("Дополнено гейтов DME из снапшотов: %d", filled)
+    for ap in got:
+        n = add_missing_flights_from_snapshot(rows_all, day, ap)
+        if n:
+            log.info("[%s] добрано из снапшотов табло: %d", ap, n)
+    enrich_from_history(rows_all)
+    return rows_all, failed
+
+
+def main() -> int:
+    """Сбор суток. С 15.09.2026 основной источник табло Яндекс Расписаний
+    (src/yandex_fids.py), AeroDataBox только запасной, если Яндекс не отдал
+    сутки по аэропорту. Если не отдал никто, прежние строки аэропорта в CSV
+    сохраняются, чтобы пересбор не стирал данные."""
+    from src import yandex_fids
+    from src.config import BROWSER_HEADERS
+
+    day = resolve_target_day()
+    log.info("=== daily_fetch 2026-09: сбор за %s, источник табло Яндекса ===", day)
+
+    all_rows: list[dict] = []
+    prepared: dict[str, list[dict]] = {}
+    need_adb: list[str] = []
+    source: dict[str, str] = {}
+
+    with httpx.Client(timeout=REQUEST_TIMEOUT_SEC, headers=BROWSER_HEADERS,
+                      follow_redirects=True) as yc:
+        for airport in AIRPORTS:
+            try:
+                flights = yandex_fids.fetch_day(airport, day, yc)
+            except yandex_fids.YandexError as e:
+                log.error("[%s] Яндекс не отдал сутки %s: %s", airport, day, e)
+                need_adb.append(airport)
+                continue
+            all_rows.extend(yandex_fids.csv_rows(airport, day, flights))
+            prepared[airport] = yandex_fids.ops_flights(flights)
+            source[airport] = "yandex"
+
+    failed: list[str] = []
+    if need_adb:
+        adb_rows, failed = _fetch_adb(need_adb, day)
+        all_rows.extend(adb_rows)
+        for ap in need_adb:
+            if ap not in failed:
+                source[ap] = "aerodatabox"
+    if failed:
+        kept = _existing_rows(day, failed)
+        all_rows.extend(kept)
+        for ap in failed:
+            source[ap] = "прежние строки (%d)" % sum(1 for r in kept if r["airport"] == ap)
+        log.error("СТРАХОВКА: за %s не собраны %s ни из Яндекса, ни из "
+                  "AeroDataBox. Оставлены прежние строки.", day, failed)
 
     if not all_rows:
-        log.error("Ни одной строки не собрано (ошибки: %s)", failed)
+        log.error("Ни одной строки за %s", day)
         return 1
 
-    by_airport: dict[str, int] = {}
+    counts: dict[str, int] = {}
     for r in all_rows:
-        by_airport[r["airport"]] = by_airport.get(r["airport"], 0) + 1
-
-    MIN_EXPECTED = 30
-    for airport in AIRPORTS:
-        n = by_airport.get(airport, 0)
-        if airport in failed or n == 0:
-            log.error("СТРАХОВКА: [%s] за %s пусто — данные дозревают дольше "
-                      "2 суток? Собери вручную позже (FETCH_DATE=%s).",
-                      airport, day, day)
-        elif n < MIN_EXPECTED:
-            log.warning("СТРАХОВКА: [%s] за %s только %d рейсов — подозрительно "
-                        "мало, проверь полноту.", airport, day, n)
-
-    # Шаг 1: дополнить недостающие гейты DME из снапшота табло Яндекса
-    # (проверяет снапшоты D и D+1 для задержанных рейсов)
-    filled = fill_dme_gates(all_rows, day)
-    if filled:
-        log.info("Дополнено гейтов DME из табло Яндекса: %d", filled)
-
-    # Шаг 2: дополнить СОСТАВ рейсов DME из исторического табло Яндекс.Расписания
-    # (AeroDataBox пропускает ~8-9 мелких перевозчиков/день по DME)
-    with httpx.Client(timeout=REQUEST_TIMEOUT_SEC,
-                      headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                                             "AppleWebKit/537.36 (KHTML, like Gecko) "
-                                             "Chrome/126.0.0.0 Safari/537.36"}) as ya_client:
-        added = supplement_dme_from_yandex(all_rows, day, ya_client)
-
-    # Шаг 3: САМО-ЛЕЧЕНИЕ — добрать рейсы из снапшота живого табло по всем
-    # аэропортам (страховка на частичный/пропущенный день; кодшеринги склеиваются).
-    snap_added: dict[str, int] = {}
-    for ap in AIRPORTS:
-        n = add_missing_flights_from_snapshot(all_rows, day, ap)
-        if n:
-            snap_added[ap] = n
-    if snap_added:
-        log.info("Добрано из снапшотов табло (само-лечение): %s", snap_added)
-    # СТРАХОВКА 2026-07-11: если снапшот добрал слишком много — ADB отдал день
-    # частично (как DME 2026-07-09: 27 от ADB + 81 из снапшота). Счёт строк
-    # при этом нормальный и completeness_check дыру не видит. Кричим в лог:
-    # такие дни стоит пересобрать вручную (FETCH_DATE), у добранных строк
-    # нет actual_time.
-    for ap, n in snap_added.items():
-        n_adb = by_airport.get(ap, 0)
-        if n > 25 or (n_adb and n > n_adb):
-            log.error("СТРАХОВКА: [%s] само-лечение добрало %d строк при %d "
-                      "от ADB — день пришёл частичным. Пересобери вручную: "
-                      "Run workflow c FETCH_DATE=%s.", ap, n, n_adb, day)
-
-    # Шаг 4: восстановить авиакомпанию/направление у добранных строк по истории
-    # (в снапшоте их нет — берём по номеру рейса из уже собранных дней).
-    # Вызываем всегда: заполняет только пустые поля, вреда при их отсутствии нет.
-    enrich_from_history(all_rows)
-
-    # Итоговые счётчики
-    by_airport_final: dict[str, int] = {}
-    for r in all_rows:
-        by_airport_final[r["airport"]] = by_airport_final.get(r["airport"], 0) + 1
-
+        counts[r["airport"]] = counts.get(r["airport"], 0) + 1
     path = write_csv(day, all_rows)
-    log.info(
-        "Записано %d строк в %s. По аэропортам: %s "
-        "(DME: %d от ADB + %d от Яндекса + снапшоты %s). Ошибки: %s",
-        len(all_rows), path, by_airport_final,
-        by_airport.get("DME", 0), added, snap_added or "0",
-        failed or "нет",
-    )
-    # Операционная сводка (план, отмены, задержки по зонам и терминалам).
-    # Считается из тех же ответов API, лишних запросов не делает.
+    log.info("Записано %d строк в %s. По аэропортам: %s. Источники: %s",
+             len(all_rows), path, counts, source)
+
     try:
         from src.ops_report import build_ops_day
-        build_ops_day(day)
+        build_ops_day(day, airports=[a for a in AIRPORTS if a not in failed],
+                      prepared=prepared, keep_airports=tuple(failed))
     except Exception as exc:
         log.error("Операционная сводка не собралась: %s", exc)
-
     return 0
 
 
