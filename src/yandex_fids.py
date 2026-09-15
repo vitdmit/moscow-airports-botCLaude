@@ -24,6 +24,19 @@ window.INITIAL_STATE полный список рейсов суток (station.
 вторые отбрасываем: они есть на странице D+1. Отменённые и рейсы без
 статуса относятся к плановой дате.
 
+Полнота. Часть перевозчиков на табло Яндекса не попадает: по DME за
+16-31.08.2026 это NordStar Y7 402/407/408, Sky FRU R8 484, в отдельные
+дни Belavia и Уральские авиалинии, в среднем 2-3 рейса в сутки. Поэтому
+сутки дополняются рейсами AeroDataBox, которых на странице Яндекса нет
+(adb_extra). По 14 сопоставимым дням августа с ручным учётом коллег (сутки
+по плановой дате, как у коллег): AeroDataBox -4.8%, Яндекс -2.7%, вместе
+-0.4%.
+
+Доступ. Серверам GitHub Яндекс отдаёт капчу (проверено 15.09.2026, прогон
+пересбора #7). Если задан секрет YANDEX_PROXY (http://user:pass@host:port),
+запросы к Яндексу идут через него. После первой капчи модуль до конца
+запуска больше не стучится (_BLOCKED), сутки берутся из AeroDataBox.
+
 Фактическое время. У SVO оно с секундами и в среднем позже, чем
 revisedTime AeroDataBox (SU 1424 12.09: 00:15:35 против 00:03), похоже на
 отрыв от полосы. Поэтому сводки из этого источника пишутся схемой 3 и с
@@ -32,6 +45,8 @@ revisedTime AeroDataBox (SU 1424 12.09: 00:15:35 против 00:03), похож
 from __future__ import annotations
 
 import json
+import os
+import re
 import time as time_module
 from datetime import date, datetime, timedelta
 from typing import Optional
@@ -49,7 +64,7 @@ STATE_MARK = "window.INITIAL_STATE = "
 # Пауза между запросами к Яндексу. При запросах раз в 2 секунды 15 страниц
 # из 90 ушли в капчу, при паузе 20 секунд капча снималась.
 PAUSE_SEC = 10
-RETRY_WAITS = (30, 90, 180)
+RETRY_WAITS = (20, 60)
 
 # Бизнес-терминалы: деловая авиация и корпоративные борта (Газпромавиа во
 # Внукове-3, Шереметьево-A). Прежний сбор их тоже не брал (withPrivate=false).
@@ -72,6 +87,19 @@ class YandexError(Exception):
 
 
 _last_request = 0.0
+_BLOCKED = False
+
+# Номера и пары (плановое время, назначение) со страницы последних суток,
+# по аэропортам. Нужны adb_extra, чтобы не задвоить рейс, который Яндекс
+# знает, но отнёс к другим суткам или записал под другим номером.
+LAST_PAGE: dict[str, tuple[set, set]] = {}
+MOSCOW_IATA = {"SVO", "VKO", "DME", "ZIA", "BKA", "OSF"}
+
+
+def make_client() -> httpx.Client:
+    proxy = os.environ.get("YANDEX_PROXY", "").strip() or None
+    return httpx.Client(timeout=REQUEST_TIMEOUT_SEC, headers=BROWSER_HEADERS,
+                        follow_redirects=True, proxy=proxy)
 
 
 def _pause():
@@ -95,12 +123,15 @@ def parse_state(html: str) -> dict:
 
 def fetch_station(airport: str, day: date,
                   client: Optional[httpx.Client] = None) -> dict:
+    global _BLOCKED
+    if _BLOCKED:
+        raise YandexError("[%s] %s: Яндекс в этом запуске отдаёт капчу, не запрашиваю"
+                          % (airport, day))
     sid = AIRPORT_CONFIGS[airport]["station_id"]
     url = URL.format(sid=sid, d=day.isoformat())
     own = client is None
     if own:
-        client = httpx.Client(timeout=REQUEST_TIMEOUT_SEC, headers=BROWSER_HEADERS,
-                              follow_redirects=True)
+        client = make_client()
     try:
         last = None
         for attempt in range(len(RETRY_WAITS) + 1):
@@ -121,6 +152,8 @@ def fetch_station(airport: str, day: date,
                     log.warning("[%s] %s: %s, повтор через %sс", airport, day, e,
                                 RETRY_WAITS[attempt])
                     time_module.sleep(RETRY_WAITS[attempt])
+        if "INITIAL_STATE" in str(last):
+            _BLOCKED = True
         raise YandexError("[%s] %s: страница не получена: %s" % (airport, day, last))
     finally:
         if own:
@@ -305,10 +338,85 @@ def ops_flights(flights: list[dict]) -> list[dict]:
     return out
 
 
+def norm_number(n: str) -> str:
+    """'U6 271' -> 'U6271'; буква-суффикс AeroDataBox ('DP 1435D') отрезается."""
+    n = re.sub(r"\s+", "", str(n or "").upper())
+    m = re.match(r"^([A-Z0-9]{2}\d+)[A-Z]$", n)
+    return m.group(1) if m else n
+
+
+def page_keys(station: dict) -> tuple[set, set]:
+    nums, sd = set(), set()
+    for t in station.get("threads") or []:
+        for n in [t.get("number")] + [c.get("number") for c in t.get("codeshares") or []]:
+            if n:
+                nums.add(norm_number(n))
+        dt = _dt((t.get("eventDt") or {}).get("datetime"))
+        route = (t.get("routeStations") or [{}])[0] or {}
+        if dt is not None and route.get("iataCode"):
+            sd.add((dt.strftime("%H:%M"), route["iataCode"]))
+    return nums, sd
+
+
+def adb_extra(airport: str, adb_rows: list[dict], neighbor_numbers=()) -> list[dict]:
+    """Строки AeroDataBox, которых нет на странице Яндекса за те же сутки.
+
+    Рейс считается известным Яндексу, если любой его номер есть на странице
+    (в любом статусе и с любой датой) или в CSV предыдущих суток, либо если на
+    странице есть рейс с тем же плановым временем и тем же аэропортом
+    назначения (кодшеринг под другим номером).
+    """
+    nums, sd = LAST_PAGE.get(airport, (set(), set()))
+    # Перегоны между московскими аэропортами после ухода на запасной
+    # (SZ 331 и A9 932 «в Москву» из Шереметьева 18 и 20.08) и борты без
+    # аэропорта назначения (грузовые) пассажирским вылетом не считаем.
+    known = set(nums) | {norm_number(n) for n in neighbor_numbers}
+    out = []
+    for r in adb_rows:
+        rn = {norm_number(n) for n in str(r.get("flight_numbers", "")).split(",") if n.strip()}
+        if rn & known:
+            continue
+        dest = (r.get("destination_iata") or "").strip().upper()
+        if not dest or dest in MOSCOW_IATA:
+            continue
+        if (r.get("scheduled_time"), dest) in sd:
+            continue
+        out.append(r)
+    return out
+
+
+def ops_from_csv(rows: list[dict]) -> list[dict]:
+    """Записи для summarize из строк data/daily (добавленных из AeroDataBox)."""
+    out = []
+    for r in rows:
+        delay = None
+        try:
+            sh, sm = (int(x) for x in r["scheduled_time"].split(":"))
+            ah, am = (int(x) for x in r["actual_time"].split(":"))
+            delay = (ah * 60 + am) - (sh * 60 + sm)
+            if delay > 720:
+                delay -= 1440
+            elif delay <= -720:
+                delay += 1440
+        except (KeyError, ValueError, AttributeError):
+            delay = None
+        out.append({
+            "sched": r.get("scheduled_time", ""),
+            "dest": r.get("destination", ""),
+            "dest_iata": r.get("destination_iata", ""),
+            "terminal": r.get("terminal") or "н/д",
+            "gate": r.get("gate") or "",
+            "status": "departed",
+            "delay": delay,
+        })
+    return out
+
+
 def fetch_day(airport: str, day: date,
               client: Optional[httpx.Client] = None) -> list[dict]:
     """Физические рейсы аэропорта за сутки. Бросает YandexError при неудаче."""
     station = fetch_station(airport, day, client)
+    LAST_PAGE[airport] = page_keys(station)
     flights = flights_for_day(airport, station, day)
     if len(flights) < MIN_FLIGHTS:
         raise YandexError("[%s] %s: всего %d рейсов, страница неполная"
