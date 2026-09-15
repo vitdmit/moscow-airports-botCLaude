@@ -33,9 +33,12 @@ window.INITIAL_STATE полный список рейсов суток (station.
 -0.4%.
 
 Доступ. Серверам GitHub Яндекс отдаёт капчу (проверено 15.09.2026, прогон
-пересбора #7). Если задан секрет YANDEX_PROXY (http://user:pass@host:port),
-запросы к Яндексу идут через него. После первой капчи модуль до конца
-запуска больше не стучится (_BLOCKED), сутки берутся из AeroDataBox.
+пересбора #7), VPS в Нидерландах тоже (капча даже на ya.ru). Поэтому
+страницы снимает облачная рутина Claude (src/yandex_snapshot.py) и кладёт
+в data/yandex_raw/<дата>/<аэропорт>.json.gz. Сбор на GitHub берёт сутки из
+снимка. Нет снимка: на GitHub Яндекс не запрашивается вовсе (только при
+заданном YANDEX_PROXY), сутки берутся из AeroDataBox. После первой капчи
+модуль до конца запуска больше не стучится (_BLOCKED).
 
 Фактическое время. У SVO оно с секундами и в среднем позже, чем
 revisedTime AeroDataBox (SU 1424 12.09: 00:15:35 против 00:03), похоже на
@@ -44,6 +47,7 @@ revisedTime AeroDataBox (SU 1424 12.09: 00:15:35 против 00:03), похож
 """
 from __future__ import annotations
 
+import gzip
 import json
 import os
 import re
@@ -54,6 +58,7 @@ from typing import Optional
 import httpx
 
 from src.config import AIRPORTS as AIRPORT_CONFIGS, BROWSER_HEADERS, REQUEST_TIMEOUT_SEC
+from src.config import DATA_DIR
 from src.utils import get_logger
 
 log = get_logger("yandex_fids")
@@ -95,6 +100,44 @@ _BLOCKED = False
 LAST_PAGE: dict[str, tuple[set, set]] = {}
 MOSCOW_IATA = {"SVO", "VKO", "DME", "ZIA", "BKA", "OSF"}
 
+SNAP_DIR = DATA_DIR / "yandex_raw"
+
+
+def snapshot_path(airport: str, day: date):
+    return SNAP_DIR / day.isoformat() / ("%s.json.gz" % airport)
+
+
+def save_snapshot(airport: str, day: date, station: dict) -> None:
+    p = snapshot_path(airport, day)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    body = dict(station)
+    body["_fetched_at"] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    raw = json.dumps(body, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    with open(p, "wb") as f:
+        f.write(gzip.compress(raw, 9, mtime=0))
+
+
+def load_snapshot(airport: str, day: date) -> Optional[dict]:
+    p = snapshot_path(airport, day)
+    if not p.exists():
+        return None
+    try:
+        station = json.loads(gzip.decompress(p.read_bytes()).decode("utf-8"))
+    except (OSError, ValueError) as e:
+        log.error("[%s] %s: снимок %s не читается: %s", airport, day, p, e)
+        return None
+    if not isinstance(station.get("threads"), list):
+        log.error("[%s] %s: в снимке нет threads", airport, day)
+        return None
+    return station
+
+
+def _network_allowed() -> bool:
+    """На серверах GitHub Яндекс отдаёт капчу, без прокси не стучимся."""
+    if os.environ.get("YANDEX_PROXY", "").strip():
+        return True
+    return os.environ.get("GITHUB_ACTIONS", "").lower() != "true"
+
 
 def make_client() -> httpx.Client:
     proxy = os.environ.get("YANDEX_PROXY", "").strip() or None
@@ -122,8 +165,18 @@ def parse_state(html: str) -> dict:
 
 
 def fetch_station(airport: str, day: date,
-                  client: Optional[httpx.Client] = None) -> dict:
+                  client: Optional[httpx.Client] = None,
+                  use_snapshot: bool = True) -> dict:
     global _BLOCKED
+    if use_snapshot:
+        station = load_snapshot(airport, day)
+        if station is not None:
+            log.info("[%s] %s: табло Яндекса из снимка (%s)", airport, day,
+                     station.get("_fetched_at", "?"))
+            return station
+        if not _network_allowed():
+            raise YandexError("[%s] %s: снимка табло нет, а с GitHub Яндекс не отвечает"
+                              % (airport, day))
     if _BLOCKED:
         raise YandexError("[%s] %s: Яндекс в этом запуске отдаёт капчу, не запрашиваю"
                           % (airport, day))
@@ -180,19 +233,18 @@ def _flight(t: dict, companies: dict) -> Optional[dict]:
     actual = _dt(st.get("actualDt")) if status == "departed" else None
     route = t.get("routeStations") or [{}]
     first = route[0] or {}
-    numbers = [t.get("number") or ""]
-    comp = [t.get("companyId")]
+    pairs = [(t.get("number") or "", t.get("companyId"))]
     for cs in t.get("codeshares") or []:
-        numbers.append(cs.get("number") or "")
-        comp.append(cs.get("companyId"))
+        pairs.append((cs.get("number") or "", cs.get("companyId")))
+    pairs = [p for p in pairs if p[0]]
     return {
         "sched": sched,
         "actual": actual,
         "status": status,
         "gate": (st.get("gate") or "").strip(),
         "terminal_raw": (st.get("actualTerminalName") or t.get("terminalName") or ""),
-        "numbers": [n for n in numbers if n],
-        "company_ids": comp,
+        "numbers": [p[0] for p in pairs],
+        "company_ids": [p[1] for p in pairs],
         "supplement": bool(t.get("isSupplement")),
         "dest_iata": first.get("iataCode") or "",
         "dest": first.get("settlement") or first.get("title") or "",
@@ -241,7 +293,11 @@ def _merge_codeshares(flights: list[dict]) -> list[dict]:
                         comps.append(c)
                 if not head["gate"] and f["gate"]:
                     head["gate"] = f["gate"]
-            head["numbers"], head["company_ids"] = nums, comps
+            # Номер оператора первым, остальные по алфавиту: порядок
+            # кодшерингов на странице Яндекса от запроса к запросу плавает.
+            rest = sorted(zip(nums[1:], comps[1:]), key=lambda p: p[0])
+            head["numbers"] = nums[:1] + [p[0] for p in rest]
+            head["company_ids"] = comps[:1] + [p[1] for p in rest]
             out.append(head)
     return out
 
