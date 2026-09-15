@@ -8,6 +8,10 @@ name: Daily fetch (AeroDataBox)
 # Если после этого неполные дни остались — workflow становится КРАСНЫМ
 # (GitHub пришлёт письмо), но собранные данные всё равно закоммичены.
 #
+# ИЗМЕНЕНИЕ 15.09.2026: основной источник табло Яндекс Расписаний. GitHub
+# Яндекс не пускает, поэтому страницы в 8:15 МСК снимает облачная рутина
+# Claude и коммитит в data/yandex_raw/. Этот сбор берёт сутки из снимка.
+#
 # ИЗМЕНЕНИЕ 2026-09: из тех же ответов API считается операционная сводка
 # (план, отмены, задержки по зонам и терминалам) в data/ops_daily/ и
 # уходит письмом. Дополнительных запросов к API это не требует.
@@ -58,6 +62,15 @@ jobs:
           YANDEX_PROXY: ${{ secrets.YANDEX_PROXY }}
           FETCH_DATE: ${{ github.event.inputs.fetch_date }}
         run: python -m src.daily_fetch
+
+      # Сутки, собранные из AeroDataBox до появления снимка табло Яндекса
+      # (утренняя рутина Claude опоздала), пересобираются по снимку.
+      - name: Досбор по снимкам Яндекса
+        continue-on-error: true
+        env:
+          AERODATABOX_KEY: ${{ secrets.AERODATABOX_KEY }}
+          FETCH_DATE: ${{ github.event.inputs.fetch_date }}
+        run: python -m src.yandex_upgrade
 
       - name: Completeness check + auto-heal
         env:
