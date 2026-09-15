@@ -342,6 +342,10 @@ td.l { white-space: nowrap; }
 tr.zebra td { background: %(zebra)s; }
 tr.tot td { font-weight: 600; background: #eef2ec; }
 td.sp { padding: 3px 5px; width: 68px; line-height: 0; }
+table.dl th { font-size: 6.3pt; padding: 3px 3px; }
+table.dl td { font-size: 7.5pt; padding: 3px 3px; }
+table.dl td.sp { width: 48px; }
+.d { white-space: nowrap; }
 tr { break-inside: avoid; }
 .note { font-size: 7.2pt; color: %(muted)s; margin: 4px 0 0; }
 .find { margin: 0 0 5px; font-size: 8.4pt; line-height: 1.4;
@@ -357,12 +361,15 @@ def metric_table(rows: list[tuple], label: str, show_delta: bool) -> str:
     """rows: (подпись, текущие, прошлая неделя или None, спарклайн, итог?)"""
     dh = "<th>Отмены,<br>к пр.&nbsp;неделе</th>" if show_delta else ""
     dh2 = "<th>Задержки,<br>к пр.&nbsp;неделе</th>" if show_delta else ""
-    h = ['<table><tr><th class="l">%s</th><th>Запла-<br>нировано</th>'
+    # С колонками динамики таблица не влезала в A4 и обрезала спарклайн
+    # справа (первый отчёт с динамикой, 15.09.2026): для неё шрифт и поля уже.
+    tcls = ' class="dl"' if show_delta else ""
+    h = ['<table%s><tr><th class="l">%s</th><th>Запла-<br>нировано</th>'
          '<th>Отме-<br>нено</th><th>Отменено,<br>%%</th>%s'
          '<th>1-2<br>часа</th><th>2-3<br>часа</th><th>больше<br>3 часов</th>'
          '<th>Задержано<br>от часа, %%</th>%s'
          '<th>Средняя<br>задержка,<br>мин</th>'
-         '<th>Доля задержек<br>по дням</th></tr>' % (label, dh, dh2)]
+         '<th>Доля задержек<br>по дням</th></tr>' % (tcls, label, dh, dh2)]
     for i, (lab, r, p, sp, is_tot) in enumerate(rows):
         cls = ' class="tot"' if is_tot else (' class="zebra"' if i % 2 else "")
         dc = ("<td>%s</td>" % delta_html(r["cpct"], p["cpct"] if p else None)) \
@@ -539,21 +546,18 @@ def render_html(facts: dict, analysis: dict) -> tuple[str, str, str]:
             p.append('<p class="find">· %s</p>' % line)
         p.append('</div>')
 
-    dme = next((r for r in ap if r["airport"] == "DME"), None)
-    worst = max(ap, key=lambda r: r["dpct"])
-    dme_note = ""
-    if dme and dme["dpct"] < 10 and worst["dpct"] > 20:
-        dme_note = ("Домодедово: %s%% задержек. Источник обновляет время вылета "
-                    "только у опоздавших рейсов и обрезает крупные опоздания, за "
-                    "июнь-август максимум 111 минут на 8928 рейсов. Долю по "
-                    "Домодедову с двумя другими аэропортами напрямую не "
-                    "сравниваем. " % num(dme["dpct"]))
-
-    p.append('<div class="footer">%sИсточник: сбор бота по расписанию вылетов '
-             'AeroDataBox, те же данные, что в ежедневной рассылке. '
-             'Рейсы без факта отправления в базу для процента задержек не '
-             'входят, за период таких %d. Отчёт собран %s.</div>'
-             % (dme_note, tot["no_fact"], date.today().strftime("%d.%m.%Y")))
+    # С 15.09.2026 источник табло Яндекс Расписаний (src/yandex_fids.py).
+    # Прежняя оговорка про обрезанные задержки Домодедова относилась к
+    # AeroDataBox и убрана: у Яндекса по DME фактическое время есть у всех
+    # вылетевших рейсов.
+    p.append('<div class="footer">Источник: табло вылета Яндекс Расписаний '
+             'по трём аэропортам, сутки с 16.08.2026 пересобраны по нему. '
+             'Фактическое время ближе к отрыву от полосы, поэтому доля '
+             'задержек выше, чем в отчётах до 15.09.2026, сравнение со '
+             'старыми отчётами некорректно. Рейсы без факта отправления в '
+             'базу для процента задержек не входят, за период таких %d. '
+             'Отчёт собран %s.</div>'
+             % (tot["no_fact"], date.today().strftime("%d.%m.%Y")))
 
     html = "".join(p)
     subject = ("Вылеты за неделю %s: отменено %s%%, задержано от часа %s%%"
