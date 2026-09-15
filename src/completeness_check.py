@@ -35,6 +35,7 @@ LOOKBACK_DAYS = 14
 HISTORY_WEEKS = 8
 MIN_RATIO = 0.85
 MAX_REFETCH = 2
+SYSTEMIC_LIMIT = 2
 FLAG_FILE = Path("/tmp/completeness_flag.txt")
 EXC_FILE = DATA_DIR / "completeness_exceptions.json"
 
@@ -121,7 +122,6 @@ def main() -> int:
     if not bad:
         log.info("Полнота ОК (порог %.0f%% от медианы; известных исключений: %d)",
                  MIN_RATIO * 100, len(exc))
-        return 0
 
     for d, a, n, med in bad:
         log.warning("НЕПОЛНЫЙ ДЕНЬ %s [%s]: %d рейсов при медиане %.0f",
@@ -136,9 +136,10 @@ def main() -> int:
         except ValueError:
             pass
 
-    have_key = bool(os.environ.get("AERODATABOX_KEY", "").strip())
+    # С 15.09.2026 пересбор идёт через табло Яндекса, ключ AeroDataBox для
+    # него не обязателен (он нужен только запасному пути).
     refetched = 0
-    if have_key:
+    if True:
         for d in dict.fromkeys(x[0] for x in bad):
             if d in tried:
                 continue
@@ -149,8 +150,6 @@ def main() -> int:
             if refetch(d):
                 refetched += 1
                 tried.add(d)
-    else:
-        log.warning("Нет AERODATABOX_KEY — автодосбор невозможен")
 
     # перепроверка; пробованные и не вылечившиеся дни -> исключения
     counts2 = day_counts()
@@ -165,7 +164,39 @@ def main() -> int:
                   f"(медиана {med:.0f}); больше не пересобирается")
         else:
             new_flags.append((d, a, n, med))
+    # Вылеченные дни убираем из исключений: счёт уже в норме.
+    for key in list(exc):
+        ds, ap = key.split("|")
+        try:
+            dd = date.fromisoformat(ds)
+        except ValueError:
+            continue
+        med = meds.get((ap, dd.weekday()))
+        n_now = counts2.get((ap, dd), 0)
+        if med and n_now >= MIN_RATIO * med:
+            log.info("Исключение %s снято: теперь %d рейсов при медиане %.0f",
+                     key, n_now, med)
+            del exc[key]
     save_exceptions(exc)
+
+    # Системный сбой источника. До 15.09.2026 исключения копились молча: по
+    # DME за сентябрь их набралось 8 дней из 12, прогон при этом был зелёным.
+    # Теперь, если у аэропорта за LOOKBACK_DAYS больше SYSTEMIC_LIMIT
+    # исключений, прогон краснеет, даже если каждое по отдельности известно.
+    lo = upto - timedelta(days=LOOKBACK_DAYS)
+    per_ap: dict[str, list[str]] = {}
+    for key in exc:
+        ds, ap = key.split("|")
+        try:
+            if date.fromisoformat(ds) > lo:
+                per_ap.setdefault(ap, []).append(ds)
+        except ValueError:
+            continue
+    for ap, days in sorted(per_ap.items()):
+        if len(days) > SYSTEMIC_LIMIT:
+            new_flags.append((date.fromisoformat(max(days)), ap, -1, float(len(days))))
+            print(f"::error::Системный недобор {ap}: {len(days)} дней-исключений "
+                  f"за {LOOKBACK_DAYS} дней ({', '.join(sorted(days))})")
 
     if new_flags:
         lines = [f"{d} [{a}]: {n} рейсов, медиана {med:.0f}"
