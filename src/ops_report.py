@@ -24,7 +24,7 @@ from datetime import date
 from src.aerodatabox import LAST_PAYLOADS, _norm_dest, _parse_local
 from src.config import DATA_DIR
 from src.utils import get_logger
-from src.zones import zone
+from src.zones import zone_of
 
 log = get_logger("ops")
 
@@ -59,7 +59,11 @@ DELAY_BUCKETS = (("60_120", 60, 120), ("120_180", 120, 180), ("180_plus", 180, 1
 
 # Версия схемы строки. Меняется, когда меняется состав или смысл полей.
 # ops_email берёт в базу для средних только сводки текущей версии.
-SCHEMA = 2
+# Схема 3 (15.09.2026): основной источник табло Яндекс Расписаний
+# (src/yandex_fids.py). Фактическое время там ближе к отрыву от полосы,
+# чем revisedTime AeroDataBox, поэтому задержки со схемой 2 несопоставимы.
+# Сводки с 16.08.2026 пересобраны по Яндексу.
+SCHEMA = 3
 
 FIELDS = ("planned", "canceled", "diverted", "delay_60_120", "delay_120_180",
           "delay_180_plus", "delayed_total", "on_time", "departed", "no_fact",
@@ -141,7 +145,7 @@ def collapse(payloads: list[dict]) -> list[dict]:
             status = (item.get("status") or "").strip().lower()
             g = groups.get(key)
             if g is None:
-                g = {"sched": sched.strftime("%H:%M"), "dest": dest,
+                g = {"sched": sched.strftime("%H:%M"), "dest": dest, "dest_iata": iata,
                      "terminal": "н/д", "gate": "", "status": "", "delay": None}
                 groups[key] = g
             if g["terminal"] == "н/д":
@@ -170,7 +174,8 @@ def summarize(airport: str, rows: list[dict]) -> list[dict]:
             if first.isalpha():
                 term = first
         # Зона: сначала по месту вылета, направление только если правила нет.
-        z = zone_by_place(airport, term, r.get("gate")) or zone(r["dest"]) or "?"
+        z = (zone_by_place(airport, term, r.get("gate"))
+             or zone_of("", r["dest"], dest_iata=r.get("dest_iata")))
         # В Домодедово международная зона это только терминал E. Проверено по
         # data/daily за июнь-сентябрь: из гейтов E ушло 2936 международных
         # рейсов, из гейтов C и D ни одного. Гейт есть не у всех рейсов
@@ -211,10 +216,22 @@ def summarize(airport: str, rows: list[dict]) -> list[dict]:
     return out
 
 
-def build_ops_day(day: date, airports=("SVO", "VKO", "DME")) -> str:
-    """Собрать сводку за день из payload'ов последнего сбора и записать JSON."""
+def build_ops_day(day: date, airports=("SVO", "VKO", "DME"),
+                  prepared: dict | None = None,
+                  keep_airports=()) -> str:
+    """Собрать сводку за день и записать JSON.
+
+    prepared: {аэропорт: записи в формате collapse()} из табло Яндекса.
+    Аэропорты без готовых записей берутся из payload'ов AeroDataBox.
+    """
     rows: list[dict] = []
+    sources: dict[str, str] = {}
+    prepared = prepared or {}
     for ap in airports:
+        if ap in prepared:
+            rows.extend(summarize(ap, prepared[ap]))
+            sources[ap] = "yandex"
+            continue
         payloads = LAST_PAYLOADS.get(ap)
         if not payloads:
             log.warning("[%s] нет payload'ов за %s, аэропорт пропущен", ap, day)
@@ -223,13 +240,26 @@ def build_ops_day(day: date, airports=("SVO", "VKO", "DME")) -> str:
         # API лежат и вчерашние рейсы, уехавшие за полночь, и утренние
         # рейсы следующих суток. До правки 03.09.2026 они попадали в сводку.
         rows.extend(summarize(ap, collapse(payloads)))
+        sources[ap] = "aerodatabox"
+    # Аэропорты, которые в этот раз не собрались: оставляем прежние строки.
+    path = OPS_DIR / ("%s.json" % day.isoformat())
+    if keep_airports and path.exists():
+        try:
+            old = json.loads(path.read_text(encoding="utf-8"))
+            for r in old.get("rows", []):
+                if r.get("airport") in keep_airports:
+                    rows.append(r)
+            for ap in keep_airports:
+                sources[ap] = "прежние (%s)" % (old.get("sources") or {}).get(ap, "схема %s" % old.get("schema"))
+        except Exception as exc:
+            log.warning("прежняя сводка %s не читается: %s", path, exc)
     if not rows:
         log.error("Сводка за %s пустая, нечего писать", day)
         return ""
     OPS_DIR.mkdir(parents=True, exist_ok=True)
     path = OPS_DIR / ("%s.json" % day.isoformat())
     path.write_text(json.dumps({"date": day.isoformat(), "schema": SCHEMA,
-                                "rows": rows},
+                                "sources": sources, "rows": rows},
                                ensure_ascii=False, indent=1), encoding="utf-8")
     tot = sum(r["planned"] for r in rows)
     can = sum(r["canceled"] for r in rows)
