@@ -2,7 +2,8 @@ name: Weekly dashboard email
 
 # ДОБАВЛЕНО 16.09.2026: рутина «Недельный дашборд по вылетам» (claude.ai/code)
 # по вторникам в 10:00 МСК собирает PDF и коммитит его сюда, в
-# data/weekly_reports/weekly_<дата>.pdf. Этот workflow срабатывает на такой
+# data/weekly_reports/<имя>.pdf (имя русское, без нижних подчёркиваний,
+# например «Дашборд вылетов 21-27 сентября 2026.pdf»). Этот workflow срабатывает на такой
 # коммит и рассылает письмо с этим же PDF во вложении — той же аналитикой,
 # что ушла Виталию в чат, без пересборки.
 #
@@ -34,16 +35,23 @@ jobs:
       - name: Найти новый PDF в этом коммите
         id: find
         run: |
-          FILE=$(git diff-tree --no-commit-id --name-only -r HEAD -- 'data/weekly_reports/*.pdf' | tail -n1)
+          FILE=$(git -c core.quotepath=false diff-tree --no-commit-id --name-only -r HEAD -- 'data/weekly_reports/*.pdf' | tail -n1)
           if [ -z "$FILE" ]; then
             echo "В этом коммите нет нового PDF, письмо не отправляю."
             echo "send=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          echo "send=true" >> "$GITHUB_OUTPUT"
-          echo "file=$FILE" >> "$GITHUB_OUTPUT"
           BASENAME=$(basename "$FILE" .pdf)
-          echo "end_date=${BASENAME#weekly_}" >> "$GITHUB_OUTPUT"
+          case "$BASENAME" in
+            weekly_*) TITLE="Недельный дашборд по вылетам, неделя до ${BASENAME#weekly_}" ;;
+            *) TITLE="$BASENAME" ;;
+          esac
+          mkdir -p mail
+          CLEAN="mail/$(printf '%s' "$BASENAME" | tr -d ',').pdf"
+          cp "$FILE" "$CLEAN"
+          echo "send=true" >> "$GITHUB_OUTPUT"
+          echo "file=$CLEAN" >> "$GITHUB_OUTPUT"
+          echo "title=$TITLE" >> "$GITHUB_OUTPUT"
 
       - name: Отправить письмо
         if: ${{ steps.find.outputs.send == 'true' && env.SMTP_HOST != '' && env.SMTP_PASSWORD != '' }}
@@ -56,6 +64,6 @@ jobs:
           password: ${{ secrets.SMTP_PASSWORD }}
           from: Дашборд по вылетам <${{ secrets.SMTP_USER }}>
           to: vitalydmitriyev@gmail.com,vdmitriev@gkvinegret.ru,rahmetov@gkvinegret.ru,kkashirina@gkvinegret.ru,apan@gkvinegret.ru,ffilippov@gkvinegret.ru
-          subject: Недельный дашборд по вылетам, неделя до ${{ steps.find.outputs.end_date }}
+          subject: ${{ steps.find.outputs.title }}
           body: Дашборд по вылетам из аэропортов Москвы за прошедшую неделю во вложении.
           attachments: ${{ steps.find.outputs.file }}
