@@ -18,6 +18,10 @@ name: Daily fetch (AeroDataBox)
 # Письмо отправляется, только если в секретах задан SMTP_HOST.
 # Нужные секреты: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, OPS_MAIL_TO.
 # secure: true — это SSL (обычно порт 465). Для STARTTLS на 587 поставить false.
+# ИЗМЕНЕНИЕ 01.10.2026: вторым письмом, сразу за ежедневным, уходит сводка за
+# прошлый месяц с сравнением с позапрошлым (src/ops_email_monthly.py). Условие
+# одно: целевой день запуска (позавчера) последний в месяце, то есть письмо за
+# сентябрь уходит 2 октября. Отдельного расписания у него нет.
 # ЗАПУСК. Расписание GitHub убрано 04.09.2026: оно не гарантированное, под
 # нагрузкой прогон задерживается или пропускается совсем. 04.09 так и вышло,
 # письмо в 9 утра не пришло. Единственный триггер теперь задача в cron-job.org
@@ -104,6 +108,22 @@ jobs:
           OPS_DATE: ${{ github.event.inputs.fetch_date }}
         run: python -m src.ops_email
 
+      # Второе письмо: сводка за месяц. Собирается только если целевой день
+      # последний в месяце, иначе шаг сразу выходит. Сбой не трогает дневное
+      # письмо, но шаг ниже сделает прогон красным, чтобы GitHub прислал сигнал.
+      - name: Собрать месячное письмо
+        id: month
+        continue-on-error: true
+        env:
+          FETCH_DATE: ${{ github.event.inputs.fetch_date }}
+        run: |
+          if [ "$(python -m src.ops_email_monthly --due | tail -n 1)" = "yes" ]; then
+            pip install -q duckdb==1.5.5
+            python -m src.ops_email_monthly
+          else
+            echo "send=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Отправить письмо
         if: ${{ env.SMTP_HOST != '' && env.SMTP_PASSWORD != '' && steps.ops.outcome == 'success' }}
         uses: dawidd6/action-send-mail@v3
@@ -123,6 +143,25 @@ jobs:
           html_body: file:///tmp/ops_body.html
           convert_markdown: false
 
+      - name: Пауза между письмами
+        if: ${{ !cancelled() && env.SMTP_HOST != '' && env.SMTP_PASSWORD != '' && steps.month.outputs.send == 'true' }}
+        run: sleep 20
+
+      - name: Отправить месячное письмо
+        if: ${{ !cancelled() && env.SMTP_HOST != '' && env.SMTP_PASSWORD != '' && steps.month.outputs.send == 'true' }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_HOST }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          secure: true
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          from: Отчёт по вылетам <${{ secrets.SMTP_USER }}>
+          to: vdmitriev@gkvinegret.ru,rahmetov@gkvinegret.ru,kkashirina@gkvinegret.ru,apan@gkvinegret.ru,ffilippov@gkvinegret.ru
+          subject: ${{ steps.month.outputs.subject }}
+          html_body: file:///tmp/ops_month_body.html
+          convert_markdown: false
+
       - name: Alarm if incomplete days remain
         run: |
           if [ -f /tmp/completeness_flag.txt ]; then
@@ -131,3 +170,9 @@ jobs:
             exit 1
           fi
           echo "Полнота в норме (известные дыры источника: data/completeness_exceptions.json)."
+
+      - name: Alarm if monthly report failed
+        if: ${{ !cancelled() && steps.month.outcome == 'failure' }}
+        run: |
+          echo "Месячное письмо не собралось, смотри шаг 'Собрать месячное письмо'."
+          exit 1
