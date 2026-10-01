@@ -1,0 +1,59 @@
+name: Weekly dashboard email TEST
+
+# ТЕСТОВАЯ копия weekly_email.yml. Срабатывает на PDF в data/weekly_reports_test
+# и шлёт письмо только Виталию, заказчики его не получают. Нужна, чтобы
+# проверить цепочку «вторничная задача Claude -> коммит PDF -> письмо» без
+# рассылки коллегам. Боевой вариант: weekly_email.yml, папка data/weekly_reports.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/weekly_reports_test/*.pdf"
+
+permissions:
+  contents: read
+
+jobs:
+  email:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SMTP_HOST: ${{ secrets.SMTP_HOST }}
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Найти новый PDF в этом коммите
+        id: find
+        run: |
+          FILE=$(git -c core.quotepath=false diff-tree --no-commit-id --name-only -r HEAD -- 'data/weekly_reports_test/*.pdf' | tail -n1)
+          if [ -z "$FILE" ]; then
+            echo "В этом коммите нет нового PDF, письмо не отправляю."
+            echo "send=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          BASENAME=$(basename "$FILE" .pdf)
+          mkdir -p mail
+          CLEAN="mail/$(printf '%s' "$BASENAME" | tr -d ',').pdf"
+          cp "$FILE" "$CLEAN"
+          echo "send=true" >> "$GITHUB_OUTPUT"
+          echo "file=$CLEAN" >> "$GITHUB_OUTPUT"
+          echo "title=ТЕСТ: $BASENAME" >> "$GITHUB_OUTPUT"
+
+      - name: Отправить тестовое письмо
+        if: ${{ steps.find.outputs.send == 'true' && env.SMTP_HOST != '' && env.SMTP_PASSWORD != '' }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_HOST }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          secure: true
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          from: Дашборд по вылетам (тест) <${{ secrets.SMTP_USER }}>
+          to: vitalydmitriyev@gmail.com,vdmitriev@gkvinegret.ru
+          subject: ${{ steps.find.outputs.title }}
+          body: Тестовая рассылка недельного дашборда. Коллегам это письмо не уходило.
+          attachments: ${{ steps.find.outputs.file }}
