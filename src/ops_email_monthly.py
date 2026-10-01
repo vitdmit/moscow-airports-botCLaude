@@ -294,7 +294,7 @@ def build(y: int, m: int) -> tuple[str, str]:
 
     cp = fmt_pct(tot["cpct"])
     dp = fmt_pct(tot["dpct"])
-    subject = ("Вылеты за %s %d: запланировано %s, отменено %s (%s), задержано от часа %s"
+    subject = ("Месячный отчет по задержкам и отменам, %s %d: запланировано %s, отменено %s (%s), задержано от часа %s"
                % (cur_name, y, fmt_int(tot["planned"]), fmt_int(tot["canceled"]), cp, dp))
     return "".join(parts), subject.replace(" ", " ")
 
