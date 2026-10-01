@@ -206,7 +206,7 @@ def build(day: date) -> tuple[str, str, str]:
                         r["departed"], pct(r["on_time"], b_r), r["no_fact"],
                         r["delay_min_total"],
                         0 if not b_r else round(r["delay_min_total"] / b_r)])
-    subject = ("Вылеты %s: запланировано %d, отменено %d (%s), задержано от часа %s"
+    subject = ("Ежедневный отчет по задержкам и отменам, %s: запланировано %d, отменено %d (%s), задержано от часа %s"
                % (day.strftime("%d.%m.%Y"), total["planned"], total["canceled"],
                   pct(total["canceled"], total["planned"]),
                   pct(total["delayed_total"], total["departed"] - total["no_fact"])))
