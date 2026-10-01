@@ -1,14 +1,13 @@
 name: Weekly dashboard email
 
-# ДОБАВЛЕНО 16.09.2026: рутина «Недельный дашборд по вылетам» (claude.ai/code)
-# по вторникам в 10:00 МСК собирает PDF и коммитит его сюда, в
-# data/weekly_reports/<имя>.pdf (имя русское, без нижних подчёркиваний,
-# например «Дашборд вылетов 21-27 сентября 2026.pdf»). Этот workflow срабатывает на такой
-# коммит и рассылает письмо с этим же PDF во вложении — той же аналитикой,
-# что ушла Виталию в чат, без пересборки.
+# Недельный отчет по задержкам и отменам. Задание Клода по вторникам в 10:00 МСК
+# собирает PDF и коммитит его в data/weekly_reports/weekly_<воскресенье>.pdf.
+# Этот workflow срабатывает на такой коммит и рассылает письмо с PDF во вложении.
+# Тема, текст письма и имя вложения строятся здесь по-русски из даты воскресенья,
+# поэтому имя файла в репозитории на них не влияет.
 #
 # Секреты те же, что у daily.yml: SMTP_HOST, SMTP_PORT, SMTP_USER,
-# SMTP_PASSWORD. Если SMTP_HOST/SMTP_PASSWORD не заданы, письмо просто не
+# SMTP_PASSWORD. Если SMTP_HOST/SMTP_PASSWORD не заданы, письмо не
 # отправляется (файл в репозитории всё равно останется).
 
 on:
@@ -32,7 +31,7 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Найти новый PDF в этом коммите
+      - name: Найти новый PDF и назвать его по-русски
         id: find
         run: |
           FILE=$(git -c core.quotepath=false diff-tree --no-commit-id --name-only -r HEAD -- 'data/weekly_reports/*.pdf' | tail -n1)
@@ -42,16 +41,31 @@ jobs:
             exit 0
           fi
           BASENAME=$(basename "$FILE" .pdf)
+          MON=(января февраля марта апреля мая июня июля августа сентября октября ноября декабря)
           case "$BASENAME" in
-            weekly_*) TITLE="Недельный дашборд по вылетам, неделя до ${BASENAME#weekly_}" ;;
-            *) TITLE="$BASENAME" ;;
+            weekly_*)
+              END="${BASENAME#weekly_}"
+              START=$(date -d "$END -6 days" +%Y-%m-%d)
+              sd=$(date -d "$START" +%-d); sm=$(date -d "$START" +%-m); sy=$(date -d "$START" +%Y)
+              ed=$(date -d "$END" +%-d); em=$(date -d "$END" +%-m); ey=$(date -d "$END" +%Y)
+              if [ "$sy" != "$ey" ]; then
+                PERIOD="$sd ${MON[$sm-1]} $sy - $ed ${MON[$em-1]} $ey"
+              elif [ "$sm" != "$em" ]; then
+                PERIOD="$sd ${MON[$sm-1]} - $ed ${MON[$em-1]} $ey"
+              else
+                PERIOD="$sd-$ed ${MON[$em-1]} $ey"
+              fi
+              ;;
+            *) PERIOD="$BASENAME" ;;
           esac
+          TITLE="Недельный отчет по задержкам и отменам, $PERIOD"
           mkdir -p mail
-          CLEAN="mail/$(printf '%s' "$BASENAME" | tr -d ',').pdf"
+          CLEAN="mail/Недельный отчет по задержкам и отменам $PERIOD.pdf"
           cp "$FILE" "$CLEAN"
           echo "send=true" >> "$GITHUB_OUTPUT"
           echo "file=$CLEAN" >> "$GITHUB_OUTPUT"
           echo "title=$TITLE" >> "$GITHUB_OUTPUT"
+          echo "period=$PERIOD" >> "$GITHUB_OUTPUT"
 
       - name: Отправить письмо
         if: ${{ steps.find.outputs.send == 'true' && env.SMTP_HOST != '' && env.SMTP_PASSWORD != '' }}
@@ -62,8 +76,8 @@ jobs:
           secure: true
           username: ${{ secrets.SMTP_USER }}
           password: ${{ secrets.SMTP_PASSWORD }}
-          from: Дашборд по вылетам <${{ secrets.SMTP_USER }}>
+          from: Отчёт по вылетам <${{ secrets.SMTP_USER }}>
           to: vitalydmitriyev@gmail.com,vdmitriev@gkvinegret.ru,rahmetov@gkvinegret.ru,kkashirina@gkvinegret.ru,apan@gkvinegret.ru,ffilippov@gkvinegret.ru
           subject: ${{ steps.find.outputs.title }}
-          body: Дашборд по вылетам из аэропортов Москвы за прошедшую неделю во вложении.
+          body: Недельный отчет по задержкам и отменам рейсов из аэропортов Москвы за ${{ steps.find.outputs.period }} во вложении.
           attachments: ${{ steps.find.outputs.file }}
