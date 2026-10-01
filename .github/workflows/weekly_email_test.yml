@@ -1,11 +1,14 @@
 name: Weekly dashboard email TEST
 
-# ТЕСТОВАЯ копия weekly_email.yml. Срабатывает на PDF в data/weekly_reports_test
-# и шлёт письмо только Виталию, заказчики его не получают. Нужна, чтобы
-# проверить цепочку «вторничная задача Claude -> коммит PDF -> письмо» без
-# рассылки коллегам. Боевой вариант: weekly_email.yml, папка data/weekly_reports.
+# ТЕСТОВАЯ копия weekly_email.yml. Шлёт письмо только Виталию, заказчики его не
+# получают. Запускается двумя способами:
+#   1) вручную (Run workflow): берёт самый свежий PDF из data/weekly_reports;
+#   2) пушем PDF в data/weekly_reports_test.
+# Тема, текст и имя вложения строятся так же, как в боевом weekly_email.yml,
+# с пометкой ТЕСТ.
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
@@ -26,22 +29,45 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Найти новый PDF в этом коммите
+      - name: Найти PDF и назвать его по-русски
         id: find
         run: |
-          FILE=$(git -c core.quotepath=false diff-tree --no-commit-id --name-only -r HEAD -- 'data/weekly_reports_test/*.pdf' | tail -n1)
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            FILE=$(ls -1 data/weekly_reports/*.pdf | tail -n1)
+          else
+            FILE=$(git -c core.quotepath=false diff-tree --no-commit-id --name-only -r HEAD -- 'data/weekly_reports_test/*.pdf' | tail -n1)
+          fi
           if [ -z "$FILE" ]; then
-            echo "В этом коммите нет нового PDF, письмо не отправляю."
+            echo "Нет PDF, письмо не отправляю."
             echo "send=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           BASENAME=$(basename "$FILE" .pdf)
+          MON=(января февраля марта апреля мая июня июля августа сентября октября ноября декабря)
+          case "$BASENAME" in
+            weekly_*)
+              END="${BASENAME#weekly_}"
+              START=$(date -d "$END -6 days" +%Y-%m-%d)
+              sd=$(date -d "$START" +%-d); sm=$(date -d "$START" +%-m); sy=$(date -d "$START" +%Y)
+              ed=$(date -d "$END" +%-d); em=$(date -d "$END" +%-m); ey=$(date -d "$END" +%Y)
+              if [ "$sy" != "$ey" ]; then
+                PERIOD="$sd ${MON[$sm-1]} $sy - $ed ${MON[$em-1]} $ey"
+              elif [ "$sm" != "$em" ]; then
+                PERIOD="$sd ${MON[$sm-1]} - $ed ${MON[$em-1]} $ey"
+              else
+                PERIOD="$sd-$ed ${MON[$em-1]} $ey"
+              fi
+              ;;
+            *) PERIOD="$BASENAME" ;;
+          esac
+          TITLE="ТЕСТ: Недельный отчет по задержкам и отменам, $PERIOD"
           mkdir -p mail
-          CLEAN="mail/$(printf '%s' "$BASENAME" | tr -d ',').pdf"
+          CLEAN="mail/Недельный отчет по задержкам и отменам $PERIOD.pdf"
           cp "$FILE" "$CLEAN"
           echo "send=true" >> "$GITHUB_OUTPUT"
           echo "file=$CLEAN" >> "$GITHUB_OUTPUT"
-          echo "title=ТЕСТ: $BASENAME" >> "$GITHUB_OUTPUT"
+          echo "title=$TITLE" >> "$GITHUB_OUTPUT"
+          echo "period=$PERIOD" >> "$GITHUB_OUTPUT"
 
       - name: Отправить тестовое письмо
         if: ${{ steps.find.outputs.send == 'true' && env.SMTP_HOST != '' && env.SMTP_PASSWORD != '' }}
@@ -52,8 +78,8 @@ jobs:
           secure: true
           username: ${{ secrets.SMTP_USER }}
           password: ${{ secrets.SMTP_PASSWORD }}
-          from: Дашборд по вылетам (тест) <${{ secrets.SMTP_USER }}>
+          from: Отчёт по вылетам (тест) <${{ secrets.SMTP_USER }}>
           to: vitalydmitriyev@gmail.com,vdmitriev@gkvinegret.ru
           subject: ${{ steps.find.outputs.title }}
-          body: Тестовая рассылка недельного дашборда. Коллегам это письмо не уходило.
+          body: Тестовая рассылка, коллегам это письмо не уходило. Недельный отчет по задержкам и отменам рейсов из аэропортов Москвы за ${{ steps.find.outputs.period }} во вложении.
           attachments: ${{ steps.find.outputs.file }}
