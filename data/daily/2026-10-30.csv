@@ -1,428 +1,491 @@
 ﻿airport,flight_date,scheduled_time,actual_time,terminal,gate,airlines,flight_numbers,destination,destination_iata
-SVO,2026-10-30,00:15,11:37,C,146,Aeroflot,SU 424,Hurghada,HRG
-SVO,2026-10-30,00:55,11:25,B,104,Aeroflot,SU 1562,Irkutsk,IKT
-SVO,2026-10-30,01:05,12:16,C,132,"Rossiya,Aeroflot","FV 5957,SU 5957",Hurghada,HRG
-SVO,2026-10-30,01:15,12:20,C,130,Aeroflot,SU 524,Dubai,DXB
-SVO,2026-10-30,01:30,12:25,B,101,Aeroflot,SU 1464,Novosibirsk,OVB
-SVO,2026-10-30,02:00,11:41,B,115,Aeroflot,SU 1448,Ekaterinburg,SVX
-SVO,2026-10-30,02:20,11:34,C,135,Aeroflot,SU 2148,Antalya,AYT
-SVO,2026-10-30,02:40,09:44,D,14,Smartavia,5N 231,Orenburg,REN
-SVO,2026-10-30,02:50,10:53,B,102,"Rossiya,Aeroflot","FV 6279,SU 6279",Khabarovsk,KHV
-SVO,2026-10-30,03:10,12:49,B,104,Aeroflot,SU 1262,Ufa,UFA
-SVO,2026-10-30,05:40,10:59,C,132,Aeroflot,SU 2178,Antalya,AYT
-SVO,2026-10-30,05:45,10:38,C,130,Aeroflot,SU 430,Sharm el Sheikh,SSH
-SVO,2026-10-30,06:10,10:41,B,103,"Rossiya,Aeroflot","FV 6405,SU 6405",Syktyvkar,SCW
-SVO,2026-10-30,06:20,10:18,B,103,Aeroflot,SU 1152,Sochi,AER
-SVO,2026-10-30,06:30,09:55,B,102,Aeroflot,SU 1000,Kaliningrad,KGD
-SVO,2026-10-30,06:40,11:33,B,117,"Rossiya,Aeroflot","FV 6209,SU 6209",Ekaterinburg,SVX
-SVO,2026-10-30,06:45,11:11,B,121,"Rossiya,Aeroflot","FV 6075,SU 6075",Ulyanovsk,ULV
-SVO,2026-10-30,06:45,14:52,D,13,Pobeda,DP 6921,Makhachkala,MCX
-SVO,2026-10-30,06:50,15:27,D,1,Pobeda,DP 6843,Kazan,KZN
-SVO,2026-10-30,06:55,12:25,B,102,"Rossiya,Aeroflot","FV 6247,SU 6247",Nizhnekamsk,NBC
-SVO,2026-10-30,07:00,16:27,B,101,"Rossiya,Aeroflot","FV 6727,SU 6727",Saransk,SKX
-SVO,2026-10-30,07:05,10:14,C,132,Aeroflot,SU 2140,Istanbul,IST
-SVO,2026-10-30,07:15,15:03,D,3,Pobeda,DP 6903,Magas,IGT
-SVO,2026-10-30,07:15,16:57,D,3,Pobeda,DP 6835,Kaliningrad,KGD
-SVO,2026-10-30,07:20,18:37,C,132,Aeroflot,SU 2120,Bodrum,BJV
-SVO,2026-10-30,07:30,18:54,D,13,Pobeda,DP 6841,Kazan,KZN
-SVO,2026-10-30,07:35,11:27,C,131,Aeroflot,SU 520,Dubai,DXB
-SVO,2026-10-30,07:40,13:10,B,102,Aeroflot,SU 1444,Irkutsk,IKT
-SVO,2026-10-30,07:40,10:44,B,104,"Rossiya,Aeroflot","FV 6433,SU 6433",Perm,PEE
-SVO,2026-10-30,07:50,10:06,C,132,Aeroflot,SU 1872,Tashkent,TAS
-SVO,2026-10-30,08:00,10:43,B,101,"Rossiya,Aeroflot","FV 6955,SU 6955",Saint-Petersburg,LED
-SVO,2026-10-30,08:00,17:57,C,140,Air Cairo,SM 788,Hurghada,HRG
-SVO,2026-10-30,08:10,12:29,C,132,Aeroflot,SU 1864,Yerevan,EVN
-SVO,2026-10-30,08:10,12:22,C,133,Aeroflot,SU 2130,Istanbul,IST
-SVO,2026-10-30,08:15,12:32,C,131,Aeroflot,SU 1886,Bishkek,BSZ
-SVO,2026-10-30,08:15,13:35,D,3,Pobeda,DP 6905,Vladikavkaz,OGZ
-SVO,2026-10-30,08:20,11:30,B,102,Aeroflot,SU 1136,Sochi,AER
-SVO,2026-10-30,08:20,12:08,C,126,Royal Air Maroc,AT 221,Casablanca,CMN
-SVO,2026-10-30,08:20,12:59,C,138,Aeroflot,SU 426,Sharm el Sheikh,SSH
-SVO,2026-10-30,08:45,10:56,B,108,"Rossiya,Aeroflot","FV 6271,SU 6271",Orenburg,REN
-SVO,2026-10-30,08:50,11:01,B,107,Aeroflot,SU 1276,Kazan,KZN
-SVO,2026-10-30,08:50,19:46,D,1,Pobeda,DP 6941,Sochi,AER
-SVO,2026-10-30,09:00,12:48,B,106,"Rossiya,Aeroflot","FV 6801,SU 6801",Saint-Petersburg,LED
-SVO,2026-10-30,09:00,17:03,C,131,Aeroflot,SU 1866,Yerevan,EVN
-SVO,2026-10-30,09:05,09:30,C,125,Aeroflot,SU 7214,Addis Ababa,ADD
-SVO,2026-10-30,09:05,09:34,C,131,Aeroflot,SU 1828,Ganja,
-SVO,2026-10-30,09:10,10:17,C,133,Aeroflot,SU 2704,Antalya,AYT
-SVO,2026-10-30,09:20,09:33,B,115,Aeroflot,SU 1460,Novosibirsk,OVB
-SVO,2026-10-30,09:20,10:16,B,117,Aeroflot,SU 10,Saint-Petersburg,LED
-SVO,2026-10-30,09:25,09:49,B,101,"Rossiya,Aeroflot","FV 6229,SU 6229",Nizhniy Novgorod,GOJ
-SVO,2026-10-30,09:25,12:20,B,104,Aeroflot,SU 1344,Mineralnyye Vody,MRV
-SVO,2026-10-30,09:25,09:37,B,116,Aeroflot,SU 1322,Murmansk,MMK
-SVO,2026-10-30,09:30,10:23,C,131,Aeroflot,SU 540,Jebel Ali,DWC
-SVO,2026-10-30,09:30,13:07,C,145,Air Cairo,SM 796,El Alamein,DBB
-SVO,2026-10-30,09:40,10:15,B,104,Severstal Aircompany,D2 152,Cherepovets,CEE
-SVO,2026-10-30,09:50,10:14,C,130,Aeroflot,SU 400,Cairo,CAI
-SVO,2026-10-30,10:00,10:17,B,101,"Rossiya,Aeroflot","FV 6213,SU 6213",Saint-Petersburg,LED
-SVO,2026-10-30,10:00,10:29,B,113,"Rossiya,Aeroflot","FV 6337,SU 6337",Arkhangelsk,ARH
-SVO,2026-10-30,10:05,11:20,C,129,Belavia,B2 976,Minsk,MSQ
-SVO,2026-10-30,10:05,10:26,C,133,Aeroflot,SU 2136,Istanbul,IST
-SVO,2026-10-30,10:15,11:03,B,106,Aeroflot,SU 1208,Krasnodar,KRR
-SVO,2026-10-30,10:15,10:49,B,121,"Rossiya,Aeroflot","FV 6373,SU 6373",Izhevsk,IJK
-SVO,2026-10-30,10:20,10:15,B,122,Aeroflot,SU 1002,Kaliningrad,KGD
-SVO,2026-10-30,10:25,12:55,C,133,Aeroflot,SU 1940,Almaty,ALA
-SVO,2026-10-30,10:30,13:58,B,101,"Rossiya,Aeroflot","FV 6057,SU 6057",Saint-Petersburg,LED
-SVO,2026-10-30,10:30,16:13,D,14,Smartavia,5N 521,Murmansk,MMK
-SVO,2026-10-30,10:35,11:15,B,114,Aeroflot,SU 1054,Makhachkala,MCX
-SVO,2026-10-30,10:45,11:22,B,113,Aeroflot,SU 1060,Orsk,OSW
-SVO,2026-10-30,10:50,13:15,B,104,Aeroflot,SU 1420,Chelyabinsk,CEK
-SVO,2026-10-30,10:55,14:34,C,132,Aeroflot,SU 2142,Antalya,AYT
-SVO,2026-10-30,11:00,11:11,B,101,Aeroflot,SU 1182,Volgograd,VOG
-SVO,2026-10-30,11:00,11:47,B,103,"Rossiya,Aeroflot","FV 6059,SU 6059",Saint-Petersburg,LED
-SVO,2026-10-30,11:00,15:57,B,116,"Rossiya,Aeroflot","FV 6591,SU 6591",Perm,PEE
-SVO,2026-10-30,11:05,11:30,B,116,Aeroflot,SU 1150,Sochi,AER
-SVO,2026-10-30,11:05,18:06,D,1,Pobeda,DP 6901,Nalchik,NAL
-SVO,2026-10-30,11:10,12:00,B,112,Aeroflot,SU 1312,Mineralnyye Vody,MRV
-SVO,2026-10-30,11:15,21:06,C,129,Etihad,EY 842A,Abu Dhabi,AUH
-SVO,2026-10-30,11:20,14:18,B,102,Aeroflot,SU 1018,Kaliningrad,KGD
-SVO,2026-10-30,11:25,12:43,C,135,Air Serbia,JU 131,Belgrade,BEG
-SVO,2026-10-30,11:30,12:24,B,101,"Rossiya,Aeroflot","FV 6215,SU 6215",Saint-Petersburg,LED
-SVO,2026-10-30,11:35,12:14,C,131,Aeroflot,SU 1860,Yerevan,EVN
-SVO,2026-10-30,11:35,13:37,C,133,Aeroflot,SU 2132,Istanbul,IST
-SVO,2026-10-30,11:40,13:59,C,135,Air Cairo,SM 794,El Alamein,DBB
-SVO,2026-10-30,11:50,12:11,B,103,Aeroflot,SU 1346,Apatity,KVK
-SVO,2026-10-30,11:55,12:47,C,128,Aeroflot,SU 1962,Astana,NQZ
-SVO,2026-10-30,12:00,13:46,C,134,Air Serbia,JU 4139,Belgrade,BEG
-SVO,2026-10-30,12:05,12:44,C,125,Mahan Air,W5 99,Tehran,IKA
-SVO,2026-10-30,12:10,12:10,B,121,Aeroflot,SU 1124,Sochi,AER
-SVO,2026-10-30,12:15,22:34,D,3,Pobeda,DP 6923,Makhachkala,MCX
-SVO,2026-10-30,12:25,12:59,C,132,Aeroflot,SU 1954,Aktau,SCO
-SVO,2026-10-30,12:30,12:56,B,114,"Rossiya,Aeroflot","FV 6245,SU 6245",Saint-Petersburg,LED
-SVO,2026-10-30,12:30,23:28,C,129,Aeroflot,SU 2146,Antalya,AYT
-SVO,2026-10-30,12:35,12:48,B,113,Aeroflot,SU 1266,Krasnodar,KRR
-SVO,2026-10-30,12:40,12:50,B,103,Aeroflot,SU 1722,Khabarovsk,KHV
-SVO,2026-10-30,12:40,12:55,B,117,Aeroflot,SU 1300,Mineralnyye Vody,MRV
-SVO,2026-10-30,12:45,12:45,C,141,Aeroflot,SU 1974,Tashkent,TAS
-SVO,2026-10-30,12:50,12:57,B,109,Aeroflot,SU 1004,Kaliningrad,KGD
-SVO,2026-10-30,12:50,13:07,C,139,Gulf Air,GF 13,Manama,BAH
-SVO,2026-10-30,12:55,15:24,C,130,Southwind,2S 142,Antalya,AYT
-SVO,2026-10-30,13:00,13:09,B,102,"Rossiya,Aeroflot","FV 6043,SU 6043",Saint-Petersburg,LED
-SVO,2026-10-30,13:05,16:46,B,106,"Rossiya,Aeroflot","FV 6073,SU 6073",Perm,PEE
-SVO,2026-10-30,13:10,13:15,B,101,Aeroflot,SU 1196,Kazan,KZN
-SVO,2026-10-30,13:10,16:17,B,114,"Rossiya,Aeroflot","FV 6221,SU 6221",Nizhniy Novgorod,GOJ
-SVO,2026-10-30,13:15,13:27,B,122,Aeroflot,SU 1488,Krasnoyarsk,KJA
-SVO,2026-10-30,13:15,14:01,C,126,Southwind,2S 2,Antalya,AYT
-SVO,2026-10-30,13:30,13:34,B,101,"Rossiya,Aeroflot","FV 6045,SU 6045",Saint-Petersburg,LED
-SVO,2026-10-30,13:30,13:30,B,112,Aeroflot,SU 1082,Gelendzhik,GDZ
-SVO,2026-10-30,13:35,13:56,B,102,Aeroflot,SU 1402,Ekaterinburg,SVX
-SVO,2026-10-30,13:40,13:31,B,105,Aeroflot,SU 1156,Krasnodar,KRR
-SVO,2026-10-30,13:40,13:46,B,115,Severstal Aircompany,D2 333,Ukhta,UCT
-SVO,2026-10-30,13:40,19:38,D,3,Pobeda,DP 6825,Saint-Petersburg,LED
-SVO,2026-10-30,13:45,13:42,B,106,Aeroflot,SU 1642,Astrakhan,ASF
-SVO,2026-10-30,13:45,13:48,C,144,Belavia,B2 988,Gomel,GME
-SVO,2026-10-30,13:50,14:37,B,107,"Rossiya,Aeroflot","FV 6391,SU 6391",Samara,KUF
-SVO,2026-10-30,13:55,14:37,C,131,Aeroflot,SU 2144,Antalya,AYT
-SVO,2026-10-30,14:00,21:12,B,105,"Rossiya,Aeroflot","FV 6763,SU 6763",Tyumen,TJM
-SVO,2026-10-30,14:05,15:20,B,104,"Rossiya,Aeroflot","FV 6661,SU 6661",Kaliningrad,KGD
-SVO,2026-10-30,14:10,14:20,B,101,"Rossiya,Aeroflot","FV 6047,SU 6047",Saint-Petersburg,LED
-SVO,2026-10-30,14:10,14:16,B,121,Aeroflot,SU 1056,Makhachkala,MCX
-SVO,2026-10-30,14:20,14:25,C,133,Aeroflot,SU 1856,Baku,GYD
-SVO,2026-10-30,14:30,15:51,B,102,"Rossiya,Aeroflot","FV 6427,SU 6427",Saint-Petersburg,LED
-SVO,2026-10-30,14:35,14:34,B,108,Aeroflot,SU 1126,Sochi,AER
-SVO,2026-10-30,14:35,14:45,B,114,Aeroflot,SU 1232,Ufa,UFA
-SVO,2026-10-30,14:45,14:50,C,131,Aeroflot,SU 1946,Almaty,ALA
-SVO,2026-10-30,14:50,14:46,C,129,China Southern,CZ 8028,Guangzhou,CAN
-SVO,2026-10-30,14:55,14:53,C,146,Aeroflot,SU 1862,Yerevan,EVN
-SVO,2026-10-30,15:00,14:57,B,111,Aeroflot,SU 1680,Nizhnekamsk,NBC
-SVO,2026-10-30,15:00,16:24,C,135,Southwind,2S 86,Istanbul,IST
-SVO,2026-10-30,15:15,15:27,B,106,Aeroflot,SU 1328,Murmansk,MMK
-SVO,2026-10-30,15:20,15:26,B,103,Aeroflot,SU 1006,Kaliningrad,KGD
-SVO,2026-10-30,15:25,15:25,B,102,Aeroflot,SU 1496,Grozny,GRV
-SVO,2026-10-30,15:30,15:33,B,101,"Rossiya,Aeroflot","FV 6495,SU 6495",Saint-Petersburg,LED
-SVO,2026-10-30,15:30,15:59,B,109,Aeroflot,SU 1248,Orenburg,REN
-SVO,2026-10-30,15:35,15:27,C,125,Tianjin,GS 7942,Chongqing,CKG
-SVO,2026-10-30,15:40,15:36,B,110,Aeroflot,SU 1174,Astrakhan,ASF
-SVO,2026-10-30,15:45,22:47,B,105,Aeroflot,SU 1022,Ekaterinburg,SVX
-SVO,2026-10-30,15:50,16:29,B,115,Aeroflot,SU 1780,Kazan,KZN
-SVO,2026-10-30,15:50,18:04,B,118,"Rossiya,Aeroflot","FV 6375,SU 6375",Izhevsk,IJK
-SVO,2026-10-30,15:55,16:05,B,104,Aeroflot,SU 1116,Krasnodar,KRR
-SVO,2026-10-30,16:00,16:05,B,101,"Rossiya,Aeroflot","FV 6497,SU 6497",Saint-Petersburg,LED
-SVO,2026-10-30,16:05,18:16,B,102,"Rossiya,Aeroflot","FV 6545,SU 6545",Penza,PEZ
-SVO,2026-10-30,16:05,16:05,B,112,Aeroflot,SU 1358,Saratov,GSV
-SVO,2026-10-30,16:10,16:09,B,123,Aeroflot,SU 1546,Apatity,KVK
-SVO,2026-10-30,16:15,16:42,C,126,Qatar,QR 340,Doha,DOH
-SVO,2026-10-30,16:25,20:03,C,125,Etihad,EY 846,Abu Dhabi,AUH
-SVO,2026-10-30,16:30,17:41,C,129,Vietnam,VN 62,Hanoi,HAN
-SVO,2026-10-30,16:35,17:12,B,113,Aeroflot,SU 1258,Ufa,UFA
-SVO,2026-10-30,16:40,16:59,B,111,Aeroflot,SU 1302,Mineralnyye Vody,MRV
-SVO,2026-10-30,16:40,16:37,B,118,Aeroflot,SU 1010,Kaliningrad,KGD
-SVO,2026-10-30,16:45,17:51,B,112,Aeroflot,SU 1186,Volgograd,VOG
-SVO,2026-10-30,16:45,16:45,C,142,China Eastern,MU 248,Shanghai,PVG
-SVO,2026-10-30,16:55,16:55,B,102,Aeroflot,SU 1426,Chelyabinsk,CEK
-SVO,2026-10-30,16:55,16:49,B,122,Aeroflot,SU 1282,Kazan,KZN
-SVO,2026-10-30,17:00,17:05,B,101,"Rossiya,Aeroflot","FV 6517,SU 6517",Saint-Petersburg,LED
-SVO,2026-10-30,17:00,17:36,B,116,Aeroflot,SU 1324,Murmansk,MMK
-SVO,2026-10-30,17:10,17:08,B,119,Aeroflot,SU 1730,Petropavlovsk-Kamchatskiy,PKC
-SVO,2026-10-30,17:10,17:32,B,123,Aeroflot,SU 1214,Samara,KUF
-SVO,2026-10-30,17:10,22:33,D,14,Smartavia,5N 217,Arkhangelsk,ARH
-SVO,2026-10-30,17:15,18:08,B,117,Aeroflot,SU 1224,Nizhniy Novgorod,GOJ
-SVO,2026-10-30,17:15,17:13,C,137,China Eastern,MU 2076,Beijing,PKX
-SVO,2026-10-30,17:25,17:25,C,138,Air China,CA 754,Beijing,PEK
-SVO,2026-10-30,17:30,17:28,B,121,Aeroflot,SU 30,Saint-Petersburg,LED
-SVO,2026-10-30,17:35,22:41,B,121,Aeroflot,SU 1204,Perm,PEE
-SVO,2026-10-30,17:40,18:27,B,111,Aeroflot,SU 1414,Ekaterinburg,SVX
-SVO,2026-10-30,17:45,19:44,B,123,Aeroflot,SU 1396,Syktyvkar,SCW
-SVO,2026-10-30,18:00,18:03,B,101,"Rossiya,Aeroflot","FV 6519,SU 6519",Saint-Petersburg,LED
-SVO,2026-10-30,18:00,18:00,B,103,Aeroflot,SU 5806,Khabarovsk,KHV
-SVO,2026-10-30,18:05,18:05,B,106,Aeroflot,SU 5804,Vladivostok,VVO
-SVO,2026-10-30,18:05,19:52,B,113,Aeroflot,SU 1194,Kazan,KZN
-SVO,2026-10-30,18:10,18:39,C,141,Air Serbia,JU 4135,Belgrade,BEG
-SVO,2026-10-30,18:10,22:17,D,1,Pobeda,DP 6925,Makhachkala,MCX
-SVO,2026-10-30,18:15,18:15,B,102,"Rossiya,Aeroflot","FV 6079,SU 6079",Ulyanovsk,ULV
-SVO,2026-10-30,18:15,18:23,C,131,Aeroflot,SU 2138,Istanbul,IST
-SVO,2026-10-30,18:20,18:37,B,115,Aeroflot,SU 1250,Nizhnekamsk,NBC
-SVO,2026-10-30,18:20,18:29,C,144,Belavia,B2 992,Minsk,MSQ
-SVO,2026-10-30,18:25,18:50,B,116,Severstal Aircompany,D2 263,Petrozavodsk,PES
-SVO,2026-10-30,18:30,18:45,B,114,Aeroflot,SU 32,Saint-Petersburg,LED
-SVO,2026-10-30,18:35,18:51,C,127,Aeroflot,SU 1832,Minsk,MSQ
-SVO,2026-10-30,18:35,18:35,C,133,Aeroflot,SU 1868,Yerevan,EVN
-SVO,2026-10-30,18:35,22:33,D,13,Pobeda,DP 6855,Murmansk,MMK
-SVO,2026-10-30,18:40,18:40,B,103,"Rossiya,Aeroflot","FV 6885,SU 6885",Izhevsk,IJK
-SVO,2026-10-30,18:40,18:38,B,122,Aeroflot,SU 1184,Volgograd,VOG
-SVO,2026-10-30,18:40,23:27,D,1,Pobeda,DP 6845,Nizhnekamsk,NBC
-SVO,2026-10-30,18:50,19:51,B,112,Aeroflot,SU 1750,Yakutsk,YKS
-SVO,2026-10-30,18:50,20:41,C,126,Nordwind,N4 6107,Pyongyang-si,FNJ
-SVO,2026-10-30,19:00,19:49,B,101,"Rossiya,Aeroflot","FV 6579,SU 6579",Saint-Petersburg,LED
-SVO,2026-10-30,19:00,18:58,C,145,China Southern,CZ 342,Beijing,PKX
-SVO,2026-10-30,19:05,21:10,B,123,Aeroflot,SU 1216,Samara,KUF
-SVO,2026-10-30,19:05,19:09,C,131,Aeroflot,SU 278,Phuket,HKT
-SVO,2026-10-30,19:10,19:10,B,102,Aeroflot,SU 1314,Mineralnyye Vody,MRV
-SVO,2026-10-30,19:10,19:07,C,142,China Eastern,MU 592,Shanghai,PVG
-SVO,2026-10-30,19:15,19:25,B,104,Aeroflot,SU 1020,Ekaterinburg,SVX
-SVO,2026-10-30,19:15,19:31,C,132,Aeroflot,SU 270,Bangkok,BKK
-SVO,2026-10-30,19:20,19:20,B,103,"Rossiya,Aeroflot","FV 6225,SU 6225",Nizhniy Novgorod,GOJ
-SVO,2026-10-30,19:30,19:35,B,102,"Rossiya,Aeroflot","FV 6093,SU 6093",Saint-Petersburg,LED
-SVO,2026-10-30,19:30,19:39,B,106,"Rossiya,Aeroflot","FV 6827,SU 6827",Saransk,SKX
-SVO,2026-10-30,19:35,20:32,C,133,Aeroflot,SU 236,Vasco da Gama,GOI
-SVO,2026-10-30,19:45,20:08,C,131,Aeroflot,SU 208,Shanghai,PVG
-SVO,2026-10-30,19:50,19:50,C,130,Aeroflot,SU 220,Guangzhou,CAN
-SVO,2026-10-30,19:55,20:03,C,132,Aeroflot,SU 292,Ho Chi Minh City,SGN
-SVO,2026-10-30,20:00,20:03,B,101,"Rossiya,Aeroflot","FV 6703,SU 6703",Saint-Petersburg,LED
-SVO,2026-10-30,20:00,20:17,B,107,"Rossiya,Aeroflot","FV 6289,SU 6289",Magadan,GDX
-SVO,2026-10-30,20:05,20:21,C,137,Hainan,HU 7986,Beijing,PEK
-SVO,2026-10-30,20:10,20:17,B,110,Aeroflot,SU 1742,Yuzhno-Sakhalinsk,UUS
-SVO,2026-10-30,20:15,20:26,B,121,Aeroflot,SU 1128,Sochi,AER
-SVO,2026-10-30,20:15,20:15,C,138,Air China,CA 910,Beijing,PEK
-SVO,2026-10-30,20:20,20:17,C,140,China Southern,CZ 6002,Ürümqi,URC
-SVO,2026-10-30,20:30,20:27,B,114,"Rossiya,Aeroflot","FV 6097,SU 6097",Saint-Petersburg,LED
-SVO,2026-10-30,20:40,20:40,C,130,Aeroflot,SU 284,Phuket,HKT
-SVO,2026-10-30,20:40,23:05,D,13,Pobeda,DP 6531,Barnaul,BAX
-SVO,2026-10-30,20:45,22:48,D,3,Pobeda,DP 6549,Krasnoyarsk,KJA
-SVO,2026-10-30,20:55,20:55,B,103,"Rossiya,Aeroflot","FV 6263,SU 6263",Blagoveschensk,BQS
-SVO,2026-10-30,20:55,21:20,C,141,Air Serbia,JU 133,Belgrade,BEG
-SVO,2026-10-30,21:00,20:57,B,101,"Rossiya,Aeroflot","FV 6705,SU 6705",Saint-Petersburg,LED
-SVO,2026-10-30,21:05,12:47,B,112,Nordwind,N4 59,Kazan,KZN
-SVO,2026-10-30,21:05,21:05,B,118,Aeroflot,SU 1548,Novosibirsk,OVB
-SVO,2026-10-30,21:05,21:09,C,131,Aeroflot,SU 204,Beijing,PKX
-SVO,2026-10-30,21:15,22:09,B,122,Aeroflot,SU 1450,Kemerovo,KEJ
-SVO,2026-10-30,21:20,21:14,B,117,Aeroflot,SU 1260,Ufa,UFA
-SVO,2026-10-30,21:30,21:27,B,116,"Rossiya,Aeroflot","FV 6699,SU 6699",Saint-Petersburg,LED
-SVO,2026-10-30,21:30,21:58,C,130,Aeroflot,SU 1850,Baku,GYD
-SVO,2026-10-30,21:35,22:41,B,106,Aeroflot,SU 1326,Murmansk,MMK
-SVO,2026-10-30,21:40,21:33,B,104,Severstal Aircompany,D2 154,Cherepovets,CEE
-SVO,2026-10-30,21:40,22:40,B,112,Aeroflot,SU 1442,Irkutsk,IKT
-SVO,2026-10-30,21:45,22:00,C,133,Aeroflot,SU 232,New Delhi,DEL
-SVO,2026-10-30,21:55,22:27,B,108,Aeroflot,SU 1454,Ulan-Ude,UUD
-SVO,2026-10-30,21:55,22:17,C,142,Sichuan,3U 3888,Chengdu,TFU
-SVO,2026-10-30,22:00,22:33,B,101,"Rossiya,Aeroflot","FV 6951,SU 6951",Saint-Petersburg,LED
-SVO,2026-10-30,22:00,17:53,B,104,Aeroflot,SU 5918,Khabarovsk,KHV
-SVO,2026-10-30,22:00,21:59,B,119,Aeroflot,SU 1700,Vladivostok,VVO
-SVO,2026-10-30,22:05,22:13,C,137,Aeroflot,SU 294,Nha Trang,CXR
-SVO,2026-10-30,22:10,22:06,B,111,Aeroflot,SU 1762,Omsk,OMS
-SVO,2026-10-30,22:15,22:26,C,144,Belavia,B2 978,Minsk,MSQ
-SVO,2026-10-30,22:15,22:15,C,145,Aeroflot,SU 320,Malé,MLE
-SVO,2026-10-30,22:25,22:37,C,125,Etihad,EY 844,Abu Dhabi,AUH
-SVO,2026-10-30,22:30,22:30,B,102,Aeroflot,SU 22,Saint-Petersburg,LED
-SVO,2026-10-30,22:30,20:35,C,134,Etihad,EY 844A,Abu Dhabi,AUH
-SVO,2026-10-30,22:35,22:38,B,107,Aeroflot,SU 1458,Novokuznetsk,NOZ
-SVO,2026-10-30,22:50,22:58,B,104,Severstal Aircompany,D2 158,Cherepovets,CEE
-SVO,2026-10-30,22:50,23:12,C,130,Aeroflot,SU 276,Phuket,HKT
-SVO,2026-10-30,22:55,23:01,B,103,"Rossiya,Aeroflot","FV 6253,SU 6253",Vladivostok,VVO
-SVO,2026-10-30,22:55,22:53,B,117,Aeroflot,SU 1646,Nizhnevartovsk,NJC
-SVO,2026-10-30,22:55,13:41,D,1,Pobeda,DP 6543,Ekaterinburg,SVX
-SVO,2026-10-30,23:10,13:22,C,137,Aeroflot,SU 288,Colombo,CMB
-SVO,2026-10-30,23:10,12:57,D,16,Pobeda,DP 6501,Ufa,UFA
-SVO,2026-10-30,23:15,23:09,C,138,China Southern,CZ 656,Guangzhou,CAN
-SVO,2026-10-30,23:20,12:16,C,133,Aeroflot,SU 282,Duong Dong,PQC
-SVO,2026-10-30,23:25,23:43,D,3,Pobeda,DP 6541,Ekaterinburg,SVX
-SVO,2026-10-30,23:30,23:26,B,101,"Rossiya,Aeroflot","FV 6807,SU 6807",Saint-Petersburg,LED
-SVO,2026-10-30,23:30,17:11,D,13,Pobeda,DP 6567,Chelyabinsk,CEK
-SVO,2026-10-30,23:35,23:38,C,132,Aeroflot,SU 1956,Astana,NQZ
-SVO,2026-10-30,23:35,23:32,C,141,Aeroflot,SU 1950,Shymkent,CIT
-SVO,2026-10-30,23:50,23:54,C,133,Aeroflot,SU 1874,Samarkand,SKD
-SVO,2026-10-30,23:55,14:26,D,13,Pobeda,DP 6511,Perm,PEE
-VKO,2026-10-30,02:50,14:40,A,18,FlyOne Armenia,3F 3324,Yerevan,EVN
-VKO,2026-10-30,05:00,13:07,A,08A,UVT Aero,RT 203,Tobolsk,RMZ
-VKO,2026-10-30,06:20,14:45,A,18A,Nesma,NE 611,Hurghada,HRG
-VKO,2026-10-30,06:20,17:21,A,25,Turkish,TK 408,Istanbul,IST
-VKO,2026-10-30,06:20,13:40,A,26,Nesma,NE 605,Hurghada,HRG
-VKO,2026-10-30,07:00,11:49,A,08,"Rossiya,Aeroflot","FV 6188,SU 6188",Saint-Petersburg,LED
-VKO,2026-10-30,07:00,18:30,A,19A,Pobeda,DP 839,Antalya,AYT
-VKO,2026-10-30,07:00,17:56,A,26A,Pobeda,DP 835,Gazipaşa,GZP
-VKO,2026-10-30,07:00,14:49,A,28A,Pobeda,DP 995,Istanbul,IST
-VKO,2026-10-30,07:00,13:30,A,29A,Pobeda,DP 991,Jebel Ali,DWC
-VKO,2026-10-30,07:10,18:59,A,08,Pobeda,DP 157,Krasnodar,KRR
-VKO,2026-10-30,07:35,12:29,A,20,UTAir,UT 757,Sharm el Sheikh,SSH
-VKO,2026-10-30,07:55,15:55,A,19A,Turkish,TK 420,Istanbul,IST
-VKO,2026-10-30,08:00,10:59,A,09,"Rossiya,Aeroflot","FV 6170,SU 6170",Saint-Petersburg,LED
-VKO,2026-10-30,08:00,08:00,A,19,Nesma,NE 619,Hurghada,HRG
-VKO,2026-10-30,08:05,13:13,A,10A,"RusLine,Alrosa,UTAir","7R 193,6R 4193,UT 4193",Tambov,TBW
-VKO,2026-10-30,08:10,11:12,A,14A,"UTAir,RusLine","UT 333,7R 4333",Naryan Mar,NNM
-VKO,2026-10-30,08:40,12:37,A,18A,Azimuth,A4 7009,Tbilisi,TBS
-VKO,2026-10-30,08:50,14:26,A,27,Nesma,NE 601,Hurghada,HRG
-VKO,2026-10-30,09:15,13:09,A,29,"Belavia,UTAir","B2 982,UT 4982",Minsk,MSQ
-VKO,2026-10-30,09:20,18:20,A,19A,UTAir,UT 801,Dushanbe,DYU
-VKO,2026-10-30,09:25,13:43,A,26A,Pobeda,DP 753,Abu Dhabi,AUH
-VKO,2026-10-30,09:30,11:18,A,09A,"Rossiya,Aeroflot","FV 6052,SU 6052",Saint-Petersburg,LED
-VKO,2026-10-30,09:35,17:43,A,30,Nesma,NE 615,Hurghada,HRG
-VKO,2026-10-30,09:50,12:02,A,22,FlyOne Armenia,3F 3322,Yerevan,EVN
-VKO,2026-10-30,09:50,17:25,A,24,UTAir,UT 745,Baku,GYD
-VKO,2026-10-30,10:00,18:49,A,13,"UTAir,Belavia","UT 463,B2 2253",Tyumen,TJM
-VKO,2026-10-30,10:00,18:53,A,14,"UTAir,Alrosa,Belavia","UT 373,6R 4373,B2 2273",Mineralnyye Vody,MRV
-VKO,2026-10-30,10:00,17:42,A,29A,Pobeda,DP 793,Jebel Ali,DWC
-VKO,2026-10-30,10:05,12:24,A,11A,Vologda Air Company,ВГ 2391,Vologda,VGD
-VKO,2026-10-30,10:10,11:54,A,18,SCAT,DV 1006,Almaty,ALA
-VKO,2026-10-30,10:20,11:55,A,11,UTAir,UT 575,Krasnodar,KRR
-VKO,2026-10-30,10:30,14:34,A,09,"Rossiya,Aeroflot","FV 6004,SU 6004",Saint-Petersburg,LED
-VKO,2026-10-30,10:40,17:27,A,23A,Pobeda,DP 743D,Osh,OSS
-VKO,2026-10-30,10:40,13:31,A,25,Cathay Dragon,KA 556,Osh,OSS
-VKO,2026-10-30,11:00,13:48,A,25A,Nesma,NE 609,Hurghada,HRG
-VKO,2026-10-30,11:15,13:52,A,12A,"UTAir,Belavia","UT 295,B2 2295",Surgut,SGC
-VKO,2026-10-30,11:15,17:12,A,29,Georgian,A9 935,Tbilisi,TBS
-VKO,2026-10-30,11:20,14:53,A,17,"UTAir,Belavia","UT 351,B2 2251",Khanty-Mansiysk,HMA
-VKO,2026-10-30,11:30,15:59,A,08,"Rossiya,Aeroflot","FV 6006,SU 6006",Saint-Petersburg,LED
-VKO,2026-10-30,11:30,15:02,A,19A,Pobeda,DP 997D,Samarkand,SKD
-VKO,2026-10-30,11:30,16:37,A,23A,AZAL Azerbaijan,J2 5829,Ganja,
-VKO,2026-10-30,11:55,19:15,A,16,Pobeda,DP 1403D,Ekaterinburg,SVX
-VKO,2026-10-30,12:00,13:25,A,19,Turkish,TK 6932,Istanbul,IST
-VKO,2026-10-30,12:30,14:14,A,10,"Rossiya,Aeroflot","FV 6008,SU 6008",Saint-Petersburg,LED
-VKO,2026-10-30,12:35,14:18,A,22A,SCAT,DV 1010,Astana,NQZ
-VKO,2026-10-30,12:35,18:03,A,25A,"AZAL Azerbaijan,S7","J2 810A,S7 4139",Baku,GYD
-VKO,2026-10-30,13:15,18:08,A,12,UTAir,UT 445,Kogalym,KGP
-VKO,2026-10-30,13:30,14:30,A,11,"Rossiya,Aeroflot","FV 6010,SU 6010",Saint-Petersburg,LED
-VKO,2026-10-30,13:55,17:02,A,09A,UVT Aero,RT 302,Bugulma,UUA
-VKO,2026-10-30,14:05,15:28,A,22,Turkish,TK 414,Istanbul,IST
-VKO,2026-10-30,14:30,16:51,A,10,"Rossiya,Aeroflot","FV 6026,SU 6026",Saint-Petersburg,LED
+SVO,2026-10-30,00:05,12:36,C,144,Аэрофлот,SU 536,Дубай,DWC
+SVO,2026-10-30,00:15,13:02,C,140,Аэрофлот,SU 2134,Стамбул,IST
+SVO,2026-10-30,00:15,12:13,C,146,Аэрофлот,SU 424,Хургада,HRG
+SVO,2026-10-30,00:55,12:05,B,104,Аэрофлот,SU 1562,Иркутск,IKT
+SVO,2026-10-30,01:00,20:24,C,139,Аэрофлот,SU 1964,Ереван,EVN
+SVO,2026-10-30,01:05,12:28,C,132,"Россия,Аэрофлот","FV 5957,SU 5957",Хургада,HRG
+SVO,2026-10-30,01:15,12:48,C,130,Аэрофлот,SU 524,Дубай,DXB
+SVO,2026-10-30,01:30,12:50,B,101,Аэрофлот,SU 1464,Новосибирск,OVB
+SVO,2026-10-30,01:35,19:48,C,130,Royal Air Maroc,AT 223,Касабланка,CMN
+SVO,2026-10-30,02:00,12:08,B,115,Аэрофлот,SU 1448,Екатеринбург,SVX
+SVO,2026-10-30,02:20,11:54,C,135,Аэрофлот,SU 2148,Анталья,AYT
+SVO,2026-10-30,02:40,10:07,D,14,Smartavia,5N 231,Оренбург,REN
+SVO,2026-10-30,02:45,18:05,C,141,Corendon Airlines,XC 9315,Анталья,AYT
+SVO,2026-10-30,02:50,11:11,B,102,"Россия,Аэрофлот","FV 6279,SU 6279",Хабаровск,KHV
+SVO,2026-10-30,02:55,22:23,C,132,Air Cairo,SM 944,Шарм-эль-Шейх,SSH
+SVO,2026-10-30,03:10,13:14,B,104,Аэрофлот,SU 1262,Уфа,UFA
+SVO,2026-10-30,05:40,11:31,C,132,Аэрофлот,SU 2178,Анталья,AYT
+SVO,2026-10-30,05:45,10:53,C,130,Аэрофлот,SU 430,Шарм-эль-Шейх,SSH
+SVO,2026-10-30,06:10,10:52,B,103,"Россия,Аэрофлот","FV 6405,SU 6405",Сыктывкар,SCW
+SVO,2026-10-30,06:20,10:38,B,103,Аэрофлот,SU 1152,Сочи,AER
+SVO,2026-10-30,06:30,10:10,B,102,Аэрофлот,SU 1000,Калининград,KGD
+SVO,2026-10-30,06:40,12:10,B,117,"Россия,Аэрофлот","FV 6209,SU 6209",Екатеринбург,SVX
+SVO,2026-10-30,06:45,11:32,B,121,"Россия,Аэрофлот","FV 6075,SU 6075",Ульяновск,ULV
+SVO,2026-10-30,06:55,12:54,B,102,"Россия,Аэрофлот","FV 6247,SU 6247",Нижнекамск,NBC
+SVO,2026-10-30,07:00,16:36,B,101,Россия,SU 6727,Саранск,SKX
+SVO,2026-10-30,07:05,10:32,C,132,Аэрофлот,SU 2140,Стамбул,IST
+SVO,2026-10-30,07:05,15:38,D,1,Победа,DP 6843,Казань,KZN
+SVO,2026-10-30,07:10,11:56,C,131,Аэрофлот,SU 520,Дубай,DXB
+SVO,2026-10-30,07:10,15:13,D,3,Победа,DP 6903,Магас,IGT
+SVO,2026-10-30,07:15,17:10,D,3,Победа,DP 6835,Калининград,KGD
+SVO,2026-10-30,07:20,18:55,C,132,Аэрофлот,SU 2120,Бодрум,BJV
+SVO,2026-10-30,07:30,20:18,D,1,Победа,DP 6961,Астрахань,ASF
+SVO,2026-10-30,07:40,13:50,B,102,Аэрофлот,SU 1444,Иркутск,IKT
+SVO,2026-10-30,07:40,10:59,B,104,"Россия,Аэрофлот","FV 6433,SU 6433",Пермь,PEE
+SVO,2026-10-30,07:40,19:07,D,13,Победа,DP 6841,Казань,KZN
+SVO,2026-10-30,07:50,10:17,C,132,Аэрофлот,SU 1872,Ташкент,TAS
+SVO,2026-10-30,08:00,11:00,B,101,"Россия,Аэрофлот","FV 6955,SU 6955",Санкт-Петербург,LED
+SVO,2026-10-30,08:00,18:23,C,140,Air Cairo,SM 788,Хургада,HRG
+SVO,2026-10-30,08:10,12:43,C,132,Аэрофлот,SU 1864,Ереван,EVN
+SVO,2026-10-30,08:10,12:41,C,133,Аэрофлот,SU 2130,Стамбул,IST
+SVO,2026-10-30,08:15,12:51,C,131,Аэрофлот,SU 1886,Бишкек,BSZ
+SVO,2026-10-30,08:15,13:55,D,3,Победа,DP 6905,Владикавказ,OGZ
+SVO,2026-10-30,08:20,11:49,B,102,Аэрофлот,SU 1136,Сочи,AER
+SVO,2026-10-30,08:20,12:24,C,126,Royal Air Maroc,AT 221,Касабланка,CMN
+SVO,2026-10-30,08:20,13:21,C,138,Аэрофлот,SU 426,Шарм-эль-Шейх,SSH
+SVO,2026-10-30,08:40,21:14,C,144,Аэрофлот,SU 530,Абу-Даби,AUH
+SVO,2026-10-30,08:45,11:15,B,108,Россия,FV 6271,Оренбург,REN
+SVO,2026-10-30,08:50,11:17,B,107,Аэрофлот,SU 1276,Казань,KZN
+SVO,2026-10-30,09:00,12:59,B,106,"Россия,Аэрофлот","FV 6801,SU 6801",Санкт-Петербург,LED
+SVO,2026-10-30,09:00,17:19,C,131,Аэрофлот,SU 1866,Ереван,EVN
+SVO,2026-10-30,09:05,09:47,C,125,Аэрофлот,SU 7214,Аддис-Абеба,ADD
+SVO,2026-10-30,09:05,10:02,C,131,Аэрофлот,SU 1828,Гянджа,GNJ
+SVO,2026-10-30,09:05,15:00,D,13,Победа,DP 6921,Махачкала,MCX
+SVO,2026-10-30,09:10,10:24,C,133,Аэрофлот,SU 2704,Анталья,AYT
+SVO,2026-10-30,09:20,09:54,B,115,Аэрофлот,SU 1460,Новосибирск,OVB
+SVO,2026-10-30,09:20,10:27,B,117,Аэрофлот,SU 10,Санкт-Петербург,LED
+SVO,2026-10-30,09:25,10:05,B,101,"Россия,Аэрофлот","FV 6229,SU 6229",Нижний Новгород,GOJ
+SVO,2026-10-30,09:25,12:32,B,104,Аэрофлот,SU 1344,Минеральные Воды,MRV
+SVO,2026-10-30,09:25,09:57,B,116,Аэрофлот,SU 1322,Мурманск,MMK
+SVO,2026-10-30,09:30,10:48,C,131,Аэрофлот,SU 540,Дубай,DWC
+SVO,2026-10-30,09:30,13:46,C,145,Air Cairo,SM 796,Эль-Аламейн,DBB
+SVO,2026-10-30,09:40,10:33,B,104,Северсталь,D2 152,Череповец,CEE
+SVO,2026-10-30,09:45,19:55,D,1,Победа,DP 6941,Сочи,AER
+SVO,2026-10-30,09:50,10:30,C,130,Аэрофлот,SU 400,Каир,CAI
+SVO,2026-10-30,09:50,23:50,C,140,Аэрофлот,SU 526,Дубай,DXB
+SVO,2026-10-30,10:00,10:23,B,101,"Россия,Аэрофлот","FV 6213,SU 6213",Санкт-Петербург,LED
+SVO,2026-10-30,10:00,10:39,B,113,"Россия,Аэрофлот","FV 6337,SU 6337",Архангельск,ARH
+SVO,2026-10-30,10:05,11:40,C,129,Белавиа,B2 976,Минск,MSQ
+SVO,2026-10-30,10:05,10:50,C,133,Аэрофлот,SU 2136,Стамбул,IST
+SVO,2026-10-30,10:15,11:28,B,106,Аэрофлот,SU 1208,Краснодар,KRR
+SVO,2026-10-30,10:15,10:57,B,121,"Россия,Аэрофлот","FV 6373,SU 6373",Ижевск,IJK
+SVO,2026-10-30,10:20,10:26,B,122,Аэрофлот,SU 1002,Калининград,KGD
+SVO,2026-10-30,10:25,13:18,C,133,Аэрофлот,SU 1940,Алматы,ALA
+SVO,2026-10-30,10:30,14:08,B,101,"Россия,Аэрофлот","FV 6057,SU 6057",Санкт-Петербург,LED
+SVO,2026-10-30,10:30,16:32,D,14,Smartavia,5N 521,Мурманск,MMK
+SVO,2026-10-30,10:35,11:24,B,114,Аэрофлот,SU 1054,Махачкала,MCX
+SVO,2026-10-30,10:45,11:45,B,113,Аэрофлот,SU 1060,Орск,OSW
+SVO,2026-10-30,10:50,13:48,B,104,Аэрофлот,SU 1420,Челябинск,CEK
+SVO,2026-10-30,10:55,14:46,C,132,Аэрофлот,SU 2142,Анталья,AYT
+SVO,2026-10-30,10:55,18:14,D,1,Победа,DP 6901,Нальчик,NAL
+SVO,2026-10-30,11:00,11:35,B,101,Аэрофлот,SU 1182,Волгоград,VOG
+SVO,2026-10-30,11:00,12:15,B,103,"Россия,Аэрофлот","FV 6059,SU 6059",Санкт-Петербург,LED
+SVO,2026-10-30,11:00,16:09,B,116,"Россия,Аэрофлот","FV 6591,SU 6591",Пермь,PEE
+SVO,2026-10-30,11:05,11:51,B,116,Аэрофлот,SU 1150,Сочи,AER
+SVO,2026-10-30,11:10,12:18,B,112,Аэрофлот,SU 1312,Минеральные Воды,MRV
+SVO,2026-10-30,11:15,21:30,C,129,Etihad Airways,EY 842A,Абу-Даби,AUH
+SVO,2026-10-30,11:20,14:34,B,102,Аэрофлот,SU 1018,Калининград,KGD
+SVO,2026-10-30,11:25,12:55,C,135,Air Serbia,JU 131,Белград,BEG
+SVO,2026-10-30,11:30,12:47,B,101,"Россия,Аэрофлот","FV 6215,SU 6215",Санкт-Петербург,LED
+SVO,2026-10-30,11:35,12:35,C,131,Аэрофлот,SU 1860,Ереван,EVN
+SVO,2026-10-30,11:35,14:05,C,133,Аэрофлот,SU 2132,Стамбул,IST
+SVO,2026-10-30,11:40,14:18,C,135,Air Cairo,SM 794,Эль-Аламейн,DBB
+SVO,2026-10-30,11:50,12:20,B,103,Аэрофлот,SU 1346,Апатиты,KVK
+SVO,2026-10-30,11:55,13:07,C,128,Аэрофлот,SU 1962,Астана,NQZ
+SVO,2026-10-30,12:00,14:13,C,134,Air Serbia,JU 4139,Белград,BEG
+SVO,2026-10-30,12:05,13:12,C,125,Mahan Airlines,W5 99,Тегеран,IKA
+SVO,2026-10-30,12:10,12:22,B,121,Аэрофлот,SU 1124,Сочи,AER
+SVO,2026-10-30,12:15,22:54,D,3,Победа,DP 6923,Махачкала,MCX
+SVO,2026-10-30,12:25,13:35,C,132,Аэрофлот,SU 1954,Актау,SCO
+SVO,2026-10-30,12:30,13:29,B,114,"Россия,Аэрофлот","FV 6245,SU 6245",Санкт-Петербург,LED
+SVO,2026-10-30,12:30,23:48,C,129,Аэрофлот,SU 2146,Анталья,AYT
+SVO,2026-10-30,12:35,13:28,B,113,Аэрофлот,SU 1266,Краснодар,KRR
+SVO,2026-10-30,12:40,13:10,B,103,Аэрофлот,SU 1722,Хабаровск,KHV
+SVO,2026-10-30,12:40,14:02,B,105,Аэрофлот,SU 1156,Краснодар,KRR
+SVO,2026-10-30,12:40,13:39,B,117,Аэрофлот,SU 1300,Минеральные Воды,MRV
+SVO,2026-10-30,12:45,13:03,C,141,Аэрофлот,SU 1974,Ташкент,TAS
+SVO,2026-10-30,12:50,13:20,B,109,Аэрофлот,SU 1004,Калининград,KGD
+SVO,2026-10-30,12:50,13:45,C,139,Gulf Air,GF 13,Манама,BAH
+SVO,2026-10-30,12:55,15:36,C,130,Southwind Airlines,2S 142,Анталья,AYT
+SVO,2026-10-30,13:00,13:44,B,102,"Россия,Аэрофлот","FV 6043,SU 6043",Санкт-Петербург,LED
+SVO,2026-10-30,13:05,17:05,B,106,"Россия,Аэрофлот","FV 6073,SU 6073",Пермь,PEE
+SVO,2026-10-30,13:10,13:49,B,101,Аэрофлот,SU 1196,Казань,KZN
+SVO,2026-10-30,13:10,16:33,B,114,"Россия,Аэрофлот","FV 6221,SU 6221",Нижний Новгород,GOJ
+SVO,2026-10-30,13:15,13:54,B,122,Аэрофлот,SU 1488,Красноярск,KJA
+SVO,2026-10-30,13:15,14:23,C,126,Southwind Airlines,2S 2,Анталья,AYT
+SVO,2026-10-30,13:30,13:58,B,101,"Россия,Аэрофлот","FV 6045,SU 6045",Санкт-Петербург,LED
+SVO,2026-10-30,13:30,13:57,B,112,Аэрофлот,SU 1082,Геленджик,GDZ
+SVO,2026-10-30,13:35,14:11,B,102,Аэрофлот,SU 1402,Екатеринбург,SVX
+SVO,2026-10-30,13:40,14:06,B,115,Северсталь,D2 333,Ухта,UCT
+SVO,2026-10-30,13:40,19:50,D,3,Победа,DP 6825,Санкт-Петербург,LED
+SVO,2026-10-30,13:45,13:59,B,106,Аэрофлот,SU 1642,Астрахань,ASF
+SVO,2026-10-30,13:45,14:15,C,144,Белавиа,B2 988,Гомель,GME
+SVO,2026-10-30,13:50,14:49,B,107,"Россия,Аэрофлот","FV 6391,SU 6391",Самара,KUF
+SVO,2026-10-30,13:55,14:54,C,131,Аэрофлот,SU 2144,Анталья,AYT
+SVO,2026-10-30,14:00,21:35,B,105,"Россия,Аэрофлот","FV 6763,SU 6763",Тюмень,TJM
+SVO,2026-10-30,14:05,15:41,B,104,"Россия,Аэрофлот","FV 6661,SU 6661",Калининград,KGD
+SVO,2026-10-30,14:10,14:26,B,101,"Россия,Аэрофлот","FV 6047,SU 6047",Санкт-Петербург,LED
+SVO,2026-10-30,14:10,14:27,B,121,Аэрофлот,SU 1056,Махачкала,MCX
+SVO,2026-10-30,14:10,23:40,D,1,Победа,DP 6845,Нижнекамск,NBC
+SVO,2026-10-30,14:20,14:39,C,133,Аэрофлот,SU 1856,Баку,GYD
+SVO,2026-10-30,14:30,15:58,B,102,"Россия,Аэрофлот","FV 6427,SU 6427",Санкт-Петербург,LED
+SVO,2026-10-30,14:35,14:51,B,108,Аэрофлот,SU 1126,Сочи,AER
+SVO,2026-10-30,14:35,14:57,B,114,Аэрофлот,SU 1232,Уфа,UFA
+SVO,2026-10-30,14:45,15:06,C,131,Аэрофлот,SU 1946,Алматы,ALA
+SVO,2026-10-30,14:50,15:02,C,129,China Southern Airlines,CZ 8028,Гуанчжоу,CAN
+SVO,2026-10-30,14:55,15:11,C,146,Аэрофлот,SU 1862,Ереван,EVN
+SVO,2026-10-30,15:00,15:08,B,111,Аэрофлот,SU 1680,Нижнекамск,NBC
+SVO,2026-10-30,15:00,16:40,C,135,Southwind Airlines,2S 86,Стамбул,IST
+SVO,2026-10-30,15:15,15:54,B,106,Аэрофлот,SU 1328,Мурманск,MMK
+SVO,2026-10-30,15:20,15:46,B,103,Аэрофлот,SU 1006,Калининград,KGD
+SVO,2026-10-30,15:25,15:48,B,102,Аэрофлот,SU 1496,Грозный,GRV
+SVO,2026-10-30,15:30,15:45,B,101,"Россия,Аэрофлот","FV 6495,SU 6495",Санкт-Петербург,LED
+SVO,2026-10-30,15:30,16:11,B,109,Аэрофлот,SU 1248,Оренбург,REN
+SVO,2026-10-30,15:35,15:50,C,125,TianJin Airlines,GS 7942,Чунцин,CKG
+SVO,2026-10-30,15:40,15:56,B,110,Аэрофлот,SU 1174,Астрахань,ASF
+SVO,2026-10-30,15:45,23:28,B,105,Аэрофлот,SU 1022,Екатеринбург,SVX
+SVO,2026-10-30,15:50,16:42,B,115,Аэрофлот,SU 1780,Казань,KZN
+SVO,2026-10-30,15:50,18:19,B,118,"Россия,Аэрофлот","FV 6375,SU 6375",Ижевск,IJK
+SVO,2026-10-30,15:55,16:18,B,104,Аэрофлот,SU 1116,Краснодар,KRR
+SVO,2026-10-30,16:00,16:13,B,101,"Россия,Аэрофлот","FV 6497,SU 6497",Санкт-Петербург,LED
+SVO,2026-10-30,16:05,18:41,B,102,"Россия,Аэрофлот","FV 6545,SU 6545",Пенза,PEZ
+SVO,2026-10-30,16:05,16:21,B,112,Аэрофлот,SU 1358,Саратов,GSV
+SVO,2026-10-30,16:10,16:29,B,123,Аэрофлот,SU 1546,Апатиты,KVK
+SVO,2026-10-30,16:15,17:01,C,126,"Qatar Airways,Srilankan Airlines","QR 340,UL 3034",Доха,DOH
+SVO,2026-10-30,16:30,18:00,C,129,Vietnam Airlines,VN 62,Ханой,HAN
+SVO,2026-10-30,16:35,17:27,B,113,Аэрофлот,SU 1258,Уфа,UFA
+SVO,2026-10-30,16:40,17:16,B,111,Аэрофлот,SU 1302,Минеральные Воды,MRV
+SVO,2026-10-30,16:40,16:47,B,118,Аэрофлот,SU 1010,Калининград,KGD
+SVO,2026-10-30,16:45,18:03,B,112,Аэрофлот,SU 1186,Волгоград,VOG
+SVO,2026-10-30,16:45,17:07,C,142,China Eastern Airlines,MU 248,Шанхай,PVG
+SVO,2026-10-30,16:55,17:12,B,102,Аэрофлот,SU 1426,Челябинск,CEK
+SVO,2026-10-30,16:55,16:59,B,122,Аэрофлот,SU 1282,Казань,KZN
+SVO,2026-10-30,17:00,17:14,B,101,"Россия,Аэрофлот","FV 6517,SU 6517",Санкт-Петербург,LED
+SVO,2026-10-30,17:00,17:53,B,116,Аэрофлот,SU 1324,Мурманск,MMK
+SVO,2026-10-30,17:10,17:24,B,119,Аэрофлот,SU 1730,Петропавловск-Камчатский,PKC
+SVO,2026-10-30,17:10,17:45,B,123,Аэрофлот,SU 1214,Самара,KUF
+SVO,2026-10-30,17:10,23:05,D,14,Smartavia,5N 217,Архангельск,ARH
+SVO,2026-10-30,17:15,18:26,B,117,Аэрофлот,SU 1224,Нижний Новгород,GOJ
+SVO,2026-10-30,17:15,17:32,C,137,China Eastern Airlines,MU 2076,Пекин,PKX
+SVO,2026-10-30,17:20,18:32,B,103,Аэрофлот,SU 5806,Хабаровск,KHV
+SVO,2026-10-30,17:25,17:38,C,138,Air China,CA 754,Пекин,PEK
+SVO,2026-10-30,17:30,17:43,B,121,Аэрофлот,SU 30,Санкт-Петербург,LED
+SVO,2026-10-30,17:35,23:19,B,121,Аэрофлот,SU 1204,Пермь,PEE
+SVO,2026-10-30,17:35,22:50,D,13,Победа,DP 6855,Мурманск,MMK
+SVO,2026-10-30,17:40,18:45,B,111,Аэрофлот,SU 1414,Екатеринбург,SVX
+SVO,2026-10-30,17:40,20:31,C,125,Etihad Airways,EY 846,Абу-Даби,AUH
+SVO,2026-10-30,17:45,19:58,B,123,Аэрофлот,SU 1396,Сыктывкар,SCW
+SVO,2026-10-30,18:00,18:12,B,101,"Россия,Аэрофлот","FV 6519,SU 6519",Санкт-Петербург,LED
+SVO,2026-10-30,18:05,18:38,B,106,Аэрофлот,SU 5804,Владивосток,VVO
+SVO,2026-10-30,18:05,20:07,B,113,Аэрофлот,SU 1194,Казань,KZN
+SVO,2026-10-30,18:10,18:57,C,141,Air Serbia,JU 4135,Белград,BEG
+SVO,2026-10-30,18:10,22:30,D,1,Победа,DP 6925,Махачкала,MCX
+SVO,2026-10-30,18:15,18:36,B,102,"Россия,Аэрофлот","FV 6079,SU 6079",Ульяновск,ULV
+SVO,2026-10-30,18:15,18:43,C,131,Аэрофлот,SU 2138,Стамбул,IST
+SVO,2026-10-30,18:20,18:52,B,115,Аэрофлот,SU 1250,Нижнекамск,NBC
+SVO,2026-10-30,18:20,18:47,C,144,Белавиа,B2 992,Минск,MSQ
+SVO,2026-10-30,18:25,19:03,B,116,Северсталь,D2 263,Петрозаводск,PES
+SVO,2026-10-30,18:30,19:00,B,114,Аэрофлот,SU 32,Санкт-Петербург,LED
+SVO,2026-10-30,18:30,19:32,C,131,Аэрофлот,SU 278,Пхукет,HKT
+SVO,2026-10-30,18:35,19:06,C,127,Аэрофлот,SU 1832,Минск,MSQ
+SVO,2026-10-30,18:35,18:50,C,133,Аэрофлот,SU 1868,Ереван,EVN
+SVO,2026-10-30,18:40,19:01,B,103,"Россия,Аэрофлот","FV 6885,SU 6885",Ижевск,IJK
+SVO,2026-10-30,18:40,18:54,B,122,Аэрофлот,SU 1184,Волгоград,VOG
+SVO,2026-10-30,18:50,20:05,B,112,Аэрофлот,SU 1750,Якутск,YKS
+SVO,2026-10-30,18:50,21:08,C,126,Nordwind,N4 6107,Пхеньян,FNJ
+SVO,2026-10-30,19:00,20:00,B,101,"Россия,Аэрофлот","FV 6579,SU 6579",Санкт-Петербург,LED
+SVO,2026-10-30,19:00,19:10,C,145,China Southern Airlines,CZ 342,Пекин,PKX
+SVO,2026-10-30,19:05,21:20,B,123,Аэрофлот,SU 1216,Самара,KUF
+SVO,2026-10-30,19:10,19:29,B,102,Аэрофлот,SU 1314,Минеральные Воды,MRV
+SVO,2026-10-30,19:10,19:25,C,142,China Eastern Airlines,MU 592,Шанхай,PVG
+SVO,2026-10-30,19:15,19:39,B,104,Аэрофлот,SU 1020,Екатеринбург,SVX
+SVO,2026-10-30,19:15,19:44,C,132,Аэрофлот,SU 270,Бангкок,BKK
+SVO,2026-10-30,19:20,19:35,B,103,"Россия,Аэрофлот","FV 6225,SU 6225",Нижний Новгород,GOJ
+SVO,2026-10-30,19:30,19:42,B,102,"Россия,Аэрофлот","FV 6093,SU 6093",Санкт-Петербург,LED
+SVO,2026-10-30,19:30,19:53,B,106,"Россия,Аэрофлот","FV 6827,SU 6827",Саранск,SKX
+SVO,2026-10-30,19:35,20:53,C,133,Аэрофлот,SU 236,Гоа,GOI
+SVO,2026-10-30,19:45,20:22,C,131,Аэрофлот,SU 208,Шанхай,PVG
+SVO,2026-10-30,19:50,20:10,C,130,Аэрофлот,SU 220,Гуанчжоу,CAN
+SVO,2026-10-30,19:55,20:34,C,132,Аэрофлот,SU 292,Хошимин,SGN
+SVO,2026-10-30,20:00,20:14,B,101,"Россия,Аэрофлот","FV 6703,SU 6703",Санкт-Петербург,LED
+SVO,2026-10-30,20:00,20:49,B,107,"Россия,Аэрофлот","FV 6289,SU 6289",Магадан,GDX
+SVO,2026-10-30,20:05,20:59,C,137,Hainan Airlines,HU 7986,Пекин,PEK
+SVO,2026-10-30,20:10,20:39,B,110,Аэрофлот,SU 1742,Южно-Сахалинск,UUS
+SVO,2026-10-30,20:15,20:42,B,121,Аэрофлот,SU 1128,Сочи,AER
+SVO,2026-10-30,20:15,20:46,C,138,Air China,CA 910,Пекин,PEK
+SVO,2026-10-30,20:20,20:44,C,140,China Southern Airlines,CZ 6002,Урумчи,URC
+SVO,2026-10-30,20:30,20:56,B,114,"Россия,Аэрофлот","FV 6097,SU 6097",Санкт-Петербург,LED
+SVO,2026-10-30,20:40,21:02,C,130,Аэрофлот,SU 284,Пхукет,HKT
+SVO,2026-10-30,20:40,23:26,D,13,Победа,DP 6531,Барнаул,BAX
+SVO,2026-10-30,20:55,21:23,B,103,"Россия,Аэрофлот","FV 6263,SU 6263",Благовещенск,BQS
+SVO,2026-10-30,20:55,21:39,C,141,Air Serbia,JU 133,Белград,BEG
+SVO,2026-10-30,21:00,21:12,B,101,"Россия,Аэрофлот","FV 6705,SU 6705",Санкт-Петербург,LED
+SVO,2026-10-30,21:00,23:11,D,3,Победа,DP 6549,Красноярск,KJA
+SVO,2026-10-30,21:05,13:06,B,112,Nordwind,N4 59,Казань,KZN
+SVO,2026-10-30,21:05,21:16,B,118,Аэрофлот,SU 1548,Новосибирск,OVB
+SVO,2026-10-30,21:05,21:26,C,131,Аэрофлот,SU 204,Пекин,PKX
+SVO,2026-10-30,21:15,22:28,B,122,Аэрофлот,SU 1450,Кемерово,KEJ
+SVO,2026-10-30,21:20,21:33,B,117,Аэрофлот,SU 1260,Уфа,UFA
+SVO,2026-10-30,21:30,21:41,B,116,"Россия,Аэрофлот","FV 6699,SU 6699",Санкт-Петербург,LED
+SVO,2026-10-30,21:30,22:17,C,130,Аэрофлот,SU 1850,Баку,GYD
+SVO,2026-10-30,21:35,23:13,B,106,Аэрофлот,SU 1326,Мурманск,MMK
+SVO,2026-10-30,21:40,21:43,B,104,Северсталь,D2 154,Череповец,CEE
+SVO,2026-10-30,21:40,23:08,B,112,Аэрофлот,SU 1442,Иркутск,IKT
+SVO,2026-10-30,21:40,12:38,C,133,Аэрофлот,SU 282,Фукуок,PQC
+SVO,2026-10-30,21:45,22:14,C,133,Аэрофлот,SU 232,Дели,DEL
+SVO,2026-10-30,21:55,22:52,B,108,Аэрофлот,SU 1454,Улан-Удэ,UUD
+SVO,2026-10-30,21:55,22:43,C,142,Sichuan Airlines,3U 3888,Чэнду,TFU
+SVO,2026-10-30,22:00,22:46,B,101,"Россия,Аэрофлот","FV 6951,SU 6951",Санкт-Петербург,LED
+SVO,2026-10-30,22:00,18:07,B,104,Аэрофлот,SU 5918,Хабаровск,KHV
+SVO,2026-10-30,22:00,22:19,B,119,Аэрофлот,SU 1700,Владивосток,VVO
+SVO,2026-10-30,22:00,11:09,D,1,Победа,DP 6523,Омск,OMS
+SVO,2026-10-30,22:05,01:47,C,133,Air China,CA 714,Урумчи,URC
+SVO,2026-10-30,22:05,22:34,C,137,Аэрофлот,SU 294,Нячанг,CXR
+SVO,2026-10-30,22:10,22:21,B,111,Аэрофлот,SU 1762,Омск,OMS
+SVO,2026-10-30,22:15,22:37,C,144,Белавиа,B2 978,Минск,MSQ
+SVO,2026-10-30,22:15,22:39,C,145,Аэрофлот,SU 320,Мале,MLE
+SVO,2026-10-30,22:20,11:41,B,119,Аэрофлот,SU 1700,Владивосток,VVO
+SVO,2026-10-30,22:25,13:40,C,142,Аэрофлот,SU 294,Нячанг,CXR
+SVO,2026-10-30,22:30,22:48,B,102,Аэрофлот,SU 22,Санкт-Петербург,LED
+SVO,2026-10-30,22:30,21:05,C,134,Etihad Airways,EY 844A,Абу-Даби,AUH
+SVO,2026-10-30,22:35,23:09,B,107,Аэрофлот,SU 1458,Новокузнецк,NOZ
+SVO,2026-10-30,22:35,11:48,D,3,Победа,DP 6547,Красноярск,KJA
+SVO,2026-10-30,22:45,12:30,D,3,Победа,DP 6525,Новосибирск,OVB
+SVO,2026-10-30,22:50,23:22,B,104,Северсталь,D2 158,Череповец,CEE
+SVO,2026-10-30,22:50,23:37,C,130,Аэрофлот,SU 276,Пхукет,HKT
+SVO,2026-10-30,22:55,23:34,B,103,Россия,FV 6253,Владивосток,VVO
+SVO,2026-10-30,22:55,23:20,B,117,Аэрофлот,SU 1646,Нижневартовск,NJC
+SVO,2026-10-30,22:55,14:10,D,1,Победа,DP 6543,Екатеринбург,SVX
+SVO,2026-10-30,23:00,11:06,B,112,"Россия,Аэрофлот","FV 6731,SU 6731",Иркутск,IKT
+SVO,2026-10-30,23:10,13:52,C,137,Аэрофлот,SU 288,Коломбо,CMB
+SVO,2026-10-30,23:10,13:17,D,16,Победа,DP 6501,Уфа,UFA
+SVO,2026-10-30,23:15,01:40,C,138,China Southern Airlines,CZ 656,Гуанчжоу,CAN
+SVO,2026-10-30,23:15,23:42,C,138,China Southern Airlines,CZ 656,Гуанчжоу,CAN
+SVO,2026-10-30,23:25,16:15,D,3,Победа,DP 6541,Екатеринбург,SVX
+SVO,2026-10-30,23:25,23:56,D,3,Победа,DP 6541,Екатеринбург,SVX
+SVO,2026-10-30,23:30,23:45,B,101,"Россия,Аэрофлот","FV 6807,SU 6807",Санкт-Петербург,LED
+SVO,2026-10-30,23:30,17:22,D,13,Победа,DP 6567,Челябинск,CEK
+SVO,2026-10-30,23:35,23:59,C,132,Аэрофлот,SU 1956,Астана,NQZ
+SVO,2026-10-30,23:35,23:52,C,141,Аэрофлот,SU 1950,Шымкент,CIT
+SVO,2026-10-30,23:50,23:15,C,125,"Etihad Airways,Garuda Indonesia","EY 844,GA 9033",Абу-Даби,AUH
+SVO,2026-10-30,23:55,14:37,D,13,Победа,DP 6511,Пермь,PEE
+VKO,2026-10-30,00:20,19:15,A,16,Победа,DP 1403,Екатеринбург,SVX
+VKO,2026-10-30,00:20,19:07,A,24,Red Sea Airlines,4S 342,Хургада,HRG
+VKO,2026-10-30,00:35,22:36,A,22,Turkish Airlines,TK 410,Стамбул,IST
+VKO,2026-10-30,01:00,13:08,A,24,"Uzbekistan Airways,S7 Airlines","HY 606,S7 4265",Самарканд,SKD
+VKO,2026-10-30,01:10,14:40,A,18,FLYONE Armenia,3F 3324,Ереван,EVN
+VKO,2026-10-30,01:10,19:05,A,23A,"Pegasus,Airasia X","PC 391,D7 8065",Стамбул,SAW
+VKO,2026-10-30,01:10,04:15,A,26,Turkish Airlines,TK 3037,Анталья,AYT
+VKO,2026-10-30,01:45,14:58,A,20A,Nesma Airlines,NE 645,Шарм-эль-Шейх,SSH
+VKO,2026-10-30,02:05,09:50,A,"19,19",Turkish Airlines,TK 412,Стамбул,IST
+VKO,2026-10-30,02:05,22:36,A,22,Turkish Airlines,TK 412,Стамбул,IST
+VKO,2026-10-30,02:25,16:41,A,26,Turkish Airlines,TK 3015,Анталья,AYT
+VKO,2026-10-30,02:45,13:40,A,26,Nesma Airlines,NE 605,Хургада,HRG
+VKO,2026-10-30,02:50,20:10,A,30,Ajet,VF 276,Стамбул,SAW
+VKO,2026-10-30,03:05,21:52,A,20,"Flydubai,Emirates","FZ 966,EK 2253",Дубай,DXB
+VKO,2026-10-30,03:10,20:23,A,29,"Pegasus,Airasia X","PC 387,D7 8001",Стамбул,SAW
+VKO,2026-10-30,03:50,13:45,A,23A,Red Sea Airlines,4S 326,Шарм-эль-Шейх,SSH
+VKO,2026-10-30,04:10,18:26,A,19,Pegasus,PC 1577,Анталья,AYT
+VKO,2026-10-30,04:10,19:01,A,22,Pegasus,PC 1521,Измир,ADB
+VKO,2026-10-30,04:30,14:26,A,27,Nesma Airlines,NE 601,Хургада,HRG
+VKO,2026-10-30,04:40,09:16,A,"29,29","Flydubai,Emirates","FZ 976,EK 2285",Дубай,DXB
+VKO,2026-10-30,04:40,23:30,A,30,"Flydubai,Emirates","FZ 976,EK 2285",Дубай,DXB
+VKO,2026-10-30,05:00,13:07,A,08A,ЮВТ Аэро,RT 203,Тобольск,RMZ
+VKO,2026-10-30,05:10,10:51,A,13,Северо-Запад,0E 9151,Сан-Бернардино,
+VKO,2026-10-30,05:30,19:28,A,23,Ajet,VF 588,Анкара,ESB
+VKO,2026-10-30,05:55,23:48,A,20,"Flydubai,Emirates","FZ 968,EK 2467",Дубай,DXB
+VKO,2026-10-30,05:55,19:30,A,23A,"Flydubai,Emirates","FZ 968,EK 2467",Дубай,DXB
+VKO,2026-10-30,06:00,22:25,A,27A,Ajet,VF 278,Стамбул,SAW
+VKO,2026-10-30,06:20,14:45,A,18A,Nesma Airlines,NE 611,Хургада,HRG
+VKO,2026-10-30,06:20,17:21,A,25,Turkish Airlines,TK 408,Стамбул,IST
+VKO,2026-10-30,07:00,11:49,A,08,"Россия,Аэрофлот","FV 6188,SU 6188",Санкт-Петербург,LED
+VKO,2026-10-30,07:00,18:30,A,19A,Победа,DP 839,Анталья,AYT
+VKO,2026-10-30,07:00,17:56,A,26A,Победа,DP 835,Газипаша,GZP
+VKO,2026-10-30,07:00,14:49,A,28A,Победа,DP 995,Стамбул,IST
+VKO,2026-10-30,07:00,13:30,A,29A,Победа,DP 991,Дубай,DWC
+VKO,2026-10-30,07:10,18:59,A,08,Победа,DP 157,Краснодар,KRR
+VKO,2026-10-30,07:15,14:22,A,24A,Red Sea Airlines,4S 316,Шарм-эль-Шейх,SSH
+VKO,2026-10-30,07:35,12:29,A,20,ЮТэйр,UT 757,Шарм-эль-Шейх,SSH
+VKO,2026-10-30,07:40,22:58,A,21,ЮТэйр,UT 715,Дубай,DWC
+VKO,2026-10-30,07:45,22:27,A,13A,Победа,DP 191,Махачкала,MCX
+VKO,2026-10-30,07:55,15:55,A,"19A,19",Turkish Airlines,TK 420,Стамбул,IST
+VKO,2026-10-30,08:00,10:59,A,09,"Россия,Аэрофлот","FV 6170,SU 6170",Санкт-Петербург,LED
+VKO,2026-10-30,08:05,13:13,A,10A,"РусЛайн,Алроса,ЮТэйр","7R 193,6R 4193,UT 4193",Тамбов,TBW
+VKO,2026-10-30,08:10,11:12,A,14A,"ЮТэйр,РусЛайн","UT 333,7R 4333",Нарьян-Мар,NNM
+VKO,2026-10-30,08:30,23:01,A,22A,ЮТэйр,UT 809,Самарканд,SKD
+VKO,2026-10-30,08:40,12:37,A,18A,Азимут,A4 7009,Тбилиси,TBS
+VKO,2026-10-30,09:05,22:46,A,29,"Uzbekistan Airways,S7 Airlines","HY 9628,S7 4327",Фергана,FEG
+VKO,2026-10-30,09:15,13:09,A,29,"Белавиа,ЮТэйр","B2 982,UT 4982",Минск,MSQ
+VKO,2026-10-30,09:20,18:20,A,19A,ЮТэйр,UT 801,Душанбе,DYU
+VKO,2026-10-30,09:25,13:43,A,26A,Победа,DP 753,Абу-Даби,AUH
+VKO,2026-10-30,09:30,11:18,A,09A,"Россия,Аэрофлот","FV 6052,SU 6052",Санкт-Петербург,LED
+VKO,2026-10-30,09:30,23:38,A,27,"Uzbekistan Airways,S7 Airlines","HY 9626,S7 4325",Нукус,NCU
+VKO,2026-10-30,09:35,17:43,A,30,Nesma Airlines,NE 615,Хургада,HRG
+VKO,2026-10-30,09:50,12:02,A,22,FLYONE Armenia,3F 3322,Ереван,EVN
+VKO,2026-10-30,09:50,23:31,A,24,Uzbekistan Airways,HY 9920,Наманган,NMA
+VKO,2026-10-30,09:50,17:25,A,24,ЮТэйр,UT 745,Баку,GYD
+VKO,2026-10-30,10:00,18:49,A,13,"ЮТэйр,Белавиа","UT 463,B2 2253",Тюмень,TJM
+VKO,2026-10-30,10:00,18:53,A,14,"ЮТэйр,Алроса,Белавиа","UT 373,6R 4373,B2 2273",Минеральные Воды,MRV
+VKO,2026-10-30,10:00,17:42,A,29A,Победа,DP 793,Дубай,DWC
+VKO,2026-10-30,10:05,12:24,A,11A,Вологодское авиапредприятие,ВГ 2391,Вологда,VGD
+VKO,2026-10-30,10:10,11:54,A,18,SCAT,DV 1006,Алматы,ALA
+VKO,2026-10-30,10:20,11:55,A,11,ЮТэйр,UT 575,Краснодар,KRR
+VKO,2026-10-30,10:30,14:34,A,09,"Россия,Аэрофлот","FV 6004,SU 6004",Санкт-Петербург,LED
+VKO,2026-10-30,10:40,13:31,A,25,Аэро Номад Эйрлайнс,KA 556,Ош,OSS
+VKO,2026-10-30,11:00,13:48,A,25A,Nesma Airlines,NE 609,Хургада,HRG
+VKO,2026-10-30,11:15,13:52,A,12A,"ЮТэйр,Белавиа","UT 295,B2 2295",Сургут,SGC
+VKO,2026-10-30,11:15,17:12,A,29,Georgian Airways,A9 935,Тбилиси,TBS
+VKO,2026-10-30,11:20,14:53,A,17,"ЮТэйр,Белавиа","UT 351,B2 2251",Ханты-Мансийск,HMA
+VKO,2026-10-30,11:30,15:59,A,08,"Россия,Аэрофлот","FV 6006,SU 6006",Санкт-Петербург,LED
+VKO,2026-10-30,11:30,16:37,A,23A,Азербайджан Хава Йоллары,J2 5829,Гянджа,GNJ
+VKO,2026-10-30,12:00,13:25,A,19,Turkish Airlines,TK 6932,Стамбул,IST
+VKO,2026-10-30,12:30,14:14,A,10,"Россия,Аэрофлот","FV 6008,SU 6008",Санкт-Петербург,LED
+VKO,2026-10-30,12:35,14:18,A,22A,SCAT,DV 1010,Астана,NQZ
+VKO,2026-10-30,12:35,18:03,A,25A,S7 Airlines,S7 4139,Баку,GYD
+VKO,2026-10-30,13:15,18:08,A,12,ЮТэйр,UT 445,Когалым,KGP
+VKO,2026-10-30,13:30,14:30,A,11,"Россия,Аэрофлот","FV 6010,SU 6010",Санкт-Петербург,LED
+VKO,2026-10-30,13:55,17:02,A,09A,ЮВТ Аэро,RT 302,Бугульма,UUA
+VKO,2026-10-30,14:05,15:28,A,22,Turkish Airlines,TK 414,Стамбул,IST
+VKO,2026-10-30,14:30,16:51,A,10,"Россия,Аэрофлот","FV 6026,SU 6026",Санкт-Петербург,LED
 VKO,2026-10-30,14:30,16:50,A,21,One Jet,J1 4878,Tehran,IKA
-VKO,2026-10-30,14:30,18:37,A,27,Georgian,A9 925,Tbilisi,TBS
-VKO,2026-10-30,14:35,16:53,A,28A,Shirak Avia,5G 510,Yerevan,EVN
-VKO,2026-10-30,15:00,17:37,A,18A,Turkish,TK 418,Istanbul,IST
-VKO,2026-10-30,15:15,17:08,A,20,"flydubai,Emirates","FZ 990,EK 2311",Dubai,DXB
-VKO,2026-10-30,15:20,18:24,A,21,Pegasus,PC 1581,Antalya,AYT
-VKO,2026-10-30,15:30,18:01,A,09,"Rossiya,Aeroflot","FV 6028,SU 6028",Saint-Petersburg,LED
-VKO,2026-10-30,15:45,20:08,A,12,UTAir,UT 179,Ukhta,UCT
+VKO,2026-10-30,14:30,18:37,A,27,Georgian Airways,A9 925,Тбилиси,TBS
+VKO,2026-10-30,14:35,16:53,A,28A,Ширак Авиа,5G 510,Ереван,EVN
+VKO,2026-10-30,14:45,17:08,A,20,"Flydubai,Emirates","FZ 990,EK 2311",Дубай,DXB
+VKO,2026-10-30,15:00,17:37,A,"18A,18",Turkish Airlines,TK 418,Стамбул,IST
+VKO,2026-10-30,15:20,18:24,A,21,Pegasus,PC 1581,Анталья,AYT
+VKO,2026-10-30,15:30,18:01,A,09,"Россия,Аэрофлот","FV 6028,SU 6028",Санкт-Петербург,LED
+VKO,2026-10-30,15:45,20:08,A,12,ЮТэйр,UT 179,Ухта,UCT
 VKO,2026-10-30,15:45,15:45,A,28A,Forces Aeriennes algeriennes,KJD 202,Boufarik,QFD
-VKO,2026-10-30,16:00,18:35,A,15,"Rossiya,Aeroflot","FV 6024,SU 6024",Saint-Petersburg,LED
-VKO,2026-10-30,16:05,20:47,A,26A,Turkish,TK 3091,Antalya,AYT
-VKO,2026-10-30,17:00,19:19,A,10,"Rossiya,Aeroflot","FV 6032,SU 6032",Saint-Petersburg,LED
-VKO,2026-10-30,17:00,22:27,A,13A,Pobeda,DP 191,Makhachkala,MCX
-VKO,2026-10-30,17:15,18:55,A,28,Azimuth,A4 7071,Kutaisi,KUT
-VKO,2026-10-30,17:25,19:33,A,18,Pegasus,PC 389,Istanbul,SAW
-VKO,2026-10-30,17:30,19:11,A,11A,"Rossiya,Aeroflot","FV 6020,SU 6020",Saint-Petersburg,LED
-VKO,2026-10-30,17:30,20:43,A,28A,Azimuth,A4 7007,Tbilisi,TBS
-VKO,2026-10-30,18:00,19:24,A,09,"Rossiya,Aeroflot","FV 6014,SU 6014",Saint-Petersburg,LED
-VKO,2026-10-30,18:00,20:51,A,20A,SCAT,DV 1004,Shymkent,CIT
-VKO,2026-10-30,18:25,19:28,A,23,AJet,VF 6656,Ankara,ESB
-VKO,2026-10-30,18:30,20:28,A,08,"Rossiya,Aeroflot","FV 6176,SU 6176",Saint-Petersburg,LED
-VKO,2026-10-30,18:45,20:10,A,30,AJet,VF 6651,Istanbul,SAW
-VKO,2026-10-30,19:00,20:33,A,12A,Azimuth,A4 7035,Pskov,PKV
-VKO,2026-10-30,19:05,20:35,A,11,"Rossiya,Aeroflot","FV 6022,SU 6022",Saint-Petersburg,LED
-VKO,2026-10-30,19:30,21:13,A,14,"Rossiya,Aeroflot","FV 6178,SU 6178",Saint-Petersburg,LED
-VKO,2026-10-30,19:30,22:03,A,15,"UTAir,Belavia","UT 357,B2 2257",Samara,KUF
-VKO,2026-10-30,19:45,12:00,A,20A,UTAir,UT 807,Bukhara,BHK
-VKO,2026-10-30,20:00,22:19,A,10,"Rossiya,Aeroflot","FV 6012,SU 6012",Saint-Petersburg,LED
-VKO,2026-10-30,20:15,22:12,A,19A,Turkish,TK 416,Istanbul,IST
-VKO,2026-10-30,20:15,21:52,A,20,"flydubai,Emirates","FZ 966,EK 2253",Dubai,DXB
-VKO,2026-10-30,20:15,22:25,A,27A,AJet,VF 6653,Istanbul,SAW
-VKO,2026-10-30,20:20,21:58,A,15A,"Alrosa,Yakutia,UTAir,RusLine","6R 598,R3 5598,UT 4598,7R 6598",Mirny,MJZ
-VKO,2026-10-30,20:30,22:43,A,09,"Rossiya,Aeroflot","FV 6180,SU 6180",Saint-Petersburg,LED
-VKO,2026-10-30,20:30,21:50,A,13,UTAir,UT 453,Tyumen,TJM
-VKO,2026-10-30,20:40,22:36,A,22,Turkish,TK 6920,Istanbul,IST
-VKO,2026-10-30,20:50,22:40,A,23,"Uzbekistan,S7","HY 614,S7 4269",Tashkent,TAS
-VKO,2026-10-30,21:00,23:27,A,08,"Rossiya,Aeroflot","FV 6016,SU 6016",Saint-Petersburg,LED
-VKO,2026-10-30,21:00,23:04,A,09A,Vologda Air Company,ВГ 2389,Vologda,VGD
-VKO,2026-10-30,21:30,22:48,A,17,"UTAir,Belavia","UT 571,B2 2271",Krasnoyarsk,KJA
-VKO,2026-10-30,21:50,23:30,A,30,"flydubai,Emirates","FZ 976,EK 2285",Dubai,DXB
-VKO,2026-10-30,22:30,17:16,A,23,Nesma,NE 641,Sharm el Sheikh,SSH
-VKO,2026-10-30,23:00,23:24,A,10,"Rossiya,Aeroflot","FV 6184,SU 6184",Saint-Petersburg,LED
-VKO,2026-10-30,23:00,23:34,A,18A,AZUR Air,ZF 111,Malé,MLE
-VKO,2026-10-30,23:20,23:48,A,20,"flydubai,Emirates","FZ 968,EK 2467",Dubai,DXB
-DME,2026-10-30,00:55,00:55,E,E17,Ural,U6 8253,Dushanbe,
-DME,2026-10-30,01:30,01:30,D,D23,Yamal,YC 90,Novyy Urengoy,NUX
-DME,2026-10-30,01:40,01:40,D,D8,S7,S7 2571,Novyy Urengoy,NUX
-DME,2026-10-30,03:05,03:05,D,D24,Yamal,YC 32,Salekhard,SLY
-DME,2026-10-30,07:00,07:00,E,E18,Ural,U6 2127,Khanabad,KSQ
-DME,2026-10-30,08:35,08:35,,,Centrum Air,C6 418,Urgench,UGC
-DME,2026-10-30,09:00,10:24,D,D23,Ural,U6 371,Kaliningrad,KGD
-DME,2026-10-30,09:15,10:20,D,D7,S7,S7 2041,Sochi,AER
-DME,2026-10-30,09:45,10:26,D,D9,NordStar,Y7 1091,Kurgan,
-DME,2026-10-30,09:55,09:55,E,E14,Emirates,EK 130,Dubai,DXB
-DME,2026-10-30,09:55,10:14,E,E3,S7,S7 3235,Ashgabat,ASB
-DME,2026-10-30,10:00,10:32,D,D20,Ural,U6 261,Ekaterinburg,SVX
-DME,2026-10-30,10:00,10:22,E,E17,Ural,U6 783,Istanbul,IST
-DME,2026-10-30,10:15,11:09,D,D18,Ural,U6 1387,Vladikavkaz,OGZ
-DME,2026-10-30,11:00,11:00,,,EgyptAir,MS 728,Sharm El Sheikh,
-DME,2026-10-30,11:00,11:00,D,D8,Ural,U6 427,Grozny,GRV
-DME,2026-10-30,11:10,12:08,E,E20,S7,S7 3739,Antalya,AYT
-DME,2026-10-30,11:15,11:42,D,D4,S7,S7 2505,Novosibirsk,OVB
-DME,2026-10-30,11:20,11:44,D,D24,Yamal,YC 419,Noyabrsk,NOJ
-DME,2026-10-30,11:20,11:20,D,D4,Ural,U6 1343,Makhachkala,MCX
-DME,2026-10-30,11:20,11:20,E,E13,"Uzbekistan,S7","HY 604,S7 4263",Tashkent,TAS
-DME,2026-10-30,11:30,12:35,D,D5,Ural,U6 627,Kaliningrad,KGD
-DME,2026-10-30,11:40,11:40,D,D4,Ural,U6 153,Mineralnyye Vody,MRV
-DME,2026-10-30,12:05,12:05,D,D6,S7,S7 2153,Vladikavkaz,OGZ
-DME,2026-10-30,12:05,12:41,D,D6,S7,S7 3021,Irkutsk,IKT
-DME,2026-10-30,12:15,12:15,,,NordStar,Y7 402,Sochi,AER
-DME,2026-10-30,12:20,12:43,E,E3,Belavia,B2 958,Minsk,MSQ
-DME,2026-10-30,12:30,12:30,E,E2,Sky FRU,R8 484,Bishkek,
-DME,2026-10-30,12:35,12:45,D,D19,S7,S7 2501,Novosibirsk,OVB
-DME,2026-10-30,13:00,13:33,E,E7,Ural,U6 143,Sukhum,
-DME,2026-10-30,13:05,13:05,E,E9,"AZAL Azerbaijan,S7","J2 182,S7 4101",Baku,
-DME,2026-10-30,13:40,14:06,D,D5,Ural,U6 299,Ekaterinburg,SVX
-DME,2026-10-30,13:40,14:15,D,D8,S7,S7 2507,Novosibirsk,OVB
-DME,2026-10-30,13:50,14:10,D,D9,S7,S7 2167,Mineralnyye Vody,MRV
-DME,2026-10-30,13:55,14:08,D,D13,S7,S7 2155,Vladikavkaz,OGZ
-DME,2026-10-30,14:10,14:10,D,D20,S7,S7 1211,Kaliningrad,KGD
-DME,2026-10-30,15:45,15:45,E,E6,EgyptAir,MS 730,Cairo,CAI
-DME,2026-10-30,16:25,16:25,E,E14,Emirates,EK 134,Dubai,DXB
-DME,2026-10-30,16:35,16:35,D,D17,S7,S7 1073,Samara,KUF
-DME,2026-10-30,16:35,17:25,D,D9,S7,S7 2509,Novosibirsk,OVB
-DME,2026-10-30,16:55,16:55,D,D13,Ural,U6 167,Kaliningrad,KGD
-DME,2026-10-30,17:05,17:17,E,E4,Royal Jordanian,RJ 178,Amman,AMM
-DME,2026-10-30,17:20,17:20,D,D9,S7,S7 1015,Saint-Petersburg,LED
-DME,2026-10-30,17:45,18:04,D,D6,Ural,U6 267,Ekaterinburg,SVX
-DME,2026-10-30,18:20,18:35,D,D8,S7,S7 3007,Yakutsk,YKS
-DME,2026-10-30,18:50,19:36,D,D4,S7,S7 3031,Ulan-Ude,UUD
-DME,2026-10-30,19:15,19:15,D,D9,Ural,U6 349,Blagoveschensk,BQS
-DME,2026-10-30,19:40,20:28,D,D5,Ural,U6 93,Chita,HTA
-DME,2026-10-30,19:45,19:45,,,Ural,U6 2771,Samarkand,SKD
-DME,2026-10-30,19:55,20:22,E,E3,Belavia,B2 956,Minsk,MSQ
-DME,2026-10-30,20:30,20:38,D,D19,S7,S7 3045,Chita,HTA
-DME,2026-10-30,20:35,21:21,D,D13,Ural,U6 263,Ekaterinburg,SVX
-DME,2026-10-30,20:35,20:44,D,D23,S7,S7 2503,Novosibirsk,OVB
-DME,2026-10-30,20:45,20:45,E,E7,Ural,U6 2633,Yerevan,EVN
-DME,2026-10-30,21:00,21:29,E,E4,FlyOne Armenia,3F 3316,Yerevan,EVN
-DME,2026-10-30,21:10,21:38,E,E13,Taban,HH 714,Termez,TMJ
-DME,2026-10-30,21:15,21:15,D,D6,S7,S7 3017,Irkutsk,IKT
-DME,2026-10-30,21:30,21:58,D,D24,S7,S7 2593,Abakan,ABA
-DME,2026-10-30,21:30,21:53,E,E8,Ethiopian,ET 761,Addis Ababa,ADD
-DME,2026-10-30,22:00,22:11,D,D22,S7,S7 2515,Novosibirsk,OVB
-DME,2026-10-30,22:00,22:23,D,D5,Ural,U6 265,Ekaterinburg,SVX
-DME,2026-10-30,22:05,22:25,D,D19,Ural,U6 651,Barnaul,BAX
-DME,2026-10-30,22:20,22:36,D,D17,NordStar,"Y7 9101,Y7 101",Norilsk,
-DME,2026-10-30,22:20,22:39,D,D8,S7,S7 3033,Ulan-Ude,UUD
-DME,2026-10-30,22:20,22:53,E,E3,Avia Traffic Company,YK 960,Bishkek,BSZ
-DME,2026-10-30,22:45,22:59,D,D9,S7,S7 2601,Barnaul,BAX
-DME,2026-10-30,22:45,23:08,E,E2,Avia Traffic Company,YK 748,Osh,OSS
-DME,2026-10-30,22:50,23:16,D,D4,S7,S7 2629,Gorno-Altaysk,RGK
-DME,2026-10-30,22:50,22:50,E,E13,"Uzbekistan,S7","HY 602,S7 4261",Tashkent,TAS
-DME,2026-10-30,22:55,22:55,D,D4,S7,S7 2565,Omsk,OMS
-DME,2026-10-30,22:55,23:06,E,E4,Air Arabia,G9 806,Sharjah,SHJ
-DME,2026-10-30,23:00,23:26,D,D13,S7,S7 2513,Novosibirsk,OVB
-DME,2026-10-30,23:05,23:20,D,D20,Ural,U6 387,Omsk,OMS
-DME,2026-10-30,23:30,23:30,,,Somon Air,SZ 202,Dushanbe,
-DME,2026-10-30,23:35,23:38,D,D18,S7,S7 2625,Novokuznetsk,NOZ
-DME,2026-10-30,23:40,23:59,D,D5,S7,S7 2581,Norilsk,NSK
-DME,2026-10-30,23:55,23:55,,,NordStar,Y7 401,Norilsk,
+VKO,2026-10-30,16:00,18:35,A,15,"Россия,Аэрофлот","FV 6024,SU 6024",Санкт-Петербург,LED
+VKO,2026-10-30,16:05,20:47,A,"26A,26",Turkish Airlines,TK 3091,Анталья,AYT
+VKO,2026-10-30,17:00,19:19,A,10,"Россия,Аэрофлот","FV 6032,SU 6032",Санкт-Петербург,LED
+VKO,2026-10-30,17:15,18:55,A,28,Азимут,A4 7071,Кутаиси,
+VKO,2026-10-30,17:25,19:33,A,18,"Pegasus,Airasia X","PC 389,D7 8003",Стамбул,SAW
+VKO,2026-10-30,17:30,19:11,A,11A,"Россия,Аэрофлот","FV 6020,SU 6020",Санкт-Петербург,LED
+VKO,2026-10-30,17:30,20:43,A,28A,Азимут,A4 7007,Тбилиси,TBS
+VKO,2026-10-30,18:00,19:24,A,09,"Россия,Аэрофлот","FV 6014,SU 6014",Санкт-Петербург,LED
+VKO,2026-10-30,18:00,20:51,A,20A,SCAT,DV 1004,Шымкент,CIT
+VKO,2026-10-30,18:25,19:28,A,23,Ajet,VF 6656,Анкара,ESB
+VKO,2026-10-30,18:30,20:28,A,08,"Россия,Аэрофлот","FV 6176,SU 6176",Санкт-Петербург,LED
+VKO,2026-10-30,18:45,20:10,A,30,Ajet,VF 6651,Стамбул,SAW
+VKO,2026-10-30,19:00,20:33,A,12A,Азимут,A4 7035,Псков,PKV
+VKO,2026-10-30,19:05,20:35,A,11,"Россия,Аэрофлот","FV 6022,SU 6022",Санкт-Петербург,LED
+VKO,2026-10-30,19:30,21:13,A,14,"Россия,Аэрофлот","FV 6178,SU 6178",Санкт-Петербург,LED
+VKO,2026-10-30,19:30,22:03,A,15,"ЮТэйр,Белавиа","UT 357,B2 2257",Самара,KUF
+VKO,2026-10-30,19:45,12:00,A,20A,ЮТэйр,UT 807,Бухара,BHK
+VKO,2026-10-30,20:00,22:19,A,10,"Россия,Аэрофлот","FV 6012,SU 6012",Санкт-Петербург,LED
+VKO,2026-10-30,20:15,22:12,A,"19A,19",Turkish Airlines,TK 416,Стамбул,IST
+VKO,2026-10-30,20:15,22:25,A,27A,Ajet,VF 6653,Стамбул,SAW
+VKO,2026-10-30,20:20,21:58,A,15A,"Алроса,РусЛайн,Якутия,ЮТэйр","6R 598,7R 6598,R3 5598,UT 4598",Мирный,MJZ
+VKO,2026-10-30,20:30,22:43,A,09,"Россия,Аэрофлот","FV 6180,SU 6180",Санкт-Петербург,LED
+VKO,2026-10-30,20:30,21:50,A,13,ЮТэйр,UT 453,Тюмень,TJM
+VKO,2026-10-30,20:40,22:36,A,22,Turkish Airlines,TK 6920,Стамбул,IST
+VKO,2026-10-30,20:50,22:40,A,23,"Uzbekistan Airways,S7 Airlines","HY 614,S7 4269",Ташкент,TAS
+VKO,2026-10-30,21:00,23:27,A,08,"Россия,Аэрофлот","FV 6016,SU 6016",Санкт-Петербург,LED
+VKO,2026-10-30,21:00,23:04,A,09A,Вологодское авиапредприятие,ВГ 2389,Вологда,VGD
+VKO,2026-10-30,21:30,22:48,A,17,"ЮТэйр,Белавиа","UT 571,B2 2271",Красноярск,KJA
+VKO,2026-10-30,21:35,10:55,A,"24,24","Uzbekistan Airways,S7 Airlines","HY 9608,S7 4311",Бухара,BHK
+VKO,2026-10-30,22:15,11:08,A,"25,25","Uzbekistan Airways,S7 Airlines","HY 9624,S7 4323",Карши,KSQ
+VKO,2026-10-30,22:20,11:48,A,"21,22",Uzbekistan Airways,HY 9916,Ургенч,UGC
+VKO,2026-10-30,22:25,17:27,A,23A,Победа,DP 743,Ош,OSS
+VKO,2026-10-30,22:30,17:16,A,"23,23",Nesma Airlines,NE 641,Шарм-эль-Шейх,SSH
+VKO,2026-10-30,23:00,23:24,A,10,"Россия,Аэрофлот","FV 6184,SU 6184",Санкт-Петербург,LED
+VKO,2026-10-30,23:00,23:34,A,"18A,18",Azur Air,ZF 111,Мале,MLE
+VKO,2026-10-30,23:25,09:15,A,12A,Победа,DP 433,Пермь,PEE
+VKO,2026-10-30,23:30,15:02,A,19A,Победа,DP 997,Самарканд,SKD
+VKO,2026-10-30,23:35,17:48,A,22A,Азербайджан Хава Йоллары,J2 806,Баку,GYD
+VKO,2026-10-30,23:55,04:00,A,11,"ЮТэйр,Белавиа","UT 559,B2 2259",Махачкала,MCX
+DME,2026-10-30,00:55,19:39,E,E7,Уральские авиалинии,U6 8253,Душанбе,DYU
+DME,2026-10-30,01:00,10:26,D,D9,Нордстар,Y7 1091,Курган,KRO
+DME,2026-10-30,01:15,19:30,E,E4,Egypt Air,MS 728,Шарм-эль-Шейх,SSH
+DME,2026-10-30,01:30,11:19,D,D23,Ямал,YC 90,Новый Уренгой,NUX
+DME,2026-10-30,01:40,10:42,D,D8,S7 Airlines,S7 2571,Новый Уренгой,NUX
+DME,2026-10-30,03:05,11:38,D,D22,Ямал,YC 32,Салехард,SLY
+DME,2026-10-30,07:00,12:55,E,E18,Уральские авиалинии,U6 2127,Карши,KSQ
+DME,2026-10-30,08:35,21:39,E,E6,Centrum Air,C6 418,Ургенч,UGC
+DME,2026-10-30,09:00,10:24,D,D23,Уральские авиалинии,U6 371,Калининград,KGD
+DME,2026-10-30,09:15,10:20,D,D7,"S7 Airlines,Азимут","S7 2041,A4 1041",Сочи,AER
+DME,2026-10-30,09:50,11:01,E,E14,"Emirates,S7 Airlines","EK 130,S7 4165",Дубай,DXB
+DME,2026-10-30,09:55,10:14,E,E3,S7 Airlines,S7 3235,Ашхабад,ASB
+DME,2026-10-30,10:00,10:32,D,D20,Уральские авиалинии,U6 261,Екатеринбург,SVX
+DME,2026-10-30,10:00,10:22,E,E17,Уральские авиалинии,U6 783,Стамбул,IST
+DME,2026-10-30,10:15,11:09,D,D7,Уральские авиалинии,U6 1387,Владикавказ,OGZ
+DME,2026-10-30,10:45,08:29,E,E18,Avia Traffic Company,YK 966,Ош,OSS
+DME,2026-10-30,11:00,12:57,D,D8,Уральские авиалинии,U6 427,Грозный,GRV
+DME,2026-10-30,11:10,12:08,E,E20,S7 Airlines,S7 3739,Анталья,AYT
+DME,2026-10-30,11:15,11:42,D,D4,S7 Airlines,S7 2505,Новосибирск,OVB
+DME,2026-10-30,11:20,11:44,D,D24,Ямал,YC 419,Ноябрьск,NOJ
+DME,2026-10-30,11:20,13:35,D,D4,Уральские авиалинии,U6 1343,Махачкала,MCX
+DME,2026-10-30,11:20,14:04,E,E13,"Uzbekistan Airways,S7 Airlines","HY 604,S7 4263",Ташкент,TAS
+DME,2026-10-30,11:30,12:35,D,D5,Уральские авиалинии,U6 627,Калининград,KGD
+DME,2026-10-30,11:40,16:08,D,D4,Уральские авиалинии,U6 153,Минеральные Воды,MRV
+DME,2026-10-30,12:05,14:18,D,D6,S7 Airlines,S7 2153,Владикавказ,OGZ
+DME,2026-10-30,12:05,12:41,D,D6,S7 Airlines,S7 3021,Иркутск,IKT
+DME,2026-10-30,12:15,18:27,D,D5,Нордстар,Y7 402,Сочи,AER
+DME,2026-10-30,12:20,12:43,E,E3,Белавиа,B2 958,Минск,MSQ
+DME,2026-10-30,12:30,15:58,E,E2,Sky FRU,R8 484,Бишкек,BSZ
+DME,2026-10-30,12:35,12:45,D,D19,S7 Airlines,S7 2501,Новосибирск,OVB
+DME,2026-10-30,13:00,13:33,E,E7,Уральские авиалинии,U6 143,Сухум,SUI
+DME,2026-10-30,13:05,16:05,E,E9,Азербайджан Хава Йоллары,J2 182,Баку,GYD
+DME,2026-10-30,13:40,14:06,D,D5,Уральские авиалинии,U6 299,Екатеринбург,SVX
+DME,2026-10-30,13:40,14:15,D,D8,S7 Airlines,S7 2507,Новосибирск,OVB
+DME,2026-10-30,13:50,14:10,D,D9,"S7 Airlines,Азимут","S7 2167,A4 1167",Минеральные Воды,MRV
+DME,2026-10-30,13:55,14:08,D,D13,S7 Airlines,S7 2155,Владикавказ,OGZ
+DME,2026-10-30,14:10,16:03,D,D20,S7 Airlines,S7 1211,Калининград,KGD
+DME,2026-10-30,15:45,17:07,E,E6,Egypt Air,MS 730,Каир,CAI
+DME,2026-10-30,16:25,18:23,E,E14,"Emirates,S7 Airlines","EK 134,S7 4163",Дубай,DXB
+DME,2026-10-30,16:35,19:20,D,D17,S7 Airlines,S7 1073,Самара,KUF
+DME,2026-10-30,16:35,17:25,D,D9,S7 Airlines,S7 2509,Новосибирск,OVB
+DME,2026-10-30,16:55,18:09,D,D13,Уральские авиалинии,U6 167,Калининград,KGD
+DME,2026-10-30,17:05,17:17,E,E4,Royal Jordanian,RJ 178,Амман,AMM
+DME,2026-10-30,17:20,19:31,D,D9,S7 Airlines,S7 1015,Санкт-Петербург,LED
+DME,2026-10-30,17:45,18:04,D,D6,Уральские авиалинии,U6 267,Екатеринбург,SVX
+DME,2026-10-30,18:20,18:35,D,D8,S7 Airlines,S7 3007,Якутск,YKS
+DME,2026-10-30,18:50,19:36,D,D4,S7 Airlines,S7 3031,Улан-Удэ,UUD
+DME,2026-10-30,19:15,21:55,D,D9,Уральские авиалинии,U6 349,Благовещенск,BQS
+DME,2026-10-30,19:40,20:28,D,D5,Уральские авиалинии,U6 93,Чита,HTA
+DME,2026-10-30,19:45,23:35,E,E6,Уральские авиалинии,U6 2771,Самарканд,SKD
+DME,2026-10-30,19:55,20:22,E,E3,Белавиа,B2 956,Минск,MSQ
+DME,2026-10-30,20:30,20:38,D,D19,S7 Airlines,S7 3045,Чита,HTA
+DME,2026-10-30,20:35,21:21,D,D13,Уральские авиалинии,U6 263,Екатеринбург,SVX
+DME,2026-10-30,20:35,20:44,D,D23,S7 Airlines,S7 2503,Новосибирск,OVB
+DME,2026-10-30,20:45,23:10,E,E7,Уральские авиалинии,U6 2633,Ереван,EVN
+DME,2026-10-30,21:10,21:38,E,E13,Qanot Sharq,HH 714,Термез,TMJ
+DME,2026-10-30,21:15,23:22,D,D6,S7 Airlines,S7 3017,Иркутск,IKT
+DME,2026-10-30,21:30,21:58,D,D24,S7 Airlines,S7 2593,Абакан,ABA
+DME,2026-10-30,21:30,11:40,E,E19,FLYONE Armenia,3F 3316,Ереван,EVN
+DME,2026-10-30,21:30,21:29,E,E4,FLYONE Armenia,3F 3316,Ереван,EVN
+DME,2026-10-30,21:30,21:53,E,E8,Ethiopian Airlines,ET 761,Аддис-Абеба,ADD
+DME,2026-10-30,21:55,10:49,D,D22,Нордстар,Y7 101,Норильск,NSK
+DME,2026-10-30,22:00,22:11,D,D22,S7 Airlines,S7 2515,Новосибирск,OVB
+DME,2026-10-30,22:00,22:23,D,D5,Уральские авиалинии,U6 265,Екатеринбург,SVX
+DME,2026-10-30,22:00,08:54,E,E4,Centrum Air,C6 410,Самарканд,SKD
+DME,2026-10-30,22:05,22:25,D,D19,Уральские авиалинии,U6 651,Барнаул,BAX
+DME,2026-10-30,22:15,11:34,D,D17,S7 Airlines,S7 2615,Томск,TOF
+DME,2026-10-30,22:20,22:36,D,D17,Нордстар,"Y7 101,Y7 9101",Норильск,NSK
+DME,2026-10-30,22:20,10:58,D,D19,S7 Airlines,S7 3033,Улан-Удэ,UUD
+DME,2026-10-30,22:20,22:39,D,D8,S7 Airlines,S7 3033,Улан-Удэ,UUD
+DME,2026-10-30,22:20,09:10,E,E20,Avia Traffic Company,YK 960,Бишкек,BSZ
+DME,2026-10-30,22:20,22:53,E,E3,Avia Traffic Company,YK 960,Бишкек,BSZ
+DME,2026-10-30,22:30,11:32,E,E7,Уральские авиалинии,U6 2969,Куляб,TJU
+DME,2026-10-30,22:45,22:59,D,D9,S7 Airlines,S7 2601,Барнаул,BAX
+DME,2026-10-30,22:45,09:33,E,E2,Avia Traffic Company,YK 748,Ош,OSS
+DME,2026-10-30,22:45,23:08,E,E2,Avia Traffic Company,YK 748,Ош,OSS
+DME,2026-10-30,22:45,23:06,E,E4,Air Arabia,G9 806,Шарджа,SHJ
+DME,2026-10-30,22:45,13:27,E,E6,Air Arabia,G9 806,Шарджа,SHJ
+DME,2026-10-30,22:50,23:16,D,D4,S7 Airlines,S7 2629,Горно-Алтайск,RGK
+DME,2026-10-30,22:50,02:16,E,E13,"Uzbekistan Airways,S7 Airlines","HY 602,S7 4261",Ташкент,TAS
+DME,2026-10-30,22:55,11:36,D,D24,S7 Airlines,S7 3041,Братск,BTK
+DME,2026-10-30,22:55,10:44,D,D6,S7 Airlines,S7 2565,Омск,OMS
+DME,2026-10-30,23:00,23:26,D,D13,S7 Airlines,S7 2513,Новосибирск,OVB
+DME,2026-10-30,23:00,12:37,D,D5,S7 Airlines,S7 2513,Новосибирск,OVB
+DME,2026-10-30,23:00,02:27,E,E14,"Emirates,S7 Airlines","EK 132,S7 4161",Дубай,DXB
+DME,2026-10-30,23:00,08:52,E,E9,Qanot Sharq,HH 712,Самарканд,SKD
+DME,2026-10-30,23:05,23:20,D,D20,Уральские авиалинии,U6 387,Омск,OMS
+DME,2026-10-30,23:30,08:38,E,E10,Сомон Эйр,SZ 202,Душанбе,DYU
+DME,2026-10-30,23:35,10:54,D,D18,S7 Airlines,S7 2625,Новокузнецк,NOZ
+DME,2026-10-30,23:35,23:38,D,D18,S7 Airlines,S7 2625,Новокузнецк,NOZ
+DME,2026-10-30,23:40,12:13,D,D20,S7 Airlines,S7 2581,Норильск,NSK
+DME,2026-10-30,23:40,23:59,D,D5,S7 Airlines,S7 2581,Норильск,NSK
+DME,2026-10-30,23:45,11:07,D,D13,Уральские авиалинии,U6 271,Екатеринбург,SVX
