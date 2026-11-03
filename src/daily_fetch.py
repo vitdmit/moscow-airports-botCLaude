@@ -481,6 +481,41 @@ def _fetch_adb(airports: list[str], day: date) -> tuple[list[dict], list[str]]:
     return rows_all, failed
 
 
+def fill_gates_from_adb(rows: list[dict], adb_rows: list[dict]) -> int:
+    """Подставить гейт и терминал из AeroDataBox в строки Яндекса без гейта.
+
+    Нужно, когда Яндекс отдал факт вылета, но не гейты (DME 11-13.10.2026).
+    Совпадение по номеру рейса (любому из кодшеринга) и плановому времени
+    в пределах 90 минут."""
+    idx: dict[str, list[dict]] = {}
+    for a in adb_rows:
+        if not a.get("gate"):
+            continue
+        for n in re.split(r"[;,]", a.get("flight_numbers", "")):
+            if n.strip():
+                idx.setdefault(_norm_num(n), []).append(a)
+    filled = 0
+    for r in rows:
+        if r.get("gate"):
+            continue
+        t = _time_to_min(r.get("scheduled_time", ""))
+        best, best_d = None, 91
+        for n in re.split(r"[;,]", r.get("flight_numbers", "")):
+            for a in idx.get(_norm_num(n), []):
+                ta = _time_to_min(a.get("scheduled_time", ""))
+                if t is None or ta is None:
+                    continue
+                d = abs(t - ta)
+                if d < best_d:
+                    best, best_d = a, d
+        if best:
+            r["gate"] = best["gate"]
+            if not r.get("terminal"):
+                r["terminal"] = best.get("terminal", "")
+            filled += 1
+    return filled
+
+
 def main() -> int:
     """Сбор суток.
 
@@ -530,6 +565,10 @@ def main() -> int:
             continue
         if ap in yandex:
             rows = yandex_fids.csv_rows(ap, day, yandex[ap])
+            n_gate = fill_gates_from_adb(rows, ap_adb)
+            if n_gate:
+                log.info("[%s] %s: гейты из AeroDataBox подставлены в %d рейсов",
+                         ap, day, n_gate)
             # Соседние сутки для защиты от задвоения не смотрим: ежедневный
             # рейс, которого нет у Яндекса (R8 484), иначе терялся бы через день.
             extra = yandex_fids.adb_extra(ap, ap_adb)
