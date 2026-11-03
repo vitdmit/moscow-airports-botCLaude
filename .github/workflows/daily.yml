@@ -138,7 +138,7 @@ jobs:
           # файле и все они попадают в поле «Кому» одного письма. Через
           # запятую, без пробелов после запятой. Секрет OPS_MAIL_TO больше
           # не используется, но оставлен в репозитории на всякий случай.
-          to: vdmitriev@gkvinegret.ru,rahmetov@gkvinegret.ru,kkashirina@gkvinegret.ru,apan@gkvinegret.ru,ffilippov@gkvinegret.ru
+          to: vdmitriev@gkvinegret.ru,rahmetov@gkvinegret.ru,kkashirina@gkvinegret.ru,apan@gkvinegret.ru,ffilippov@gkvinegret.ru,erumyantseva@gkvinegret.ru
           subject: ${{ steps.ops.outputs.subject }}
           html_body: file:///tmp/ops_body.html
           convert_markdown: false
@@ -157,7 +157,7 @@ jobs:
           username: ${{ secrets.SMTP_USER }}
           password: ${{ secrets.SMTP_PASSWORD }}
           from: Отчёт по вылетам <${{ secrets.SMTP_USER }}>
-          to: vdmitriev@gkvinegret.ru,rahmetov@gkvinegret.ru,kkashirina@gkvinegret.ru,apan@gkvinegret.ru,ffilippov@gkvinegret.ru
+          to: vdmitriev@gkvinegret.ru,rahmetov@gkvinegret.ru,kkashirina@gkvinegret.ru,apan@gkvinegret.ru,ffilippov@gkvinegret.ru,erumyantseva@gkvinegret.ru
           subject: ${{ steps.month.outputs.subject }}
           html_body: file:///tmp/ops_month_body.html
           convert_markdown: false
