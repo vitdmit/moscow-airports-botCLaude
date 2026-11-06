@@ -162,6 +162,27 @@ jobs:
           html_body: file:///tmp/ops_month_body.html
           convert_markdown: false
 
+      # С 01.11.2026 облачная задача Claude перестала присылать снимки табло, и
+      # это две недели никто не видел: сбор молча уходил на AeroDataBox.
+      # Теперь прогон краснеет (GitHub шлёт письмо), если снимка позавчерашних
+      # суток нет хотя бы по одному аэропорту. Данные при этом уже собраны.
+      - name: Alarm if Yandex snapshot missing
+        if: ${{ !cancelled() && github.event.inputs.fetch_date == '' }}
+        run: |
+          python - <<'PY'
+          import sys
+          from src import yandex_fids as yf
+          from src.config import AIRPORTS
+          from src.utils import day_before_yesterday_msk
+          d = day_before_yesterday_msk()
+          miss = [ap for ap in AIRPORTS if not yf.snapshot_path(ap, d).exists()]
+          if miss:
+              print("НЕТ СНИМКА ТАБЛО ЯНДЕКСА за %s: %s. Сутки собраны из AeroDataBox." % (d, ", ".join(miss)))
+              print("Проверь облачную задачу «Снимки табло Яндекса» и доступ к rasp.yandex.ru.")
+              sys.exit(1)
+          print("Снимки табло Яндекса за %s на месте." % d)
+          PY
+
       - name: Alarm if incomplete days remain
         run: |
           if [ -f /tmp/completeness_flag.txt ]; then
