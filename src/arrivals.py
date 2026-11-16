@@ -108,21 +108,31 @@ def _write(path, fields, rows) -> None:
 
 
 def build_day(day: date) -> bool:
-    """Собрать сутки. False, если хотя бы по одному аэропорту снимка нет:
-    тогда файлы не пишутся, чтобы не оставить неполные сутки."""
-    rows = []
+    """Собрать сутки. False, если хотя бы по одному аэропорту данных нет.
+
+    Аэропорт без данных (нет снимка или Яндекс не дал статусов, как DME
+    17-25.10.2026) в файл рейсов не попадает, а в сводке получает строку
+    с зоной «нет данных» и пустым числом, чтобы при суммировании пробел
+    не прошёл незаметно. Если нет ни одного аэропорта, файлы не пишутся.
+    """
+    rows, missing = [], []
     for ap in AIRPORTS:
         try:
             rows += rows_for_day(ap, day)
         except yf.YandexError as e:
             log.error("%s", e)
-            return False
+            missing.append(ap)
+    if len(missing) == len(AIRPORTS):
+        return False
+    summ = summary(rows) + [dict(zip(SUMMARY_FIELDS, (ap, "нет данных", "", "", "", "")))
+                            for ap in missing]
     _write(ARR_DIR / ("%s.csv" % day.isoformat()), CSV_FIELDS, rows)
-    _write(ARR_DIR / ("%s.summary.csv" % day.isoformat()), SUMMARY_FIELDS, summary(rows))
+    _write(ARR_DIR / ("%s.summary.csv" % day.isoformat()), SUMMARY_FIELDS, summ)
     by = Counter((r["airport"], r["zone"]) for r in rows)
-    log.info("%s: прилётов %d (%s)", day, len(rows),
-             ", ".join("%s %s %d" % (a, z, n) for (a, z), n in sorted(by.items())))
-    return True
+    log.info("%s: прилётов %d (%s)%s", day, len(rows),
+             ", ".join("%s %s %d" % (a, z, n) for (a, z), n in sorted(by.items())),
+             " НЕТ ДАННЫХ: " + ", ".join(missing) if missing else "")
+    return not missing
 
 
 def main(argv: list[str]) -> int:
