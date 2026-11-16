@@ -103,12 +103,19 @@ MOSCOW_IATA = {"SVO", "VKO", "DME", "ZIA", "BKA", "OSF"}
 SNAP_DIR = DATA_DIR / "yandex_raw"
 
 
-def snapshot_path(airport: str, day: date):
-    return SNAP_DIR / day.isoformat() / ("%s.json.gz" % airport)
+# Прилёты (добавлено 16.11.2026): та же страница с event=arrival, снимок
+# лежит рядом с вылетным под именем <аэропорт>_arr.json.gz.
+EVENTS = ("departure", "arrival")
 
 
-def save_snapshot(airport: str, day: date, station: dict) -> None:
-    p = snapshot_path(airport, day)
+def snapshot_path(airport: str, day: date, event: str = "departure"):
+    suffix = "_arr" if event == "arrival" else ""
+    return SNAP_DIR / day.isoformat() / ("%s%s.json.gz" % (airport, suffix))
+
+
+def save_snapshot(airport: str, day: date, station: dict,
+                  event: str = "departure") -> None:
+    p = snapshot_path(airport, day, event)
     p.parent.mkdir(parents=True, exist_ok=True)
     body = dict(station)
     body["_fetched_at"] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -117,8 +124,9 @@ def save_snapshot(airport: str, day: date, station: dict) -> None:
         f.write(gzip.compress(raw, 9, mtime=0))
 
 
-def load_snapshot(airport: str, day: date) -> Optional[dict]:
-    p = snapshot_path(airport, day)
+def load_snapshot(airport: str, day: date,
+                  event: str = "departure") -> Optional[dict]:
+    p = snapshot_path(airport, day, event)
     if not p.exists():
         return None
     try:
@@ -166,10 +174,11 @@ def parse_state(html: str) -> dict:
 
 def fetch_station(airport: str, day: date,
                   client: Optional[httpx.Client] = None,
-                  use_snapshot: bool = True) -> dict:
+                  use_snapshot: bool = True,
+                  event: str = "departure") -> dict:
     global _BLOCKED
     if use_snapshot:
-        station = load_snapshot(airport, day)
+        station = load_snapshot(airport, day, event)
         if station is not None:
             log.info("[%s] %s: табло Яндекса из снимка (%s)", airport, day,
                      station.get("_fetched_at", "?"))
@@ -182,6 +191,8 @@ def fetch_station(airport: str, day: date,
                           % (airport, day))
     sid = AIRPORT_CONFIGS[airport]["station_id"]
     url = URL.format(sid=sid, d=day.isoformat())
+    if event == "arrival":
+        url += "&event=arrival"
     own = client is None
     if own:
         client = make_client()
@@ -198,6 +209,8 @@ def fetch_station(airport: str, day: date,
                     raise YandexError("страница не того аэропорта: %s" % station.get("iataCode"))
                 if station.get("whenDate") not in (None, day.isoformat()):
                     raise YandexError("страница не тех суток: %s" % station.get("whenDate"))
+                if station.get("event") not in (None, event):
+                    raise YandexError("страница не того табло: %s" % station.get("event"))
                 return station
             except (YandexError, httpx.HTTPError, ValueError) as e:
                 last = e
@@ -230,7 +243,7 @@ def _flight(t: dict, companies: dict) -> Optional[dict]:
         return None
     st = t.get("status") or {}
     status = (st.get("status") or "unknown").lower()
-    actual = _dt(st.get("actualDt")) if status == "departed" else None
+    actual = _dt(st.get("actualDt")) if status in ("departed", "arrived") else None
     route = t.get("routeStations") or [{}]
     first = route[0] or {}
     pairs = [(t.get("number") or "", t.get("companyId"))]

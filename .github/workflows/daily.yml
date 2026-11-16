@@ -76,6 +76,20 @@ jobs:
           FETCH_DATE: ${{ github.event.inputs.fetch_date }}
         run: python -m src.yandex_upgrade
 
+      # Прилёты (с 16.11.2026): только из снимка табло Яндекса, AeroDataBox
+      # не тратится. Нет снимка: сутки не пишутся, прогон не краснеет здесь,
+      # а в шаге «Alarm if Yandex snapshot missing».
+      - name: Прилёты из снимка Яндекса
+        continue-on-error: true
+        env:
+          FETCH_DATE: ${{ github.event.inputs.fetch_date }}
+        run: |
+          if [ -n "${FETCH_DATE}" ]; then
+            python -m src.arrivals "${FETCH_DATE}"
+          else
+            python -m src.arrivals
+          fi
+
       - name: Completeness check + auto-heal
         env:
           AERODATABOX_KEY: ${{ secrets.AERODATABOX_KEY }}
@@ -87,7 +101,7 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/daily data/ops_daily data/aerodatabox_usage.json data/completeness_exceptions.json
+          git add data/daily data/ops_daily data/arrivals data/aerodatabox_usage.json data/completeness_exceptions.json
           if git diff --cached --quiet; then
             echo "Нет изменений для коммита."
             exit 0
@@ -176,6 +190,8 @@ jobs:
           from src.utils import day_before_yesterday_msk
           d = day_before_yesterday_msk()
           miss = [ap for ap in AIRPORTS if not yf.snapshot_path(ap, d).exists()]
+          miss += ["%s прилёты" % ap for ap in AIRPORTS
+                   if not yf.snapshot_path(ap, d, "arrival").exists()]
           if miss:
               print("НЕТ СНИМКА ТАБЛО ЯНДЕКСА за %s: %s. Сутки собраны из AeroDataBox." % (d, ", ".join(miss)))
               print("Проверь облачную задачу «Снимки табло Яндекса» и доступ к rasp.yandex.ru.")

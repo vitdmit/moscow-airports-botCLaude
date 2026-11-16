@@ -55,6 +55,7 @@ jobs:
           while [ "$(date -d "$d" +%s)" -le "$(date -d "$TO_DATE" +%s)" ]; do
             echo "::group::$d"
             FETCH_DATE="$d" python -m src.daily_fetch || echo "день $d не собрался, идём дальше"
+            python -m src.arrivals "$d" || echo "прилёты $d не собрались (нет снимка), идём дальше"
             echo "::endgroup::"
             d=$(date -d "$d + 1 day" +%F)
           done
@@ -67,7 +68,7 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/daily data/ops_daily data/aerodatabox_usage.json
+          git add data/daily data/ops_daily data/arrivals data/aerodatabox_usage.json
           if git diff --cached --quiet; then
             echo "нет изменений"
             exit 0
